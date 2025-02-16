@@ -34,6 +34,9 @@ namespace raytracing
     mRenderQuad = sf::RectangleShape({static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Green);
 
+    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+    mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+
     while (mWindow.isOpen())
     {
       handle_messages();
@@ -70,6 +73,8 @@ namespace raytracing
         {
           std::cerr << "Failed to resize texture\n";
         }
+        mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+        mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
       }
     }
   }
@@ -148,7 +153,6 @@ namespace raytracing
 
   void rt::set_uniforms()
   {
-    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
     mShader.setUniform("cameraPosition", glm_to_sfml(mCamera.position));
     mShader.setUniform("cameraDirection", glm_to_sfml(mCamera.direction));
   }

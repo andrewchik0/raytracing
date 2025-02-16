@@ -3,8 +3,11 @@
 in vec2 passTexCoord;
 
 uniform sampler2D renderedTexture;
+uniform vec2 windowSize;
+
+#include "fxaa.glsl"
 
 void main()
 {
-  gl_FragColor = vec4(texture(renderedTexture, passTexCoord).xyz, 1.0);
+  gl_FragColor = fxaa(renderedTexture, passTexCoord, windowSize);
 }
