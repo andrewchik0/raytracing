@@ -2,6 +2,8 @@
 
 #include <filesystem>
 #include <fstream>
+#include <imgui-SFML.h>
+#include <imgui.h>
 #include <iostream>
 
 namespace raytracing
@@ -25,6 +27,8 @@ namespace raytracing
     mWindowHeight = options.height;
 
     mWindow = sf::RenderWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), options.title);
+    if (!ImGui::SFML::Init(mWindow))
+      return;
 
     if (load_shaders() != status::success)
       return;
@@ -34,9 +38,20 @@ namespace raytracing
 
     resize();
 
+    sf::Clock clock;
     while (mWindow.isOpen())
     {
       handle_messages();
+
+      sf::Time elapsedTime = clock.getElapsedTime();
+
+      ImGui::SFML::Update(mWindow, clock.restart());
+
+      ImGui::Begin("Stats");
+      ImGui::Text("FrameTime: %.3f ms", static_cast<float>(elapsedTime.asMicroseconds()) / 1000.0);
+      ImGui::Text("FPS: %.1f", 1.0 / elapsedTime.asSeconds());
+      ImGui::End();
+
       mWindow.clear();
       mTexture.clear();
 
@@ -47,6 +62,7 @@ namespace raytracing
 
       mPostShader.setUniform("renderedTexture", mTexture.getTexture());
       mWindow.draw(mRenderQuad, &mPostShader);
+      ImGui::SFML::Render(mWindow);
 
       mWindow.display();
     }
@@ -56,6 +72,7 @@ namespace raytracing
   {
     while (const std::optional event = mWindow.pollEvent())
     {
+      ImGui::SFML::ProcessEvent(mWindow, *event);
       mInput.handle(event);
 
       if (event->is<sf::Event::Closed>())
