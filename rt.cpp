@@ -25,8 +25,6 @@ namespace raytracing
     mWindowHeight = options.height;
 
     mWindow = sf::RenderWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), options.title);
-    if (!mTexture.resize({ mWindowWidth, mWindowHeight }))
-      return;
 
     if (load_shaders() != status::success)
       return;
@@ -34,8 +32,7 @@ namespace raytracing
     mRenderQuad = sf::RectangleShape({static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Green);
 
-    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
-    mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+    resize();
 
     while (mWindow.isOpen())
     {
@@ -69,15 +66,21 @@ namespace raytracing
       {
         mWindowWidth = mWindow.getSize().x;
         mWindowHeight = mWindow.getSize().y;
-        if (!mTexture.resize({ mWindowWidth, mWindowHeight}))
-        {
-          std::cerr << "Failed to resize texture\n";
-        }
-        mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
-        mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+        resize();
       }
     }
   }
+
+  void rt::resize()
+  {
+    if (!mTexture.resize({ mWindowWidth, mWindowHeight}))
+    {
+      std::cerr << "Failed to resize texture\n";
+    }
+    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+    mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+  }
+
 
   std::string rt::read_shader_file(const std::string& path)
   {

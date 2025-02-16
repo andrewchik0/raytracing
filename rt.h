@@ -43,6 +43,8 @@ namespace raytracing
 
     void handle_messages();
     void set_uniforms();
+    void resize();
+
     status load_shaders();
 
     static status load_shader(sf::Shader* shader, const std::string& vertexPath, const std::string& fragmentPath);

@@ -27,6 +27,8 @@ float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr)
 
 void main()
 {
-  float sphere = raySphereIntersect(cameraPosition, normalize(cameraDirection + vec3(passTexCoord * 2.0 - 1, 0.0) * windowSize.x / windowSize.y), vec3(0.0), .5);
+  vec2 rayShift = vec2(passTexCoord * 2.0 - 1);
+  rayShift.x *= windowSize.x / windowSize.y;
+  float sphere = raySphereIntersect(cameraPosition, normalize(cameraDirection + vec3(rayShift, 0.0)), vec3(0.0), .8);
   gl_FragColor = vec4(1.0 - vec3(pow(sphere / 2, 2.0)), 1.0);
 }
