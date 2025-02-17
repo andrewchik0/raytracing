@@ -30,6 +30,13 @@ FetchContent_Declare(ImGui-SFML
   SYSTEM)
 FetchContent_MakeAvailable(ImGui-SFML)
 
+FetchContent_Declare(
+  GLEW
+  GIT_REPOSITORY https://github.com/Perlmint/glew-cmake
+  GIT_TAG glew-cmake-2.2.0
+)
+FetchContent_MakeAvailable(GLEW)
+
 add_executable(main
   src/main.cpp
   src/rt.cpp
@@ -39,12 +46,17 @@ add_executable(main
   src/camera.cpp
   src/camera.h
   src/render.cpp
-  src/render.h)
+  src/render.h
+  src/uniform_buffer.cpp
+  src/uniform_buffer.h)
+
+find_package(OpenGL REQUIRED)
+
 target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics ImGui-SFML::ImGui-SFML)
+target_link_libraries(main PRIVATE SFML::Graphics ImGui-SFML::ImGui-SFML OpenGL::GL libglew_static)
 
 add_subdirectory(third_party/glm)
-target_include_directories(main PUBLIC third_party/glm/)
+target_include_directories(main PUBLIC third_party/glm/ ${OPENGL_INCLUDE_DIRS})
 
 add_custom_target(
   run-ray-tracing

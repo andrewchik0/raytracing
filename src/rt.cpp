@@ -89,10 +89,12 @@ namespace raytracing
 
   void rt::add_sphere(const SphereObject& object)
   {
-    mRender.mSpheres.push_back(std::move(object));
+    if (mRender.mSpheresCount >= MAX_SPHERES) return;
+    mRender.mSpheres[mRender.mSpheresCount++] = std::move(object);
   }
   void rt::add_plane(const PlaneObject& object)
   {
-    mRender.mPlanes.push_back(std::move(object));
+    if (mRender.mSpheresCount >= MAX_PLANES) return;
+    mRender.mPlanes[mRender.mPlanesCount++] = std::move(object);
   }
 }

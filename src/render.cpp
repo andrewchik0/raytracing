@@ -56,6 +56,11 @@ namespace raytracing
     mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
   }
 
+  void render::push_scene()
+  {
+
+  }
+
   std::string render::read_shader_file(const std::string& path)
   {
     std::ifstream file(path);

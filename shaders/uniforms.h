@@ -10,6 +10,8 @@ using mat4 = glm::mat4;
 using uint = unsigned int;
 #endif
 
+#define SCENE_BINDING 1
+#define MAX_SPHERES 32
 struct SphereObject
 {
   vec3 center;
@@ -17,6 +19,7 @@ struct SphereObject
   vec4 albedo;
 };
 
+#define MAX_PLANES 32
 struct PlaneObject
 {
   vec3 normal;

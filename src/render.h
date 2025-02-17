@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "uniform_buffer.h"
 #include "../shaders/uniforms.h"
 
 namespace raytracing
@@ -23,14 +24,21 @@ namespace raytracing
     void draw(sf::RenderWindow* window);
     void resize(uint32_t width, uint32_t height);
 
+    void push_scene();
+
   private:
     sf::Shader
       mShader, mPostShader;
     sf::RectangleShape mRenderQuad;
     sf::RenderTexture mTexture;
 
-    std::vector<SphereObject> mSpheres;
-    std::vector<PlaneObject> mPlanes;
+    std::array<SphereObject, MAX_SPHERES> mSpheres;
+    std::array<PlaneObject, MAX_PLANES> mPlanes;
+    size_t
+      mSpheresCount = 0,
+      mPlanesCount = 0;
+
+    uniform_buffer mSceneBuffer;
 
     void set_uniforms();
 

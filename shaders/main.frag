@@ -1,4 +1,5 @@
-#version 410
+#version 420
+layout(location = 0) out vec4 outColor;
 
 in vec2 passTexCoord;
 
@@ -13,6 +14,13 @@ uniform vec2 windowSize;
 #include "uniforms.h"
 #include "ray_tracing.glsl"
 
+
+layout (std140, binding = SCENE_BINDING) uniform Scene
+{
+  SphereObject spheres[MAX_SPHERES];
+  PlaneObject planes[MAX_PLANES];
+};
+
 void main()
 {
   vec3 rayDirection = calculateRayDirection();
@@ -25,7 +33,7 @@ void main()
   float att = 1.0;
   if (sphereDistance == -1.0 && planeDistance == -1.0)
   {
-    gl_FragColor = vec4(0.5, 0.7, 1.0, 1.0);
+    outColor = vec4(0.5, 0.7, 1.0, 1.0);
     return;
   }
   if (sphereDistance != -1.0 && planeDistance != -1.0)
@@ -51,5 +59,5 @@ void main()
       att = 0.5;
     }
   }
-  gl_FragColor = vec4(max(vec3(dot(normal, normalize(lightDirection))), 0.1) * att, 1.0);
+  outColor = vec4(max(vec3(dot(normal, normalize(lightDirection))), 0.1) * att, 1.0);
 }

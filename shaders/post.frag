@@ -1,4 +1,5 @@
-#version 410
+#version 420
+layout(location = 0) out vec4 outColor;
 
 in vec2 passTexCoord;
 
@@ -9,5 +10,5 @@ uniform vec2 windowSize;
 
 void main()
 {
-  gl_FragColor = fxaa(renderedTexture, passTexCoord, windowSize);
+  outColor = fxaa(renderedTexture, passTexCoord, windowSize);
 }
