@@ -52,6 +52,8 @@ namespace raytracing
 
     if (rt::get()->mInput.mMousePressed[static_cast<int>(sf::Mouse::Button::Left)])
     {
+      const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::SizeAll).value();
+      rt::get()->mWindow.setMouseCursor(cursor);
       float yaw = rt::get()->mInput.mMouseDeltaX / 200.0;
       float pitch = rt::get()->mInput.mMouseDeltaY / 200.0;
 
@@ -59,20 +61,24 @@ namespace raytracing
       glm::mat4 rotateY = glm::rotate(glm::mat4(1.0), pitch, glm::cross(glm::vec3(0, 1, 0), mDirection));
 
       glm::vec3 checkLookAt = glm::normalize(rotateY * glm::vec4(mDirection, 1.0));
-      float angleCos = (glm::dot(checkLookAt, getNormalizedProjection(mDirection)));
-      float threeshold = 1e-3f;
 
-      if (angleCos <= 0)
+      if (float angleCos = (glm::dot(checkLookAt, getNormalizedProjection(mDirection))); angleCos <= 0)
       {
+        float threshold = 1e-3f;
         int8_t sign = mDirection.y > 0 ? 1 : -1;
 
         mDirection = getNormalizedProjection(mDirection);
-        mDirection = rotateX * glm::vec4(mDirection.x * threeshold, sign * (1 - threeshold), mDirection.z * threeshold, 1);
+        mDirection = rotateX * glm::vec4(mDirection.x * threshold, sign * (1 - threshold), mDirection.z * threshold, 1);
       }
       else
       {
         mDirection = rotateY * rotateX * glm::vec4(mDirection, 1.0);
       }
+    }
+    else
+    {
+      const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Arrow).value();
+      rt::get()->mWindow.setMouseCursor(cursor);
     }
 
 
