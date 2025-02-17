@@ -5,10 +5,18 @@ in vec2 passTexCoord;
 
 uniform sampler2D renderedTexture;
 uniform vec2 windowSize;
+uniform bool useFXAA;
 
 #include "fxaa.glsl"
 
 void main()
 {
-  outColor = fxaa(renderedTexture, passTexCoord, windowSize);
+  if (useFXAA)
+  {
+    outColor = fxaa(renderedTexture, passTexCoord, windowSize);
+  }
+  else
+  {
+    outColor = vec4(texture(renderedTexture, passTexCoord).xyz, 1.0);
+  }
 }

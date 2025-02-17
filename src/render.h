@@ -32,6 +32,9 @@ namespace raytracing
     sf::RectangleShape mRenderQuad;
     sf::RenderTexture mTexture;
 
+    bool mUseFXAA = true;
+    glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
+
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
     size_t

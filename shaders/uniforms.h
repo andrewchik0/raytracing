@@ -26,3 +26,9 @@ struct PlaneObject
   float distance;
   vec4 albedo;
 };
+
+#define SceneBufferStruct SceneBuffer   \
+{                                       \
+  SphereObject spheres[MAX_SPHERES];    \
+  PlaneObject planes[MAX_PLANES];       \
+}

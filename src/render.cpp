@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <GL/glew.h>
 
 #include "rt.h"
 
@@ -22,10 +23,14 @@ namespace raytracing
     if (load_shaders() != status::success)
       return;
 
+    glewInit();
+
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Green);
-  }
+    mSceneBuffer.create(SCENE_BINDING, sizeof(SphereObject) * MAX_SPHERES + sizeof(PlaneObject) * MAX_PLANES, "SceneBuffer", mShader.getNativeHandle());
 
+    push_scene();
+  }
 
   void render::clear()
   {
@@ -58,7 +63,10 @@ namespace raytracing
 
   void render::push_scene()
   {
-
+    struct SceneBufferStruct buffer = {};
+    memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
+    memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    mSceneBuffer.set(&buffer);
   }
 
   std::string render::read_shader_file(const std::string& path)
@@ -146,5 +154,7 @@ namespace raytracing
     mShader.setUniform("cameraDirection", glm_to_sfml(rt::get()->mCamera.mDirection));
     mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));
     mShader.setUniform("cameraUp", glm_to_sfml(rt::get()->mCamera.mUp));
+    mShader.setUniform("lightDirection", glm_to_sfml(mLightDirection));
+    mPostShader.setUniform("useFXAA", mUseFXAA);
   }
 }

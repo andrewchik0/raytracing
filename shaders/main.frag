@@ -10,21 +10,17 @@ uniform vec3 cameraUp;
 uniform float halfHeight;
 uniform float halfWidth;
 uniform vec2 windowSize;
+uniform vec3 lightDirection;
 
 #include "uniforms.h"
 #include "ray_tracing.glsl"
 
 
-layout (std140, binding = SCENE_BINDING) uniform Scene
-{
-  SphereObject spheres[MAX_SPHERES];
-  PlaneObject planes[MAX_PLANES];
-};
+layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 
 void main()
 {
   vec3 rayDirection = calculateRayDirection();
-  vec3 lightDirection = vec3(0.8, 1.0, 1.0);
 
   float sphereDistance = raySphereIntersect(cameraPosition, rayDirection, vec3(0.0), .8);
   float planeDistance = rayPlaneIntersect(cameraPosition, rayDirection, vec3(0.0, 1.0, 0.0), .8);
