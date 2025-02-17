@@ -10,8 +10,13 @@ using mat4 = glm::mat4;
 using uint = unsigned int;
 #endif
 
+#define FAR_PLANE 1000000.0f
+
 #define SCENE_BINDING 1
+#define UNDEFINED_OBJECT 0
+
 #define MAX_SPHERES 32
+#define SPHERE_OBJECT 1
 struct SphereObject
 {
   vec3 center;
@@ -20,6 +25,7 @@ struct SphereObject
 };
 
 #define MAX_PLANES 32
+#define PLANE_OBJECT 2
 struct PlaneObject
 {
   vec3 normal;
@@ -31,4 +37,7 @@ struct PlaneObject
 {                                       \
   SphereObject spheres[MAX_SPHERES];    \
   PlaneObject planes[MAX_PLANES];       \
+  uint spheresCount;                    \
+  uint planesCount;                     \
+  uint _[2]; \
 }

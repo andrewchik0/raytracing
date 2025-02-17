@@ -30,6 +30,8 @@ namespace raytracing
 
   void rt::run()
   {
+    mRender.push_scene();
+
     while (mWindow.isOpen())
     {
       mWindow.clear();
@@ -86,7 +88,13 @@ namespace raytracing
     ImGui::Text("FPS: %.1f", 1.0 / mElapsedTime.asSeconds());
     ImGui::Separator();
     ImGui::Checkbox("Use FXAA", &mRender.mUseFXAA);
+    ImGui::Separator();
     ImGui::DragFloat3("Light Direction", &mRender.mLightDirection.x, 0.01f, -1.0f, 1.0f, "%.2f");
+    ImGui::Separator();
+    if (ImGui::Button("Reload shaders"))
+    {
+      mRender.load_shaders();
+    }
     ImGui::End();
   }
 

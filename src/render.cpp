@@ -8,6 +8,8 @@
 
 namespace raytracing
 {
+  typedef struct SceneBufferStruct SceneBuffer;
+
   sf::Glsl::Vec3 glm_to_sfml(glm::vec3 v)
   {
     return { v.x, v.y, v.z };
@@ -26,10 +28,8 @@ namespace raytracing
     glewInit();
 
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
-    mRenderQuad.setFillColor(sf::Color::Green);
-    mSceneBuffer.create(SCENE_BINDING, sizeof(SphereObject) * MAX_SPHERES + sizeof(PlaneObject) * MAX_PLANES, "SceneBuffer", mShader.getNativeHandle());
-
-    push_scene();
+    mRenderQuad.setFillColor(sf::Color::Red);
+    mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
   }
 
   void render::clear()
@@ -63,9 +63,11 @@ namespace raytracing
 
   void render::push_scene()
   {
-    struct SceneBufferStruct buffer = {};
+    SceneBuffer buffer = {};
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    buffer.planesCount = mPlanesCount;
+    buffer.spheresCount = mSpheresCount;
     mSceneBuffer.set(&buffer);
   }
 
