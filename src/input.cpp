@@ -1,7 +1,14 @@
 #include "input.h"
 
+#include "rt.h"
+
 namespace raytracing
 {
+  bool input::key(sf::Keyboard::Key key)
+  {
+    return rt::get()->mInput.mKeyPressed[static_cast<int>(key)];
+  }
+
   void input::handle(const std::optional<sf::Event>& event)
   {
     if (event->is<sf::Event::KeyPressed>())
@@ -31,4 +38,9 @@ namespace raytracing
     }
   }
 
+  void input::clear()
+  {
+    mMouseDeltaX = 0;
+    mMouseDeltaY = 0;
+  }
 }

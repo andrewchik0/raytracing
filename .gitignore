@@ -13,5 +13,6 @@ CMakeUserPresets.json
 .vs/
 .idea/
 cmake-build-debug/
+out/
 
 imgui.ini

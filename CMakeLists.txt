@@ -30,11 +30,15 @@ FetchContent_Declare(ImGui-SFML
   SYSTEM)
 FetchContent_MakeAvailable(ImGui-SFML)
 
-add_executable(main main.cpp
-  rt.cpp
-  rt.h
-  input.cpp
-  input.h)
+add_executable(main
+  src/main.cpp
+  src/rt.cpp
+  src/rt.h
+  src/input.cpp
+  src/input.h
+  src/camera.cpp
+  src/camera.h
+  src/math_helper.h)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics ImGui-SFML::ImGui-SFML)
 

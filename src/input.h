@@ -8,6 +8,7 @@
 
 namespace raytracing
 {
+
   class input
   {
   public:
@@ -20,5 +21,8 @@ namespace raytracing
     bool mKeyPressed[sf::Keyboard::KeyCount] { false };
 
     void handle(const std::optional<sf::Event>& event);
+    void clear();
+
+    static bool key(sf::Keyboard::Key key);
   };
 }

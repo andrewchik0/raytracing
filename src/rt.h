@@ -26,24 +26,29 @@ namespace raytracing
   public:
     void run(const init_options &options);
 
+    static rt* get()
+    {
+      return sInstance;
+    }
+
   private:
     sf::RenderWindow mWindow;
     sf::Shader
       mShader, mPostShader;
     sf::RectangleShape mRenderQuad;
     sf::RenderTexture mTexture;
+    sf::Clock mClock;
+    sf::Time mElapsedTime;
 
     uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
     input mInput;
     camera mCamera;
 
-    const std::string mVertexShaderPath = "./shaders/rt.vert";
-    const std::string mFragmentShaderPath = "./shaders/rt.frag";
-
     void handle_messages();
     void set_uniforms();
     void resize();
+    void imgui_update();
 
     status load_shaders();
 
@@ -51,5 +56,10 @@ namespace raytracing
 
     static std::string read_shader_file(const std::string& path);
     static std::string parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles);
+
+    static rt* sInstance;
+
+    friend class camera;
+    friend class input;
   };
 }

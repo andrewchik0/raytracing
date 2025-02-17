@@ -8,6 +8,8 @@
 
 namespace raytracing
 {
+  rt* rt::sInstance = nullptr;
+
   sf::Glsl::Vec3 glm_to_sfml(glm::vec3 v)
   {
     return { v.x, v.y, v.z };
@@ -20,7 +22,8 @@ namespace raytracing
 
   void rt::run(const init_options& options)
   {
-    if (!std::filesystem::exists(mVertexShaderPath) || !std::filesystem::exists(mFragmentShaderPath))
+    sInstance = this;
+    if (!std::filesystem::exists("shaders/main.frag"))
       return;
 
     mWindowWidth = options.width;
@@ -38,22 +41,17 @@ namespace raytracing
 
     resize();
 
-    sf::Clock clock;
     while (mWindow.isOpen())
     {
-      handle_messages();
-
-      sf::Time elapsedTime = clock.getElapsedTime();
-
-      ImGui::SFML::Update(mWindow, clock.restart());
-
-      ImGui::Begin("Stats");
-      ImGui::Text("FrameTime: %.3f ms", static_cast<float>(elapsedTime.asMicroseconds()) / 1000.0);
-      ImGui::Text("FPS: %.1f", 1.0 / elapsedTime.asSeconds());
-      ImGui::End();
-
       mWindow.clear();
       mTexture.clear();
+      mInput.clear();
+
+      handle_messages();
+
+      imgui_update();
+
+      mCamera.update(mElapsedTime.asSeconds());
 
       set_uniforms();
 
@@ -90,12 +88,27 @@ namespace raytracing
 
   void rt::resize()
   {
+    mCamera.resize(mWindowWidth, mWindowHeight);
     if (!mTexture.resize({ mWindowWidth, mWindowHeight}))
     {
       std::cerr << "Failed to resize texture\n";
     }
     mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+    mShader.setUniform("halfHeight", mCamera.mHalfHeight);
+    mShader.setUniform("halfWidth", mCamera.mHalfWidth);
     mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight)));
+  }
+
+  void rt::imgui_update()
+  {
+    mElapsedTime = mClock.getElapsedTime();
+
+    ImGui::SFML::Update(mWindow, mClock.restart());
+
+    ImGui::Begin("Stats");
+    ImGui::Text("FrameTime: %.3f ms", static_cast<float>(mElapsedTime.asMicroseconds()) / 1000.0);
+    ImGui::Text("FPS: %.1f", 1.0 / mElapsedTime.asSeconds());
+    ImGui::End();
   }
 
 
@@ -150,8 +163,8 @@ namespace raytracing
       return status::error;
     }
 
-    load_shader(&mShader, mVertexShaderPath, mFragmentShaderPath);
-    load_shader(&mPostShader, mVertexShaderPath, "./shaders/post.frag");
+    load_shader(&mShader, "./shaders/quad.vert", "./shaders/main.frag");
+    load_shader(&mPostShader, "./shaders/quad.vert", "./shaders/post.frag");
 
     return status::success;
   }
@@ -173,8 +186,10 @@ namespace raytracing
 
   void rt::set_uniforms()
   {
-    mShader.setUniform("cameraPosition", glm_to_sfml(mCamera.position));
-    mShader.setUniform("cameraDirection", glm_to_sfml(mCamera.direction));
+    mShader.setUniform("cameraPosition", glm_to_sfml(mCamera.mPosition));
+    mShader.setUniform("cameraDirection", glm_to_sfml(mCamera.mDirection));
+    mShader.setUniform("cameraRight", glm_to_sfml(mCamera.mRight));
+    mShader.setUniform("cameraUp", glm_to_sfml(mCamera.mUp));
   }
 
 }
