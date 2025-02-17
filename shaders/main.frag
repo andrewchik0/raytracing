@@ -10,6 +10,7 @@ uniform float halfHeight;
 uniform float halfWidth;
 uniform vec2 windowSize;
 
+#include "uniforms.h"
 #include "ray_tracing.glsl"
 
 void main()

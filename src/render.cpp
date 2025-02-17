@@ -1,0 +1,145 @@
+#include "render.h"
+
+#include <fstream>
+#include <iostream>
+
+#include "rt.h"
+
+namespace raytracing
+{
+  sf::Glsl::Vec3 glm_to_sfml(glm::vec3 v)
+  {
+    return { v.x, v.y, v.z };
+  }
+
+  sf::Glsl::Vec2 glm_to_sfml(glm::vec2 v)
+  {
+    return { v.x, v.y };
+  }
+
+  void render::init()
+  {
+    if (load_shaders() != status::success)
+      return;
+
+    mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
+    mRenderQuad.setFillColor(sf::Color::Green);
+  }
+
+
+  void render::clear()
+  {
+    mTexture.clear();
+  }
+
+  void render::draw(sf::RenderWindow* window)
+  {
+    set_uniforms();
+
+    mTexture.draw(mRenderQuad, &mShader);
+    mTexture.display();
+
+    mPostShader.setUniform("renderedTexture", mTexture.getTexture());
+    window->draw(mRenderQuad, &mPostShader);
+  }
+
+
+  void render::resize(uint32_t width, uint32_t height)
+  {
+    if (!mTexture.resize({ width, height}))
+    {
+      std::cerr << "Failed to resize texture\n";
+    }
+    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
+    mShader.setUniform("halfHeight", rt::get()->mCamera.mHalfHeight);
+    mShader.setUniform("halfWidth", rt::get()->mCamera.mHalfWidth);
+    mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
+  }
+
+  std::string render::read_shader_file(const std::string& path)
+  {
+    std::ifstream file(path);
+
+    if (!file.is_open())
+      std::cerr << "Failed to open file: " << path << '\n';
+
+    std::string content((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
+
+    return content;
+  }
+
+  std::string render::parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles)
+  {
+    std::filesystem::path fpath(path);
+    std::string text = read_shader_file(path);
+    std::string result;
+
+    for (auto it = text.begin(); it < text.end(); ++it)
+    {
+      if (*it == '#' && std::string(it + 1, it + 18) == "ifdef __cplusplus")
+      {
+        while (*it != '#' || std::string(it + 1, it + 6) != "endif")
+          ++it;
+        it += 6;
+      }
+
+      if (*it == '#' && std::string(it + 1, it + 8) == "include")
+      {
+        it += 8;
+        while(*it++ != '\"') {}
+        auto start = it;
+        while(*it++ != '\"') {}
+        auto end = it - 1;
+
+        auto filename =
+          fpath.parent_path().string() +
+          '/' +
+          std::string(start, end);
+
+        if (includedFiles.find(filename) == includedFiles.end())
+        {
+          includedFiles.insert(filename);
+          result += parse_shader_from_file(filename, includedFiles);
+        }
+      }
+      result += *it;
+    }
+    return result;
+  }
+
+  status render::load_shaders()
+  {
+    if (!sf::Shader::isAvailable())
+    {
+      return status::error;
+    }
+
+    load_shader(&mShader, "./shaders/quad.vert", "./shaders/main.frag");
+    load_shader(&mPostShader, "./shaders/quad.vert", "./shaders/post.frag");
+
+    return status::success;
+  }
+
+  status render::load_shader(sf::Shader* shader, const std::string& vertexPath, const std::string& fragmentPath)
+  {
+    auto
+     vertexIncluded = std::set<std::string>(),
+     fragmentIncluded = std::set<std::string>();
+    auto vertex = parse_shader_from_file(vertexPath, vertexIncluded);
+    auto fragment = parse_shader_from_file(fragmentPath, fragmentIncluded);
+
+    if (!shader->loadFromMemory(vertex, fragment))
+      return status::error;
+
+    return status::success;
+  }
+
+
+  void render::set_uniforms()
+  {
+    mShader.setUniform("cameraPosition", glm_to_sfml(rt::get()->mCamera.mPosition));
+    mShader.setUniform("cameraDirection", glm_to_sfml(rt::get()->mCamera.mDirection));
+    mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));
+    mShader.setUniform("cameraUp", glm_to_sfml(rt::get()->mCamera.mUp));
+  }
+}
