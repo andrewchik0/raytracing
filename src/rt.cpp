@@ -80,6 +80,7 @@ namespace raytracing
   void rt::imgui_update()
   {
     mElapsedTime = mClock.getElapsedTime();
+    mTime += mElapsedTime.asSeconds();
 
     ImGui::SFML::Update(mWindow, mClock.restart());
 
@@ -87,7 +88,7 @@ namespace raytracing
     ImGui::Text("FrameTime: %.3f ms", static_cast<float>(mElapsedTime.asMicroseconds()) / 1000.0);
     ImGui::Text("FPS: %.1f", 1.0 / mElapsedTime.asSeconds());
     ImGui::Separator();
-    ImGui::Checkbox("Use FXAA", &mRender.mUseFXAA);
+    ImGui::Checkbox("Enable FXAA", &mRender.mUseFXAA);
     ImGui::Separator();
     ImGui::DragFloat3("Light Direction", &mRender.mLightDirection.x, 0.01f, -1.0f, 1.0f, "%.2f");
     ImGui::Separator();

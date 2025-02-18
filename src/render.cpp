@@ -157,6 +157,7 @@ namespace raytracing
     mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));
     mShader.setUniform("cameraUp", glm_to_sfml(rt::get()->mCamera.mUp));
     mShader.setUniform("lightDirection", glm_to_sfml(mLightDirection));
+    mShader.setUniform("time", rt::get()->mTime);
     mPostShader.setUniform("useFXAA", mUseFXAA);
   }
 }

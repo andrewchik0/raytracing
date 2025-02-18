@@ -9,6 +9,7 @@ uniform vec3 cameraRight;
 uniform vec3 cameraUp;
 uniform float halfHeight;
 uniform float halfWidth;
+uniform float time;
 uniform vec2 windowSize;
 uniform vec3 lightDirection;
 

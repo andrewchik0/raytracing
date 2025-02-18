@@ -32,6 +32,8 @@ namespace raytracing
     sf::Clock mClock;
     sf::Time mElapsedTime;
 
+    float mTime = 0.0f;
+
     uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
     input mInput;

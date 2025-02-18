@@ -1,3 +1,18 @@
+vec3 skyColor = vec3(0.6f, 0.7f, 1.0f);
+
+float random(vec2 st)
+{
+  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+vec3 rand3(vec3 seed)
+{
+  return vec3(
+    random(vec2(time, seed.x)) - 0.5,
+    random(vec2(time, seed.y)) - 0.5,
+    random(vec2(time, seed.z)) - 0.5
+  );
+}
+
 float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr)
 {
   float a = dot(rd, rd);
@@ -33,76 +48,67 @@ vec3 calculateRayDirection()
   return normalize(cameraDirection + cameraRight * u + cameraUp * v);
 }
 
-float castShadow(vec3 rayOrigin, vec3 rayDirection)
+struct ClosestHit
 {
-  float closest = FAR_PLANE;
-
-  for (uint i = 0; i < spheresCount; i++)
-  {
-    float d = raySphereIntersect(rayOrigin, rayDirection, spheres[i].center, spheres[i].radius);
-    if (d > 0 && closest > d)
-    {
-      closest = d;
-    }
-  }
-
-  for (uint i = 0; i < planesCount; i++)
-  {
-    float d = rayPlaneIntersect(rayOrigin, rayDirection, planes[i].normal, planes[i].distance);
-    if (d > 0 && closest > d)
-    {
-      closest = d;
-    }
-  }
-  return closest;
-}
-
-vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
-{
-  uint objectType = 0;
-  uint objectIndex;
-  float closest = FAR_PLANE;
   vec3 normal;
-  vec3 hitAlbedo;
+  vec3 position;
+  float distance;
+  vec3 albedo;
+};
 
-  vec3 normalizedLight = normalize(lightDirection);
+ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
+{
+  ClosestHit result;
+  result.distance = FAR_PLANE;
 
   for (uint i = 0; i < spheresCount; i++)
   {
     float d = raySphereIntersect(rayOrigin, rayDirection, spheres[i].center, spheres[i].radius);
-    if (d > 0 && closest > d)
+    if (d > 0 && result.distance > d)
     {
-      closest = d;
-      normal = normalize(rayDirection * d + rayOrigin - spheres[i].center);
-      hitAlbedo = spheres[i].albedo.rgb;
-
-      if (castShadow(rayOrigin + d * rayDirection, normalizedLight) != FAR_PLANE)
-      {
-        hitAlbedo *= 0.5;
-      }
+      result.distance = d;
+      result.normal = normalize(rayDirection * d + rayOrigin - spheres[i].center);
+      result.albedo = spheres[i].albedo.rgb;
     }
   }
 
   for (uint i = 0; i < planesCount; i++)
   {
     float d = rayPlaneIntersect(rayOrigin, rayDirection, planes[i].normal, planes[i].distance);
-    if (d > 0 && closest > d)
+    if (d > 0 && result.distance > d)
     {
-      closest = d;
-      normal = planes[i].normal;
-      hitAlbedo = planes[i].albedo.rgb;
-
-      if (castShadow(rayOrigin + d * rayDirection, normalizedLight) != FAR_PLANE)
-      {
-        hitAlbedo *= 0.5;
-      }
+      result.distance = d;
+      result.normal = planes[i].normal;
+      result.albedo = planes[i].albedo.rgb;
     }
   }
-
-  if (closest == FAR_PLANE)
-  {
-    return vec3(0.5, 0.7, 1.0);
-  }
-
-  return max(vec3(0.1), dot(normal, normalizedLight) * hitAlbedo);
+  result.position = rayDirection * result.distance + rayOrigin + result.normal * 0.0001;
+  return result;
 }
+
+vec3 castRayFinal(vec3 rayOrigin, vec3 rayDirection)
+{
+  ClosestHit hit = closestHit(rayOrigin, rayDirection);
+  if (hit.distance == FAR_PLANE)
+  {
+    return skyColor;
+  }
+  return max(vec3(0.1), dot(hit.normal, lightDirection) * hit.albedo);
+}
+
+// Silly workaround in order to make recursion work
+#define cr(name, name0) \
+vec3 name(vec3 rayOrigin, vec3 rayDirection) \
+{ \
+  ClosestHit hit = closestHit(rayOrigin, rayDirection); \
+  if (hit.distance == FAR_PLANE) \
+  { \
+    return skyColor; \
+  } \
+  vec3 resultColor = max(vec3(0), dot(hit.normal, lightDirection) * hit.albedo); \
+  resultColor += name0(hit.position, reflect(rayDirection, hit.normal * rand3(rayDirection) * 0.5)) * 0.5; \
+  return resultColor; \
+}
+
+cr(castRay0, castRayFinal)
+cr(castRay, castRay0)
