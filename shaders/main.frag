@@ -21,14 +21,5 @@ layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 void main()
 {
   vec3 rayDirection = calculateRayDirection();
-
-  CastRay ray = castRay(cameraPosition, rayDirection);
-
-  if (ray.distance == FAR_PLANE)
-  {
-    outColor = vec4(0.5, 0.7, 1.0, 1.0);
-    return;
-  }
-
-  outColor = vec4(max(vec3(dot(ray.normal, normalize(lightDirection))) * ray.color, 0.1), 1.0);
+  outColor = vec4(castRay(cameraPosition, rayDirection), 1.0);
 }

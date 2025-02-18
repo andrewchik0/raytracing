@@ -33,13 +33,6 @@ vec3 calculateRayDirection()
   return normalize(cameraDirection + cameraRight * u + cameraUp * v);
 }
 
-struct CastRay
-{
-  float distance;
-  vec3 normal;
-  vec3 color;
-};
-
 float castShadow(vec3 rayOrigin, vec3 rayDirection)
 {
   float closest = FAR_PLANE;
@@ -64,29 +57,28 @@ float castShadow(vec3 rayOrigin, vec3 rayDirection)
   return closest;
 }
 
-CastRay castRay(vec3 rayOrigin, vec3 rayDirection)
+vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
 {
   uint objectType = 0;
   uint objectIndex;
-
-  CastRay ray;
-
-  ray.distance = FAR_PLANE;
+  float closest = FAR_PLANE;
+  vec3 normal;
+  vec3 hitAlbedo;
 
   vec3 normalizedLight = normalize(lightDirection);
 
   for (uint i = 0; i < spheresCount; i++)
   {
     float d = raySphereIntersect(rayOrigin, rayDirection, spheres[i].center, spheres[i].radius);
-    if (d > 0 && ray.distance > d)
+    if (d > 0 && closest > d)
     {
-      ray.distance = d;
-      ray.normal = normalize(rayDirection * d + rayOrigin);
-      ray.color = spheres[i].albedo.rgb;
+      closest = d;
+      normal = normalize(rayDirection * d + rayOrigin - spheres[i].center);
+      hitAlbedo = spheres[i].albedo.rgb;
 
       if (castShadow(rayOrigin + d * rayDirection, normalizedLight) != FAR_PLANE)
       {
-        ray.color *= 0.5;
+        hitAlbedo *= 0.5;
       }
     }
   }
@@ -94,18 +86,23 @@ CastRay castRay(vec3 rayOrigin, vec3 rayDirection)
   for (uint i = 0; i < planesCount; i++)
   {
     float d = rayPlaneIntersect(rayOrigin, rayDirection, planes[i].normal, planes[i].distance);
-    if (d > 0 && ray.distance > d)
+    if (d > 0 && closest > d)
     {
-      ray.distance = d;
-      ray.normal = planes[i].normal;
-      ray.color = planes[i].albedo.rgb;
+      closest = d;
+      normal = planes[i].normal;
+      hitAlbedo = planes[i].albedo.rgb;
 
       if (castShadow(rayOrigin + d * rayDirection, normalizedLight) != FAR_PLANE)
       {
-        ray.color *= 0.5;
+        hitAlbedo *= 0.5;
       }
     }
   }
 
-  return ray;
+  if (closest == FAR_PLANE)
+  {
+    return vec3(0.5, 0.7, 1.0);
+  }
+
+  return max(vec3(0.1), dot(normal, normalizedLight) * hitAlbedo);
 }
