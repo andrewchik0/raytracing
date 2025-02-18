@@ -96,19 +96,26 @@ vec3 castRayFinal(vec3 rayOrigin, vec3 rayDirection)
   return max(vec3(0.1), dot(hit.normal, lightDirection) * hit.albedo);
 }
 
-// Silly workaround in order to make recursion work
-#define cr(name, name0) \
-vec3 name(vec3 rayOrigin, vec3 rayDirection) \
-{ \
-  ClosestHit hit = closestHit(rayOrigin, rayDirection); \
-  if (hit.distance == FAR_PLANE) \
-  { \
-    return skyColor; \
-  } \
-  vec3 resultColor = max(vec3(0), dot(hit.normal, lightDirection) * hit.albedo); \
-  resultColor += name0(hit.position, reflect(rayDirection, hit.normal * rand3(rayDirection) * 0.5)) * 0.5; \
-  return resultColor; \
-}
+vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
+{
+  vec3 org = rayOrigin, dir = rayDirection;
+  uint bounces = 5;
+  float multiplier = 1.0f;
+  vec3 resultColor;
 
-cr(castRay0, castRayFinal)
-cr(castRay, castRay0)
+  for (uint i = 0; i < bounces; i++)
+  {
+    ClosestHit hit = closestHit(org, dir);
+    if (hit.distance == FAR_PLANE)
+    {
+      resultColor = skyColor * multiplier;
+    }
+    else
+    {
+      resultColor = max(vec3(0), dot(hit.normal, lightDirection) * hit.albedo) * multiplier;
+      org = hit.position;
+      dir = reflect(dir, hit.normal * rand3(dir) * 0.5);
+    }
+  }
+  return resultColor;
+}
