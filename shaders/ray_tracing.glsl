@@ -88,28 +88,36 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
 
 vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
 {
-  vec3 org = rayOrigin, dir = rayDirection;
   uint bounces = 5;
-  float multiplier = 1.0f;
+  uint samples = 24;
   vec3 resultColor = vec3(0);
 
-  for (uint i = 0; i < bounces; i++)
+  for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
   {
-    ClosestHit hit = closestHit(org, dir);
-    if (hit.distance == FAR_PLANE)
-    {
-      resultColor += skyColor * multiplier;
-      break;
-    }
-    else
-    {
-      resultColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
+    vec3 org = rayOrigin, dir = rayDirection;
+    vec3 sampleColor = vec3(0);
+    float multiplier = 1.0f;
 
-      multiplier *= 0.4;
+    for (uint i = 0; i < bounces; i++)
+    {
+      ClosestHit hit = closestHit(org, dir);
+      if (hit.distance == FAR_PLANE)
+      {
+        sampleColor += skyColor * multiplier;
+        break;
+      }
+      else
+      {
+        sampleColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
 
-      org = hit.position + hit.normal * 0.0001;
-      dir = reflect(dir, hit.normal + rand3(dir) * materials[hit.materialIndex].roughness);
+        multiplier *= 0.4;
+
+        org = hit.position + hit.normal * 0.0001;
+        dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * materials[hit.materialIndex].roughness);
+      }
     }
+
+    resultColor += sampleColor;
   }
-  return resultColor;
+  return resultColor / samples;
 }
