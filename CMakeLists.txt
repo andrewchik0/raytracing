@@ -46,7 +46,9 @@ add_executable(main
   src/render.cpp
   src/render.h
   src/uniform_buffer.cpp
-  src/uniform_buffer.h)
+  src/uniform_buffer.h
+  src/imgui.cpp
+  src/imgui.h)
 
 find_package(OpenGL REQUIRED)
 

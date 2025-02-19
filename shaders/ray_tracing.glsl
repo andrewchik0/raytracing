@@ -53,7 +53,7 @@ struct ClosestHit
   vec3 normal;
   vec3 position;
   float distance;
-  vec3 albedo;
+  uint materialIndex;
 };
 
 ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
@@ -63,37 +63,27 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
 
   for (uint i = 0; i < spheresCount; i++)
   {
-    float d = raySphereIntersect(rayOrigin, rayDirection, spheres[i].center, spheres[i].radius);
+    float d = raySphereIntersect(rayOrigin, rayDirection, spheres[i].center.xyz, spheres[i].radius);
     if (d > 0 && result.distance > d)
     {
       result.distance = d;
-      result.normal = normalize(rayDirection * d + rayOrigin - spheres[i].center);
-      result.albedo = spheres[i].albedo.rgb;
+      result.normal = normalize(rayDirection * d + rayOrigin - spheres[i].center.xyz);
+      result.materialIndex = spheres[i].materialIndex;
     }
   }
 
   for (uint i = 0; i < planesCount; i++)
   {
-    float d = rayPlaneIntersect(rayOrigin, rayDirection, planes[i].normal, planes[i].distance);
+    float d = rayPlaneIntersect(rayOrigin, rayDirection, planes[i].normal.xyz, planes[i].distance);
     if (d > 0 && result.distance > d)
     {
       result.distance = d;
-      result.normal = planes[i].normal;
-      result.albedo = planes[i].albedo.rgb;
+      result.normal = planes[i].normal.xyz;
+      result.materialIndex = planes[i].materialIndex;
     }
   }
   result.position = rayDirection * (result.distance) + rayOrigin;
   return result;
-}
-
-vec3 castRayFinal(vec3 rayOrigin, vec3 rayDirection)
-{
-  ClosestHit hit = closestHit(rayOrigin, rayDirection);
-  if (hit.distance == FAR_PLANE)
-  {
-    return skyColor;
-  }
-  return max(vec3(0.1), dot(hit.normal, lightDirection) * hit.albedo);
 }
 
 vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
@@ -113,12 +103,12 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
     }
     else
     {
-      resultColor += max(vec3(0), dot(hit.normal, lightDirection) * hit.albedo) * multiplier;
+      resultColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
 
       multiplier *= 0.4;
 
       org = hit.position + hit.normal * 0.0001;
-      dir = reflect(dir, hit.normal + rand3(dir) * 0.1);
+      dir = reflect(dir, hit.normal + rand3(dir) * materials[hit.materialIndex].roughness);
     }
   }
   return resultColor;

@@ -30,6 +30,11 @@ namespace raytracing
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Red);
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
+
+    Material material {};
+    material.roughness = 0.1f;
+    material.albedo = glm::vec3(0.8f);
+    mMaterials[0] = material;
   }
 
   void render::clear()
@@ -40,6 +45,7 @@ namespace raytracing
   void render::draw(sf::RenderWindow* window)
   {
     set_uniforms();
+    push_scene();
 
     mTexture.draw(mRenderQuad, &mShader);
     mTexture.display();
@@ -64,8 +70,13 @@ namespace raytracing
   void render::push_scene()
   {
     SceneBuffer buffer = {};
+    for (size_t i = 0; i < mPlanesCount; i++)
+    {
+      mPlanes[i].normal = glm::normalize(mPlanes[i].normal);
+    }
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
     buffer.planesCount = mPlanesCount;
     buffer.spheresCount = mSpheresCount;
     mSceneBuffer.set(&buffer);
@@ -152,6 +163,7 @@ namespace raytracing
 
   void render::set_uniforms()
   {
+    mLightDirection = glm::normalize(mLightDirection);
     mShader.setUniform("cameraPosition", glm_to_sfml(rt::get()->mCamera.mPosition));
     mShader.setUniform("cameraDirection", glm_to_sfml(rt::get()->mCamera.mDirection));
     mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));

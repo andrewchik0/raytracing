@@ -21,7 +21,8 @@ struct SphereObject
 {
   vec3 center;
   float radius;
-  vec4 albedo;
+  vec3 _;
+  uint materialIndex;
 };
 
 #define MAX_PLANES 32
@@ -30,14 +31,23 @@ struct PlaneObject
 {
   vec3 normal;
   float distance;
-  vec4 albedo;
+  vec3 _;
+  uint materialIndex;
+};
+
+#define MAX_MATERIALS 32
+struct Material
+{
+  vec3 albedo;
+  float roughness;
 };
 
 #define SceneBufferStruct SceneBuffer   \
 {                                       \
   SphereObject spheres[MAX_SPHERES];    \
   PlaneObject planes[MAX_PLANES];       \
+  Material materials[MAX_MATERIALS];    \
   uint spheresCount;                    \
   uint planesCount;                     \
-  uint _[2]; \
 }
+

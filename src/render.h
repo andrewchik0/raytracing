@@ -37,9 +37,11 @@ namespace raytracing
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
+    std::array<Material, MAX_MATERIALS> mMaterials;
     size_t
       mSpheresCount = 0,
-      mPlanesCount = 0;
+      mPlanesCount = 0,
+      mMaterialsCount = 1;
 
     uniform_buffer mSceneBuffer;
 
@@ -53,5 +55,6 @@ namespace raytracing
     static std::string parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles);
 
     friend class rt;
+    friend class imgui;
   };
 }

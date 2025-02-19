@@ -2,6 +2,7 @@
 
 #include "input.h"
 #include "camera.h"
+#include "imgui.h"
 #include "render.h"
 
 namespace raytracing
@@ -21,6 +22,10 @@ namespace raytracing
 
     void add_sphere(const SphereObject& object);
     void add_plane(const PlaneObject& object);
+    void add_material(const Material& material);
+    void delete_sphere(size_t index);
+    void delete_plane(size_t index);
+    void delete_material(size_t index);
 
     static rt* get()
     {
@@ -39,15 +44,16 @@ namespace raytracing
     input mInput;
     camera mCamera;
     render mRender;
+    imgui mGui;
 
     void handle_messages();
     void resize();
-    void imgui_update();
 
     static rt* sInstance;
 
     friend class camera;
     friend class input;
     friend class render;
+    friend class imgui;
   };
 }

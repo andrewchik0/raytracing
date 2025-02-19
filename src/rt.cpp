@@ -20,9 +20,8 @@ namespace raytracing
     mWindowHeight = options.height;
 
     mWindow = sf::RenderWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), options.title);
-    if (!ImGui::SFML::Init(mWindow))
-      return;
 
+    mGui.init();
     mRender.init();
 
     resize();
@@ -30,8 +29,6 @@ namespace raytracing
 
   void rt::run()
   {
-    mRender.push_scene();
-
     while (mWindow.isOpen())
     {
       mWindow.clear();
@@ -39,7 +36,7 @@ namespace raytracing
       mInput.clear();
 
       handle_messages();
-      imgui_update();
+      mGui.update();
 
       mCamera.update(mElapsedTime.asSeconds());
       mRender.draw(&mWindow);
@@ -77,36 +74,37 @@ namespace raytracing
     mRender.resize(mWindowWidth, mWindowHeight);
   }
 
-  void rt::imgui_update()
-  {
-    mElapsedTime = mClock.getElapsedTime();
-    mTime += mElapsedTime.asSeconds();
-
-    ImGui::SFML::Update(mWindow, mClock.restart());
-
-    ImGui::Begin("Stats");
-    ImGui::Text("FrameTime: %.3f ms", static_cast<float>(mElapsedTime.asMicroseconds()) / 1000.0);
-    ImGui::Text("FPS: %.1f", 1.0 / mElapsedTime.asSeconds());
-    ImGui::Separator();
-    ImGui::Checkbox("Enable FXAA", &mRender.mUseFXAA);
-    ImGui::Separator();
-    ImGui::DragFloat3("Light Direction", &mRender.mLightDirection.x, 0.01f, -1.0f, 1.0f, "%.2f");
-    ImGui::Separator();
-    if (ImGui::Button("Reload shaders"))
-    {
-      mRender.load_shaders();
-    }
-    ImGui::End();
-  }
-
   void rt::add_sphere(const SphereObject& object)
   {
     if (mRender.mSpheresCount >= MAX_SPHERES) return;
-    mRender.mSpheres[mRender.mSpheresCount++] = std::move(object);
+    mRender.mSpheres[mRender.mSpheresCount++] = object;
   }
   void rt::add_plane(const PlaneObject& object)
   {
     if (mRender.mSpheresCount >= MAX_PLANES) return;
-    mRender.mPlanes[mRender.mPlanesCount++] = std::move(object);
+    mRender.mPlanes[mRender.mPlanesCount++] = object;
+  }
+  void rt::add_material(const Material& material)
+  {
+    if (mRender.mMaterialsCount >= MAX_MATERIALS) return;
+    mRender.mMaterials[mRender.mMaterialsCount++] = material;
+  }
+  void rt::delete_sphere(size_t index)
+  {
+    for (size_t i = index; i < mRender.mSpheresCount; ++i)
+      mRender.mSpheres[i] = mRender.mSpheres[i + 1];
+    mRender.mSpheresCount--;
+  }
+  void rt::delete_plane(size_t index)
+  {
+    for (size_t i = index; i < mRender.mPlanesCount; ++i)
+      mRender.mPlanes[i] = mRender.mPlanes[i + 1];
+    mRender.mPlanesCount--;
+  }
+  void rt::delete_material(size_t index)
+  {
+    for (size_t i = index; i < mRender.mMaterialsCount; ++i)
+      mRender.mMaterials[i] = mRender.mMaterials[i + 1];
+    mRender.mMaterialsCount--;
   }
 }
