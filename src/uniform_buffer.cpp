@@ -1,6 +1,6 @@
 #include "uniform_buffer.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 namespace raytracing
 {

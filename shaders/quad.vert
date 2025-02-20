@@ -1,4 +1,4 @@
-#version 420
+#include "version.glsl"
 
 in vec2 texCoord;
 out vec2 passTexCoord;
