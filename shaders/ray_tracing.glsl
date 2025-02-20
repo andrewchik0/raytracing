@@ -88,8 +88,6 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
 
 vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
 {
-  uint bounces = 5;
-  uint samples = 24;
   vec3 resultColor = vec3(0);
 
   for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)

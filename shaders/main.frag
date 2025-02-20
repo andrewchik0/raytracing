@@ -12,6 +12,8 @@ uniform float halfWidth;
 uniform float time;
 uniform vec2 windowSize;
 uniform vec3 lightDirection;
+uniform int samples;
+uniform int bounces;
 
 #include "uniforms.h"
 

@@ -33,6 +33,8 @@ namespace raytracing
     sf::RenderTexture mTexture;
 
     bool mUseFXAA = true;
+    uint32_t mSamplesCount = 12;
+    uint32_t mBouncesCount = 4;
     glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;

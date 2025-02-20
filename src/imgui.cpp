@@ -24,6 +24,8 @@ namespace raytracing
     ImGui::Text("FPS: %.1f", 1.0 / rt::get()->mElapsedTime.asSeconds());
     ImGui::Separator();
     ImGui::Checkbox("Enable FXAA", &rt::get()->mRender.mUseFXAA);
+    ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount);
+    ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount);
     ImGui::Separator();
     ImGui::DragFloat3("Light Direction", &rt::get()->mRender.mLightDirection.x, 0.01f, -1.0f, 1.0f, "%.2f");
     ImGui::Separator();
@@ -57,8 +59,7 @@ namespace raytracing
         label = "Radius###SphereRadius" + std::to_string(i);
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f");
         label = "Material ID##SphereMaterialID" + std::to_string(i);
-        ImGuiDataType uintType = ImGuiDataType_U32;
-        ImGui::InputScalar(label.c_str(), uintType, &rt::get()->mRender.mSpheres[i].materialIndex);
+        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mSpheres[i].materialIndex);
         label = "Delete###SphereDelete" + std::to_string(i);
         if (ImGui::Button(label.c_str()))
           rt::get()->delete_sphere(i);
@@ -75,8 +76,7 @@ namespace raytracing
         label = "Distance###PlaneDistance" + std::to_string(i);
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, -100.0f, 100.0f, "%.2f");
         label = "Material ID##PlaneMaterialID" + std::to_string(i);
-        ImGuiDataType uintType = ImGuiDataType_U32;
-        ImGui::InputScalar(label.c_str(), uintType, &rt::get()->mRender.mPlanes[i].materialIndex);
+        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mPlanes[i].materialIndex);
         label = "Delete###PlaneDelete" + std::to_string(i);
         if (ImGui::Button(label.c_str()))
           rt::get()->delete_plane(i);
@@ -135,8 +135,7 @@ namespace raytracing
       label = "Radius###SphereNewRadius";
       ImGui::DragFloat(label.c_str(), &sphere.radius, 0.01f, 0.01f, 100.0f, "%.2f");
       label = "Material ID##SphereMaterialID";
-      ImGuiDataType uintType = ImGuiDataType_U32;
-      ImGui::InputScalar(label.c_str(), uintType, &sphere.materialIndex);
+      ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &sphere.materialIndex);
       ImGui::Separator();
     }
 
@@ -148,8 +147,7 @@ namespace raytracing
       label = "Distance###PlaneNewDistance";
       ImGui::DragFloat(label.c_str(), &plane.distance, 0.01f, -100.0f, 100.0f, "%.2f");
       label = "Material ID##PlaneMaterialID";
-      ImGuiDataType uintType = ImGuiDataType_U32;
-      ImGui::InputScalar(label.c_str(), uintType, &plane.materialIndex);
+      ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &plane.materialIndex);
       ImGui::Separator();
     }
 
