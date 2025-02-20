@@ -1,6 +1,6 @@
 camera:
-  position: [2.37297368, 2.55668759, -5.06760311]
-  direction: [0.0461283922, -0.188217461, 0.981010616]
+  position: [2.40252852, 1.41719902, -3.55369139]
+  direction: [0.0453597307, -0.113712862, 0.992426395]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -24,7 +24,7 @@ objects:
     materialIndex: 0
 materials:
   - albedo: [0.5, 0.5, 0.5]
-    roughness: 0.400000006
+    roughness: 1
   - albedo: [0.800000012, 0.800000012, 0.800000012]
     roughness: 0
   - albedo: [0.800000012, 0.800000012, 0.800000012]

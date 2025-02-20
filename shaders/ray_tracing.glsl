@@ -113,9 +113,9 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       }
       else
       {
-        sampleColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
+        //sampleColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
 
-        multiplier *= 0.4;
+        multiplier *= 0.8;
 
         org = hit.position + hit.normal * 0.0001;
         dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * materials[hit.materialIndex].roughness);
