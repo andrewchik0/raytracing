@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 #include "rt.h"
 
@@ -15,10 +16,10 @@ namespace raytracing
 
   void camera::resize(const uint32_t width, const uint32_t height)
   {
-    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    mAspect = static_cast<float>(width) / static_cast<float>(height);
 
     mHalfHeight = tan(mFovY / 2.0f);
-    mHalfWidth = aspect * mHalfHeight;
+    mHalfWidth = mAspect * mHalfHeight;
   }
 
   void camera::move_back(float deltaSpeed) { move_forward(-deltaSpeed); }
@@ -84,5 +85,8 @@ namespace raytracing
 
     mRight = glm::normalize(glm::cross(mDirection, glm::vec3(0, 1, 0)));
     mUp = glm::cross(mRight, mDirection);
+
+    mViewMatrix = glm::lookAt(mPosition, mPosition + mDirection, mUp);
+    mProjectionMatrix = glm::perspective(glm::radians(mFovY), mAspect, 0.001f, 10000.0f);
   }
 }

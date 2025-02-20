@@ -1,5 +1,3 @@
-vec3 skyColor = vec3(0.6f, 0.7f, 1.0f);
-
 float random(vec2 st)
 {
   return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
@@ -11,6 +9,13 @@ vec3 rand3(vec3 seed)
     random(vec2(time, seed.y)) - 0.5,
     random(vec2(time, seed.z)) - 0.5
   );
+}
+
+const float PI = 3.141592653589;
+float atan2(float y, float x)
+{
+  bool s = (abs(x) > abs(y));
+  return mix(PI / 2.0 - atan(x, y), atan(y, x), s);
 }
 
 float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr)
@@ -101,7 +106,9 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       ClosestHit hit = closestHit(org, dir);
       if (hit.distance == FAR_PLANE)
       {
-        sampleColor += skyColor * multiplier;
+        float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
+        float phi = atan(dir.x, dir.z);
+        sampleColor += texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb * multiplier;
         break;
       }
       else

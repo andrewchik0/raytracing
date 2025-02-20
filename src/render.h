@@ -31,6 +31,7 @@ namespace raytracing
       mShader, mPostShader;
     sf::RectangleShape mRenderQuad;
     sf::RenderTexture mTexture;
+    sf::Texture mSkyTexture;
 
     bool mUseFXAA = true;
     uint32_t mSamplesCount = 12;

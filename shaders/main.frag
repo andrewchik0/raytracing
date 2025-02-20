@@ -14,6 +14,7 @@ uniform vec2 windowSize;
 uniform vec3 lightDirection;
 uniform int samples;
 uniform int bounces;
+uniform sampler2D sky;
 
 #include "uniforms.h"
 

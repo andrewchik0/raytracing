@@ -13,6 +13,7 @@ using uint = unsigned int;
 #define FAR_PLANE 1000000.0f
 
 #define SCENE_BINDING 1
+#define SKYBOX_BINDING 6
 #define UNDEFINED_OBJECT 0
 
 #define MAX_SPHERES 32
