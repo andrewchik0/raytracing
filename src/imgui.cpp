@@ -7,10 +7,7 @@
 
 namespace raytracing
 {
-  bool imgui::init()
-  {
-    return ImGui::SFML::Init(rt::get()->mWindow);
-  }
+  bool imgui::init() { return ImGui::SFML::Init(rt::get()->mWindow); }
 
   void imgui::update()
   {
@@ -93,6 +90,15 @@ namespace raytracing
     if (ImGui::Button("Edit materials..."))
       mMaterialsOpened = !mMaterialsOpened;
 
+    static char filename[256] = "scenes/default.yaml";
+    ImGui::Separator();
+    ImGui::InputText("###SaveSceneFileName", filename, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Save scene"))
+      rt::get()->mSceneSerializer.save(filename);
+    if (ImGui::Button("Load scene..."))
+      rt::get()->mSceneSerializer.load();
+
     if (mMaterialsOpened)
       materials_window();
 
@@ -110,23 +116,23 @@ namespace raytracing
   {
     ImGui::Begin("Add object");
 
-    const char* items[] = { "Sphere", "Plane" };
+    const char* items[] = {"Sphere", "Plane"};
     static const char* currentItem = nullptr;
 
     if (ImGui::BeginCombo("Object Type##combo", currentItem))
     {
-      for (auto & item : items)
+      for (auto& item : items)
       {
         bool is_selected = (currentItem == item);
         if (ImGui::Selectable(item, is_selected))
           currentItem = item;
         if (is_selected)
-        ImGui::SetItemDefaultFocus();
+          ImGui::SetItemDefaultFocus();
       }
       ImGui::EndCombo();
     }
 
-    static SphereObject sphere { { 0, 0, 0 }, 1, { 0, 0, 0 }, 0 };
+    static SphereObject sphere{{0, 0, 0}, 1, {0, 0, 0}, 0};
     if (currentItem && strncmp(currentItem, "Sphere", 5) == 0)
     {
 
@@ -139,7 +145,7 @@ namespace raytracing
       ImGui::Separator();
     }
 
-    static PlaneObject plane { { 0, 1, 0 }, 0, { 0, 0, 0 }, 0 };
+    static PlaneObject plane{{0, 1, 0}, 0, {0, 0, 0}, 0};
     if (currentItem && strncmp(currentItem, "Plane", 5) == 0)
     {
       std::string label = "Normal###PlaneNewNormal";
@@ -218,4 +224,4 @@ namespace raytracing
     ImGui::End();
   }
 
-}
+} // namespace raytracing

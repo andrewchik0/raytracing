@@ -1,9 +1,10 @@
 #pragma once
 
-#include "input.h"
 #include "camera.h"
 #include "imgui.h"
+#include "input.h"
 #include "render.h"
+#include "scene_serializer.h"
 
 namespace raytracing
 {
@@ -11,12 +12,15 @@ namespace raytracing
   struct init_options
   {
     std::string title = "Ray Tracing";
+    std::filesystem::path scene_filename;
     uint32_t width = 800, height = 600;
   };
 
   class rt
   {
   public:
+    ~rt();
+
     void init(const init_options& options);
     void run();
 
@@ -27,10 +31,7 @@ namespace raytracing
     void delete_plane(size_t index);
     void delete_material(size_t index);
 
-    static rt* get()
-    {
-      return sInstance;
-    }
+    static rt* get() { return sInstance; }
 
   private:
     sf::RenderWindow mWindow;
@@ -45,6 +46,7 @@ namespace raytracing
     camera mCamera;
     render mRender;
     imgui mGui;
+    scene_serializer mSceneSerializer;
 
     void handle_messages();
     void resize();
@@ -55,5 +57,6 @@ namespace raytracing
     friend class input;
     friend class render;
     friend class imgui;
+    friend class scene_serializer;
   };
-}
+} // namespace raytracing

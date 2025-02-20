@@ -5,10 +5,16 @@
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <iostream>
+#include <nfd.h>
 
 namespace raytracing
 {
   rt* rt::sInstance = nullptr;
+
+  rt::~rt()
+  {
+    NFD_Quit();
+  }
 
   void rt::init(const init_options& options)
   {
@@ -19,12 +25,16 @@ namespace raytracing
     mWindowWidth = options.width;
     mWindowHeight = options.height;
 
+    NFD_Init();
+
     mWindow = sf::RenderWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), options.title);
 
     mGui.init();
     mRender.init();
 
     resize();
+
+    mSceneSerializer.load(options.scene_filename);
   }
 
   void rt::run()
@@ -76,17 +86,20 @@ namespace raytracing
 
   void rt::add_sphere(const SphereObject& object)
   {
-    if (mRender.mSpheresCount >= MAX_SPHERES) return;
+    if (mRender.mSpheresCount >= MAX_SPHERES)
+      return;
     mRender.mSpheres[mRender.mSpheresCount++] = object;
   }
   void rt::add_plane(const PlaneObject& object)
   {
-    if (mRender.mSpheresCount >= MAX_PLANES) return;
+    if (mRender.mSpheresCount >= MAX_PLANES)
+      return;
     mRender.mPlanes[mRender.mPlanesCount++] = object;
   }
   void rt::add_material(const Material& material)
   {
-    if (mRender.mMaterialsCount >= MAX_MATERIALS) return;
+    if (mRender.mMaterialsCount >= MAX_MATERIALS)
+      return;
     mRender.mMaterials[mRender.mMaterialsCount++] = material;
   }
   void rt::delete_sphere(size_t index)
@@ -107,4 +120,4 @@ namespace raytracing
       mRender.mMaterials[i] = mRender.mMaterials[i + 1];
     mRender.mMaterialsCount--;
   }
-}
+} // namespace raytracing

@@ -1,0 +1,35 @@
+camera:
+  position: [-2.77558446, 2.34933352, -1.72963774]
+  direction: [0.63143754, -0.379930615, 0.675967813]
+objects:
+  - type: sphere
+    position: [0, 0, 0]
+    radius: 0.800000012
+    materialIndex: 0
+  - type: sphere
+    position: [0, 3, 10]
+    radius: 4
+    materialIndex: 0
+  - type: sphere
+    position: [1, 0, 0]
+    radius: 0.5
+    materialIndex: 0
+  - type: sphere
+    position: [0, 0.5, 0.5]
+    radius: 0.800000012
+    materialIndex: 0
+  - type: sphere
+    position: [2, -0.300000012, -0.5]
+    radius: 1
+    materialIndex: 0
+  - type: sphere
+    position: [0, 0, 0]
+    radius: 0.800000012
+    materialIndex: 0
+  - type: plane
+    normal: [0, 1, 0]
+    distance: 0.100000001
+    materialIndex: 0
+materials:
+  - albedo: [0.800000012, 0, 0.800000012]
+    roughness: 1

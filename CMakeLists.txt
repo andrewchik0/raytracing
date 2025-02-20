@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(RayTracing LANGUAGES CXX)
 
+find_package(OpenGL REQUIRED)
+
 include(FetchContent)
 FetchContent_Declare(SFML
   GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -35,6 +37,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(GLEW)
 
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG 0.8.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 add_executable(main
   src/main.cpp
   src/rt.cpp
@@ -48,15 +57,16 @@ add_executable(main
   src/uniform_buffer.cpp
   src/uniform_buffer.h
   src/imgui.cpp
-  src/imgui.h)
-
-find_package(OpenGL REQUIRED)
-
-target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics ImGui-SFML::ImGui-SFML OpenGL::GL libglew_static)
+  src/imgui.h
+  src/scene_serializer.cpp
+  src/scene_serializer.h)
+target_compile_features(main PRIVATE cxx_std_20)
 
 add_subdirectory(third_party/glm)
-target_include_directories(main PUBLIC third_party/glm/ ${OPENGL_INCLUDE_DIRS})
+add_subdirectory(third_party/nativefiledialog-extended)
+target_include_directories(main PUBLIC third_party/glm/ third_party/nativefiledialog-extended/src/include ${OPENGL_INCLUDE_DIRS})
+
+target_link_libraries(main PUBLIC SFML::Graphics ImGui-SFML::ImGui-SFML OpenGL::GL libglew_static yaml-cpp::yaml-cpp nfd)
 
 add_custom_target(
   run-ray-tracing

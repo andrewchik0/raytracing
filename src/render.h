@@ -58,5 +58,6 @@ namespace raytracing
 
     friend class rt;
     friend class imgui;
+    friend class scene_serializer;
   };
 }

@@ -1,0 +1,183 @@
+#include "scene_serializer.h"
+
+#include <fstream>
+#include <nfd.h>
+#include <yaml-cpp/yaml.h>
+
+#include "rt.h"
+
+namespace YAML
+{
+  template<>
+  struct convert<glm::vec3>
+  {
+    static Node encode(const glm::vec3& v)
+    {
+      Node node;
+      node.push_back(v.x);
+      node.push_back(v.y);
+      node.push_back(v.z);
+      return node;
+    }
+
+    static bool decode(const Node& node, glm::vec3& v)
+    {
+      if(!node.IsSequence() || node.size() != 3)
+      {
+        return false;
+      }
+
+      v.x = node[0].as<float>();
+      v.y = node[1].as<float>();
+      v.z = node[2].as<float>();
+      return true;
+    }
+  };
+}
+
+namespace raytracing
+{
+  YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
+  {
+    out << YAML::Flow;
+    out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
+    return out;
+  }
+
+  void scene_serializer::load(const std::filesystem::path& filename)
+  {
+    YAML::Node scene = YAML::LoadFile(filename.string());
+
+    {
+      if (scene["camera"])
+      {
+        rt::get()->mCamera.mPosition = scene["camera"]["position"].as<glm::vec3>();
+        rt::get()->mCamera.mDirection = scene["camera"]["direction"].as<glm::vec3>();
+      }
+
+      if (scene["objects"])
+      {
+        rt::get()->mRender.mSpheresCount = 0;
+        rt::get()->mRender.mPlanesCount = 0;
+
+        auto objects = scene["objects"].as<YAML::Node>();
+        for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it)
+        {
+          auto object = it->as<YAML::Node>();
+          if (strcmp(object["type"].as<std::string>().c_str(), "sphere") == 0)
+          {
+            SphereObject sphere {};
+            sphere.center = object["position"].as<glm::vec3>();
+            sphere.radius = object["radius"].as<float>();
+            sphere.materialIndex = object["materialIndex"].as<int>();
+            rt::get()->add_sphere(sphere);
+          }
+          if (strcmp(object["type"].as<std::string>().c_str(), "plane") == 0)
+          {
+            PlaneObject plane {};
+            plane.normal = object["normal"].as<glm::vec3>();
+            plane.distance = object["distance"].as<float>();
+            plane.materialIndex = object["materialIndex"].as<int>();
+            rt::get()->add_plane(plane);
+          }
+        }
+      }
+
+      if (scene["materials"])
+      {
+        rt::get()->mRender.mMaterialsCount = 0;
+
+        auto materials = scene["materials"].as<YAML::Node>();
+        for(YAML::const_iterator it = materials.begin(); it != materials.end(); ++it)
+        {
+          auto materialNode = it->as<YAML::Node>();
+
+          Material material {};
+          material.albedo = materialNode["albedo"].as<glm::vec3>();
+          material.roughness = materialNode["roughness"].as<float>();
+          rt::get()->add_material(material);
+        }
+      }
+    }
+  }
+
+
+  void scene_serializer::load()
+  {
+    nfdu8char_t* outPath;
+    const nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
+    nfdopendialogu8args_t args = {0};
+    args.filterList = filters;
+    args.filterCount = 1;
+    auto defaultPath = (std::filesystem::current_path() / "scenes").string();
+    args.defaultPath = defaultPath.c_str();
+    nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
+    if (result != NFD_OKAY)
+      return;
+
+    load(outPath);
+    NFD_FreePathU8(outPath);
+  }
+
+  void scene_serializer::save(const std::filesystem::path& filename)
+  {
+    YAML::Emitter out;
+    out << YAML::BeginMap;
+
+    {
+      out << YAML::Key << "camera";
+
+      out << YAML::BeginMap;
+      out << YAML::Key << "position";
+      out << YAML::Value << rt::get()->mCamera.mPosition;
+      out << YAML::Key << "direction";
+      out << YAML::Value << rt::get()->mCamera.mDirection;
+      out << YAML::EndMap;
+    }
+
+    {
+      out << YAML::Key << "objects";
+
+      out << YAML::BeginSeq;
+      for (size_t i = 0; i < rt::get()->mRender.mSpheresCount; i++)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "sphere";
+        out << YAML::Key << "position" << YAML::Value << rt::get()->mRender.mSpheres[i].center;
+        out << YAML::Key << "radius" << YAML::Value << rt::get()->mRender.mSpheres[i].radius;
+        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mSpheres[i].materialIndex;
+        out << YAML::EndMap;
+      }
+      for (size_t i = 0; i < rt::get()->mRender.mPlanesCount; i++)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "plane";
+        out << YAML::Key << "normal" << YAML::Value << rt::get()->mRender.mPlanes[i].normal;
+        out << YAML::Key << "distance" << YAML::Value << rt::get()->mRender.mPlanes[i].distance;
+        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mPlanes[i].materialIndex;
+        out << YAML::EndMap;
+      }
+      out << YAML::EndSeq;
+    }
+
+    {
+      out << YAML::Key << "materials";
+
+      out << YAML::BeginSeq;
+      for (size_t i = 0; i < rt::get()->mRender.mMaterialsCount; i++)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "albedo" << YAML::Value << rt::get()->mRender.mMaterials[i].albedo;
+        out << YAML::Key << "roughness" << YAML::Value << rt::get()->mRender.mMaterials[i].roughness;
+        out << YAML::EndMap;
+      }
+      out << YAML::EndSeq;
+    }
+
+    {
+      std::fstream file(filename, std::ios::out | std::ofstream::trunc);
+      file.write(out.c_str(), out.size());
+    }
+  }
+
+} // namespace raytracing
