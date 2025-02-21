@@ -61,5 +61,6 @@ namespace raytracing
     friend class imgui;
     friend class scene_serializer;
     friend class skybox;
+    friend class textures;
   };
 } // namespace raytracing

@@ -59,7 +59,9 @@ add_executable(main
   src/imgui.cpp
   src/imgui.h
   src/scene_serializer.cpp
-  src/scene_serializer.h)
+  src/scene_serializer.h
+  src/textures.cpp
+  src/textures.h)
 target_compile_features(main PRIVATE cxx_std_20)
 
 add_subdirectory(third_party/glm)

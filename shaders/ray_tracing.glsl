@@ -57,6 +57,7 @@ struct ClosestHit
 {
   vec3 normal;
   vec3 position;
+  vec2 textureCoordinates;
   float distance;
   uint materialIndex;
 };
@@ -74,6 +75,9 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       result.distance = d;
       result.normal = normalize(rayDirection * d + rayOrigin - spheres[i].center.xyz);
       result.materialIndex = spheres[i].materialIndex;
+      float theta = atan(sqrt(result.normal.x * result.normal.x + result.normal.z * result.normal.z), result.normal.y);
+      float phi = atan(result.normal.x, result.normal.z);
+      result.textureCoordinates = vec2(phi / PI / 2.0f + 0.5, theta / PI);
     }
   }
 
@@ -85,6 +89,7 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       result.distance = d;
       result.normal = planes[i].normal.xyz;
       result.materialIndex = planes[i].materialIndex;
+      result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
     }
   }
   result.position = rayDirection * (result.distance) + rayOrigin;
@@ -115,10 +120,11 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       }
       else
       {
+        vec3 albedo = texture(texArray, vec3(hit.textureCoordinates, 0)).rgb;
         if (sampleColor == vec3(0))
-          sampleColor = materials[hit.materialIndex].albedo;
+          sampleColor = albedo;
         else
-          sampleColor *= materials[hit.materialIndex].albedo;
+          sampleColor *= albedo;
 
         org = hit.position + hit.normal * 0.0001;
         dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * materials[hit.materialIndex].roughness);

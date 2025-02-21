@@ -37,6 +37,10 @@ namespace raytracing
     material.roughness = 0.1f;
     material.albedo = glm::vec3(0.8f);
     mMaterials[0] = material;
+
+    mTextures.add_texture("assets/stone.png");
+    mTextures.add_texture("assets/normal.png");
+    mTextures.load();
   }
 
   void render::clear()
@@ -48,6 +52,7 @@ namespace raytracing
   {
     set_uniforms();
     push_scene();
+    mTextures.push();
 
     mTexture.draw(mRenderQuad, &mShader);
     mTexture.display();

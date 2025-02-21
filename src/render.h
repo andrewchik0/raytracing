@@ -1,5 +1,8 @@
 #pragma once
 
+#include "textures.h"
+
+
 #include <set>
 
 #include <SFML/Graphics.hpp>
@@ -47,6 +50,7 @@ namespace raytracing
       mMaterialsCount = 1;
 
     uniform_buffer mSceneBuffer;
+    textures mTextures;
 
     void set_uniforms();
 
@@ -60,5 +64,6 @@ namespace raytracing
     friend class rt;
     friend class imgui;
     friend class scene_serializer;
+    friend class textures;
   };
 }
