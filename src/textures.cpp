@@ -15,16 +15,17 @@ namespace raytracing
 
   void textures::load()
   {
+    int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
+
     glGenTextures(1, &mTextureArray);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, mTextureWidth, mTextureWidth, mTexturesCount, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, nullptr);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA8, mTextureWidth, mTextureHeight, mTexturesCount);
 
     for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
     {
@@ -33,9 +34,12 @@ namespace raytracing
       texture.setSmooth(true);
       texture.setRepeated(true);
       texture.resize({mTextureWidth, mTextureHeight});
-      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                      texture.copyToImage().getPixelsPtr());
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
+        1, GL_RGBA, GL_UNSIGNED_BYTE, texture.copyToImage().getPixelsPtr());
     }
+
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
   void textures::unload()
   {
