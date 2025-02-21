@@ -1,6 +1,6 @@
 camera:
-  position: [2.73728657, 1.41719902, -4.44812918]
-  direction: [0.0453597307, -0.113712862, 0.992426395]
+  position: [3.13852859, 1.41719902, -4.4567318]
+  direction: [-0.00429128157, -0.108744189, 0.994008899]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -25,11 +25,24 @@ objects:
 materials:
   - albedo: [0.800000012, 0.800000012, 0.800000012]
     roughness: 1
+    texture_coordinates_multiplier: 0.400000006
+    texture_id: 0
   - albedo: [0.689999998, 0.639999986, 0]
     roughness: 0
+    texture_coordinates_multiplier: 1
+    texture_id: -1
   - albedo: [0.800000012, 0.800000012, 0.300000012]
     roughness: 0.150000006
+    texture_coordinates_multiplier: 1
+    texture_id: -1
   - albedo: [0, 0.800000012, 0.800000012]
     roughness: 0.300000012
+    texture_coordinates_multiplier: 1
+    texture_id: -1
   - albedo: [0.800000012, 0, 0.800000012]
     roughness: 0.899999976
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+textures:
+  - assets/stone.png
+  - assets/normal.png

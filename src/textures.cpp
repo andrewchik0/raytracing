@@ -9,12 +9,7 @@ namespace raytracing
 
   textures::~textures()
   {
-    if (glIsTexture(mTextureArray))
-    {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-      glDeleteTextures(1, &mTextureArray);
-      mTextureArray = 0;
-    }
+    unload();
   }
 
   void textures::load()
@@ -27,9 +22,8 @@ namespace raytracing
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage3D(
-      GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, mTextureWidth, mTextureWidth,
-      mTexturesCount, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, mTextureWidth, mTextureWidth, mTexturesCount, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
 
     for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
     {
@@ -37,10 +31,18 @@ namespace raytracing
       texture.loadFromFile(mTextureFilenames[i]);
       texture.setSmooth(true);
       texture.setRepeated(true);
-      texture.resize({ mTextureWidth, mTextureHeight });
-      glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight, 1,
-        GL_RGBA, GL_UNSIGNED_BYTE, texture.copyToImage().getPixelsPtr());
+      texture.resize({mTextureWidth, mTextureHeight});
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+                      texture.copyToImage().getPixelsPtr());
+    }
+  }
+  void textures::unload()
+  {
+    if (glIsTexture(mTextureArray))
+    {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+      glDeleteTextures(1, &mTextureArray);
+      mTextureArray = 0;
     }
   }
 
@@ -49,6 +51,12 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
     rt::get()->mRender.mShader.setUniform("texArray", 0);
+  }
+
+  void textures::reload()
+  {
+    unload();
+    load();
   }
 
   void textures::add_texture(const std::string& name)

@@ -120,7 +120,12 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       }
       else
       {
-        vec3 albedo = texture(texArray, vec3(hit.textureCoordinates, 0)).rgb;
+        vec3 albedo;
+        if (materials[hit.materialIndex].textureIndex != -1)
+          albedo = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].textureIndex)).rgb;
+        else
+          albedo = materials[hit.materialIndex].albedo;
+
         if (sampleColor == vec3(0))
           sampleColor = albedo;
         else

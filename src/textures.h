@@ -11,13 +11,10 @@ namespace raytracing
     ~textures();
 
     void load();
+    void unload();
     void push();
 
-    void reload()
-    {
-      this->~textures();
-      load();
-    }
+    void reload();
 
     void add_texture(const std::string& name);
 
@@ -28,5 +25,7 @@ namespace raytracing
 
     uint32_t mTextureArray = -1;
     std::vector<std::string> mTextureFilenames;
+
+    friend class scene_serializer;
   };
 }

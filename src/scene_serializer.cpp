@@ -95,8 +95,23 @@ namespace raytracing
           Material material {};
           material.albedo = materialNode["albedo"].as<glm::vec3>();
           material.roughness = materialNode["roughness"].as<float>();
+          material.textureIndex = materialNode["texture_id"].as<int>();
+          material.textureCoordinatesMultiplier = materialNode["texture_coordinates_multiplier"].as<float>();
           rt::get()->add_material(material);
         }
+      }
+
+      if (scene["textures"])
+      {
+        rt::get()->mRender.mTextures.mTextureFilenames.clear();
+
+        auto textures = scene["textures"].as<YAML::Node>();
+        for(YAML::const_iterator it = textures.begin(); it != textures.end(); ++it)
+        {
+          auto texture = it->as<std::string>();
+          rt::get()->mRender.mTextures.add_texture(texture);
+        }
+        rt::get()->mRender.mTextures.reload();
       }
     }
   }
@@ -169,7 +184,20 @@ namespace raytracing
         out << YAML::BeginMap;
         out << YAML::Key << "albedo" << YAML::Value << rt::get()->mRender.mMaterials[i].albedo;
         out << YAML::Key << "roughness" << YAML::Value << rt::get()->mRender.mMaterials[i].roughness;
+        out << YAML::Key << "texture_coordinates_multiplier" << YAML::Value << rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier;
+        out << YAML::Key << "texture_id" << YAML::Value << rt::get()->mRender.mMaterials[i].textureIndex;
         out << YAML::EndMap;
+      }
+      out << YAML::EndSeq;
+    }
+
+    {
+      out << YAML::Key << "textures";
+
+      out << YAML::BeginSeq << YAML::Flow;
+      for (size_t i = 0; i < rt::get()->mRender.mTextures.mTextureFilenames.size(); i++)
+      {
+        out << rt::get()->mRender.mTextures.mTextureFilenames[i];
       }
       out << YAML::EndSeq;
     }

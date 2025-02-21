@@ -32,15 +32,6 @@ namespace raytracing
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
 
     mSkyTexture = sf::Texture("assets/sky.hdr");
-
-    Material material {};
-    material.roughness = 0.1f;
-    material.albedo = glm::vec3(0.8f);
-    mMaterials[0] = material;
-
-    mTextures.add_texture("assets/stone.png");
-    mTextures.add_texture("assets/normal.png");
-    mTextures.load();
   }
 
   void render::clear()

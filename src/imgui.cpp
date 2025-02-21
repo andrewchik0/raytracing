@@ -194,6 +194,10 @@ namespace raytracing
         ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f");
         label = "Roughness###Roughness" + std::to_string(i);
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f");
+        label = "Texture ID###TextureID" + std::to_string(i);
+        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex);
+        label = "Texture Coordinates Multiplier###TextureCoordinatesMultiplier" + std::to_string(i);
+        ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f, 100.0f, "%.2f");
         label = "Delete###MaterialDelete" + std::to_string(i);
         if (ImGui::Button(label.c_str()))
           rt::get()->delete_material(i);
@@ -201,30 +205,10 @@ namespace raytracing
       ImGui::Separator();
     }
 
-    if (ImGui::Button("+ Add Material"))
-      mAddMaterialOpened = !mAddMaterialOpened;
-    if (mAddMaterialOpened)
-      add_material_window();
-
-    ImGui::End();
-  }
-
-  void imgui::add_material_window()
-  {
-    ImGui::Begin("Add material");
-
     static Material material;
-    ImGui::DragFloat3("Albedo###NewMaterialAlbedo", &material.albedo.x, 0.01f, 0.0f, 1.0f, "%.2f");
-    ImGui::DragFloat("Roughness###NewMaterialRoughness", &material.roughness, 0.01f, 0.0f, 1.0f, "%.2f");
-
-    if (ImGui::Button("Cancel###NewMaterialCancel"))
-      mAddMaterialOpened = false;
-    ImGui::SameLine(0.0f);
-    if (ImGui::Button("Add###NewMaterialAdd"))
-    {
+    if (ImGui::Button("+ Add Material"))
       rt::get()->add_material(material);
-      mAddMaterialOpened = false;
-    }
+
     ImGui::End();
   }
 
