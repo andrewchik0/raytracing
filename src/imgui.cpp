@@ -196,6 +196,10 @@ namespace raytracing
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f");
         label = "Texture ID###TextureID" + std::to_string(i);
         ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex);
+        label = "Normal Texture ID###NormalTextureID" + std::to_string(i);
+        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].normalTextureIndex);
+        label = "Metallic Texture ID###MetallicTextureID" + std::to_string(i);
+        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].metallicTextureIndex);
         label = "Texture Coordinates Multiplier###TextureCoordinatesMultiplier" + std::to_string(i);
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f, 100.0f, "%.2f");
         label = "Delete###MaterialDelete" + std::to_string(i);

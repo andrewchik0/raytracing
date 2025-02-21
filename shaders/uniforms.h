@@ -41,13 +41,22 @@ struct Material
 {
   vec3 albedo;
   float roughness;
-  vec2 _;
   float textureCoordinatesMultiplier
 #ifdef __cplusplus
   = 1.0f;
 #endif
   ;
   int textureIndex
+#ifdef __cplusplus
+  = -1;
+#endif
+  ;
+  int normalTextureIndex
+#ifdef __cplusplus
+  = -1;
+#endif
+  ;
+  int metallicTextureIndex
 #ifdef __cplusplus
   = -1;
 #endif

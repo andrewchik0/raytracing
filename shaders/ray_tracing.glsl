@@ -132,7 +132,12 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           sampleColor *= albedo;
 
         org = hit.position + hit.normal * 0.0001;
-        dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * materials[hit.materialIndex].roughness);
+        float roughness;
+        if (materials[hit.materialIndex].metallicTextureIndex != -1)
+          roughness = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].metallicTextureIndex)).r;
+        else
+          roughness = materials[hit.materialIndex].roughness;
+        dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * roughness);
       }
     }
 
