@@ -84,6 +84,25 @@ namespace raytracing
       }
       ImGui::Separator();
     }
+    for (size_t i = 0; i < rt::get()->mRender.mTrianglesCount; ++i)
+    {
+      label = "Triangle###Triangle" + std::to_string(i);
+      if (ImGui::CollapsingHeader(label.c_str()))
+      {
+        label = "Vertex 1###TriangleVertex1" + std::to_string(i);
+        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].a.x, 0.01f);
+        label = "Vertex 2###TriangleVertex2" + std::to_string(i);
+        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].b.x, 0.01f);
+        label = "Vertex 3###TriangleVertex3" + std::to_string(i);
+        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].c.x, 0.01f);
+        label = "Material ID##TriangleMaterialID" + std::to_string(i);
+        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mTriangles[i].materialIndex);
+        label = "Delete###TriangleDelete" + std::to_string(i);
+        if (ImGui::Button(label.c_str()))
+          rt::get()->delete_triangle(i);
+      }
+      ImGui::Separator();
+    }
 
     ImGui::Separator();
     if (ImGui::Button("+ Add object"))
@@ -120,7 +139,7 @@ namespace raytracing
   {
     ImGui::Begin("Add object");
 
-    const char* items[] = {"Sphere", "Plane"};
+    const char* items[] = {"Sphere", "Plane", "Triangle"};
     static const char* currentItem = nullptr;
 
     if (ImGui::BeginCombo("Object Type##combo", currentItem))
@@ -161,6 +180,20 @@ namespace raytracing
       ImGui::Separator();
     }
 
+    static TriangleObject triangle{};
+    if (currentItem && strncmp(currentItem, "Triangle", 8) == 0)
+    {
+      std::string label = "Vertex 1###TriangleVertex1New";
+      ImGui::DragFloat3(label.c_str(), &triangle.a.x, 0.01f);
+      label = "Vertex 2###TriangleVertex2New";
+      ImGui::DragFloat3(label.c_str(), &triangle.b.x, 0.01f);
+      label = "Vertex 3###TriangleVertex3New";
+      ImGui::DragFloat3(label.c_str(), &triangle.c.x, 0.01f);
+      label = "Material ID##TriangleMaterialID";
+      ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &triangle.materialIndex);
+      ImGui::Separator();
+    }
+
     if (ImGui::Button("Cancel###NewObjectCancel"))
       mAddItemOpened = false;
     ImGui::SameLine(0.0f);
@@ -173,6 +206,9 @@ namespace raytracing
 
       if (strncmp(currentItem, "Plane", 5) == 0)
         rt::get()->add_plane(plane);
+
+      if (strncmp(currentItem, "Triangle", 8) == 0)
+        rt::get()->add_triangle(triangle);
 
       currentItem = nullptr;
     }

@@ -27,9 +27,11 @@ namespace raytracing
     void add_sphere(const SphereObject& object);
     void add_plane(const PlaneObject& object);
     void add_material(const Material& material);
+    void add_triangle(const TriangleObject& object);
     void delete_sphere(size_t index);
     void delete_plane(size_t index);
     void delete_material(size_t index);
+    void delete_triangle(size_t index);
 
     void render_to_image(const std::string& image_path);
 

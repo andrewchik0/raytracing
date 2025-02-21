@@ -80,6 +80,15 @@ namespace raytracing
             plane.materialIndex = object["materialIndex"].as<int>();
             rt::get()->add_plane(plane);
           }
+          if (strcmp(object["type"].as<std::string>().c_str(), "triangle") == 0)
+          {
+            TriangleObject triangle {};
+            triangle.a = object["a"].as<glm::vec3>();
+            triangle.b = object["b"].as<glm::vec3>();
+            triangle.c = object["c"].as<glm::vec3>();
+            triangle.materialIndex = object["materialIndex"].as<int>();
+            rt::get()->add_triangle(triangle);
+          }
         }
       }
 
@@ -172,6 +181,16 @@ namespace raytracing
         out << YAML::Key << "normal" << YAML::Value << rt::get()->mRender.mPlanes[i].normal;
         out << YAML::Key << "distance" << YAML::Value << rt::get()->mRender.mPlanes[i].distance;
         out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mPlanes[i].materialIndex;
+        out << YAML::EndMap;
+      }
+      for (size_t i = 0; i < rt::get()->mRender.mTrianglesCount; i++)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "triangle";
+        out << YAML::Key << "a" << YAML::Value << rt::get()->mRender.mTriangles[i].a;
+        out << YAML::Key << "b" << YAML::Value << rt::get()->mRender.mTriangles[i].b;
+        out << YAML::Key << "c" << YAML::Value << rt::get()->mRender.mTriangles[i].c;
+        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mTriangles[i].materialIndex;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

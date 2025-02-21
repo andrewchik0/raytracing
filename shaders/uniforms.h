@@ -36,6 +36,18 @@ struct PlaneObject
   uint materialIndex;
 };
 
+#define MAX_TRIANGLES 32
+#define TRIANGLE_OBJECT 3
+struct TriangleObject
+{
+  vec3 a;
+  uint materialIndex;
+  vec3 b;
+  float _;
+  vec3 c;
+  float _1;
+};
+
 #define MAX_MATERIALS 32
 struct Material
 {
@@ -63,12 +75,14 @@ struct Material
   ;
 };
 
-#define SceneBufferStruct SceneBuffer   \
-{                                       \
-  SphereObject spheres[MAX_SPHERES];    \
-  PlaneObject planes[MAX_PLANES];       \
-  Material materials[MAX_MATERIALS];    \
-  uint spheresCount;                    \
-  uint planesCount;                     \
+#define SceneBufferStruct SceneBuffer      \
+{                                          \
+  SphereObject spheres[MAX_SPHERES];       \
+  PlaneObject planes[MAX_PLANES];          \
+  TriangleObject triangles[MAX_TRIANGLES]; \
+  Material materials[MAX_MATERIALS];       \
+  uint trianglesCount;                     \
+  uint spheresCount;                       \
+  uint planesCount;                        \
 }
 

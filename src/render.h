@@ -43,10 +43,12 @@ namespace raytracing
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
+    std::array<TriangleObject, MAX_TRIANGLES> mTriangles;
     std::array<Material, MAX_MATERIALS> mMaterials;
     size_t
       mSpheresCount = 0,
       mPlanesCount = 0,
+      mTrianglesCount = 0,
       mMaterialsCount = 1;
 
     uniform_buffer mSceneBuffer;

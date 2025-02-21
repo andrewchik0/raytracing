@@ -31,9 +31,6 @@ namespace raytracing
     {
       sf::Texture texture;
       texture.loadFromFile(mTextureFilenames[i]);
-      texture.setSmooth(true);
-      texture.setRepeated(true);
-      texture.resize({mTextureWidth, mTextureHeight});
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
         1, GL_RGBA, GL_UNSIGNED_BYTE, texture.copyToImage().getPixelsPtr());

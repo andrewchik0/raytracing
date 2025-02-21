@@ -74,9 +74,11 @@ namespace raytracing
     }
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    memcpy(buffer.triangles, mTriangles.data(), sizeof(TriangleObject) * MAX_TRIANGLES);
     memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
     buffer.planesCount = mPlanesCount;
     buffer.spheresCount = mSpheresCount;
+    buffer.trianglesCount = mTrianglesCount;
     mSceneBuffer.set(&buffer);
   }
 

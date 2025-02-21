@@ -1,10 +1,7 @@
 #include "rt.h"
 
 #include <filesystem>
-#include <fstream>
 #include <imgui-SFML.h>
-#include <imgui.h>
-#include <iostream>
 #include <nfd.h>
 
 namespace raytracing
@@ -122,7 +119,7 @@ namespace raytracing
   }
   void rt::add_plane(const PlaneObject& object)
   {
-    if (mRender.mSpheresCount >= MAX_PLANES)
+    if (mRender.mPlanesCount >= MAX_PLANES)
       return;
     mRender.mPlanes[mRender.mPlanesCount++] = object;
   }
@@ -131,6 +128,12 @@ namespace raytracing
     if (mRender.mMaterialsCount >= MAX_MATERIALS)
       return;
     mRender.mMaterials[mRender.mMaterialsCount++] = material;
+  }
+  void rt::add_triangle(const TriangleObject& object)
+  {
+    if (mRender.mTrianglesCount >= MAX_TRIANGLES)
+      return;
+    mRender.mTriangles[mRender.mTrianglesCount++] = object;
   }
   void rt::delete_sphere(size_t index)
   {
@@ -149,5 +152,11 @@ namespace raytracing
     for (size_t i = index; i < mRender.mMaterialsCount; ++i)
       mRender.mMaterials[i] = mRender.mMaterials[i + 1];
     mRender.mMaterialsCount--;
+  }
+  void rt::delete_triangle(size_t index)
+  {
+    for (size_t i = index; i < mRender.mTrianglesCount; ++i)
+      mRender.mTriangles[i] = mRender.mTriangles[i + 1];
+    mRender.mTrianglesCount--;
   }
 } // namespace raytracing

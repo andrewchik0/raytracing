@@ -1,50 +1,5 @@
-float random(vec2 st)
-{
-  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-}
-vec3 rand3(vec3 seed)
-{
-  return vec3(
-    random(vec2(time, seed.x)) - 0.5,
-    random(vec2(time, seed.y)) - 0.5,
-    random(vec2(time, seed.z)) - 0.5
-  );
-}
-
-const float PI = 3.141592653589;
-float atan2(float y, float x)
-{
-  bool s = (abs(x) > abs(y));
-  return mix(PI / 2.0 - atan(x, y), atan(y, x), s);
-}
-
-float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr)
-{
-  float a = dot(rd, rd);
-  vec3 s0_r0 = r0 - s0;
-  float b = 2.0 * dot(rd, s0_r0);
-  float c = dot(s0_r0, s0_r0) - (sr * sr);
-  float disriminant = b * b - 4.0 * a * c;
-  if (disriminant < 0.0)
-  {
-    return FAR_PLANE;
-  }
-  return (-b - sqrt(disriminant)) / (2.0 * a);
-}
-
-float rayPlaneIntersect(vec3 r0, vec3 rd, vec3 n, float d) {
-  float denom = dot(n, rd);
-
-  if (abs(denom) <= 1e-4f)
-    return FAR_PLANE;
-
-  float t = -(dot(n, r0) + d) / denom;
-
-  if (t <= 1e-4)
-    return FAR_PLANE;
-
-  return t;
-}
+#include "utils.glsl"
+#include "intersections.glsl"
 
 vec3 calculateRayDirection()
 {
@@ -93,6 +48,19 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       result.distance = d;
       result.normal = planes[i].normal.xyz;
       result.materialIndex = planes[i].materialIndex;
+      result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
+      result.tangent = vec3(1, 0, 0);
+      result.bitangent = vec3(0, 0, 1);
+    }
+  }
+  for (uint i = 0; i < trianglesCount; i++)
+  {
+    float d = rayTriangleIntersect(rayOrigin, rayDirection, triangles[i].a, triangles[i].b, triangles[i].c);
+    if (d > 0 && result.distance > d)
+    {
+      result.distance = d;
+      result.normal = normalize(cross(triangles[i].a - triangles[i].b, triangles[i].a - triangles[i].c));
+      result.materialIndex = triangles[i].materialIndex;
       result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
       result.tangent = vec3(1, 0, 0);
       result.bitangent = vec3(0, 0, 1);
