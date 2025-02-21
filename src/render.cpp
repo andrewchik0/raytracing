@@ -101,22 +101,23 @@ namespace raytracing
     std::filesystem::path fpath(path);
     std::string text = read_shader_file(path);
     std::string result;
+    size_t pos = 0;
 
     for (auto it = text.begin(); it < text.end(); ++it)
     {
-      if (*it == '#' && std::string(it + 1, it + 18) == "ifdef __cplusplus")
+      if (text.size() > pos + 18 && *it == '#' && std::string(it + 1, it + 18) == "ifdef __cplusplus")
       {
         while (*it != '#' || std::string(it + 1, it + 6) != "endif")
-          ++it;
-        it += 6;
+          ++it, pos++;
+        it += 6, pos += 6;
       }
 
       if (*it == '#' && std::string(it + 1, it + 8) == "include")
       {
-        it += 8;
-        while(*it++ != '\"') {}
+        it += 8, pos += 8;
+        while(*it++ != '\"') pos++;
         auto start = it;
-        while(*it++ != '\"') {}
+        while(*it++ != '\"') pos++;
         auto end = it - 1;
 
         auto filename =
