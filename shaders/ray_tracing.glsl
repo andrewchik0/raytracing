@@ -56,6 +56,8 @@ vec3 calculateRayDirection()
 struct ClosestHit
 {
   vec3 normal;
+  vec3 tangent;
+  vec3 bitangent;
   vec3 position;
   vec2 textureCoordinates;
   float distance;
@@ -78,6 +80,8 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       float theta = atan(sqrt(result.normal.x * result.normal.x + result.normal.z * result.normal.z), result.normal.y);
       float phi = atan(result.normal.x, result.normal.z);
       result.textureCoordinates = vec2(phi / PI / 2.0f + 0.5, theta / PI);
+      result.tangent = normalize(vec3(-cos(theta) * sin(phi), 0, cos(theta) * cos(phi)));
+      result.bitangent = cross(result.normal, result.tangent);
     }
   }
 
@@ -90,6 +94,8 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       result.normal = planes[i].normal.xyz;
       result.materialIndex = planes[i].materialIndex;
       result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
+      result.tangent = vec3(1, 0, 0);
+      result.bitangent = vec3(0, 0, 1);
     }
   }
   result.position = rayDirection * (result.distance) + rayOrigin;
@@ -120,24 +126,36 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       }
       else
       {
+
         vec3 albedo;
         if (materials[hit.materialIndex].textureIndex != -1)
           albedo = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].textureIndex)).rgb;
         else
           albedo = materials[hit.materialIndex].albedo;
 
-        if (sampleColor == vec3(0))
-          sampleColor = albedo;
-        else
-          sampleColor *= albedo;
-
-        org = hit.position + hit.normal * 0.0001;
         float roughness;
         if (materials[hit.materialIndex].metallicTextureIndex != -1)
           roughness = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].metallicTextureIndex)).r;
         else
           roughness = materials[hit.materialIndex].roughness;
-        dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * roughness);
+
+        vec3 normal;
+        if (materials[hit.materialIndex].normalTextureIndex != -1)
+        {
+          normal = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1;
+          mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
+          normal = TBN * normal;
+        }
+        else
+          normal = hit.normal;
+
+        if (sampleColor == vec3(0))
+          sampleColor = albedo;
+        else
+          sampleColor *= albedo;
+
+        org = hit.position + normal * 1e-6;
+        dir = reflect(dir, normal + rand3(dir + sampleCounter) * roughness);
       }
     }
 
