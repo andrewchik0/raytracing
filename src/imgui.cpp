@@ -213,6 +213,21 @@ namespace raytracing
     if (ImGui::Button("+ Add Material"))
       rt::get()->add_material(material);
 
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("Textures"))
+    {
+      for (size_t i = 0; i < rt::get()->mRender.mTextures.mTextureFilenames.size(); ++i)
+      {
+        label = "[" + std::to_string(i) + "] " + rt::get()->mRender.mTextures.mTextureFilenames[i];
+        ImGui::Text(label.c_str());
+      }
+      if (ImGui::Button("Add texture..."))
+      {
+        rt::get()->mRender.mTextures.load_from_filesystem();
+        rt::get()->mRender.mTextures.reload();
+      }
+    }
+
     ImGui::End();
   }
 

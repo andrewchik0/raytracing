@@ -59,13 +59,14 @@ namespace raytracing
 
   void rt::render_to_image(const std::string& image_path)
   {
-    sf::RenderTexture rt({ 3840, 2160 });
+    uint32_t renderWidth = 1920, renderHeight = 1080;
+    sf::RenderTexture rt({ renderWidth, renderHeight });
     uint32_t samples = mRender.mSamplesCount;
     uint32_t bounces = mRender.mBouncesCount;
     uint32_t width = mWindowWidth, height = mWindowHeight;
-    mWindowWidth = 3840; mWindowHeight = 2160;
+    mWindowWidth = renderWidth; mWindowHeight = renderHeight;
     resize();
-    mRender.mSamplesCount = 1024;
+    mRender.mSamplesCount = 2048;
     mRender.mBouncesCount = 64;
     mRender.clear();
     mRender.draw(&rt);

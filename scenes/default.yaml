@@ -1,6 +1,6 @@
 camera:
-  position: [2.98798275, 0.920886874, -4.61193895]
-  direction: [0.0327203795, -0.0185958073, 0.99921912]
+  position: [3.96864939, 1.50787735, 5.08979177]
+  direction: [-0.00675540091, -0.201402664, -0.979372919]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -18,6 +18,10 @@ objects:
     position: [6, 1, 0]
     radius: 1
     materialIndex: 4
+  - type: sphere
+    position: [8, 1, 0]
+    radius: 1
+    materialIndex: 5
   - type: plane
     normal: [0, 1, 0]
     distance: 0
@@ -25,35 +29,56 @@ objects:
 materials:
   - albedo: [0.800000012, 0.800000012, 0.800000012]
     roughness: 1
-    texture_coordinates_multiplier: 0.569999993
+    texture_coordinates_multiplier: 1.38999999
     texture_id: 0
     metallic_texture_id: 2
     normal_texture_id: 1
   - albedo: [0.689999998, 0.639999986, 0]
     roughness: 0
     texture_coordinates_multiplier: 1
-    texture_id: -1
-    metallic_texture_id: -1
-    normal_texture_id: -1
+    texture_id: 3
+    metallic_texture_id: 5
+    normal_texture_id: 4
   - albedo: [0.800000012, 0.800000012, 0.300000012]
     roughness: 0.150000006
     texture_coordinates_multiplier: 1
-    texture_id: -1
-    metallic_texture_id: -1
-    normal_texture_id: -1
+    texture_id: 6
+    metallic_texture_id: 8
+    normal_texture_id: 7
   - albedo: [0, 0.800000012, 0.800000012]
     roughness: 0.300000012
     texture_coordinates_multiplier: 1
-    texture_id: -1
-    metallic_texture_id: -1
-    normal_texture_id: -1
+    texture_id: 9
+    metallic_texture_id: 11
+    normal_texture_id: 10
   - albedo: [0.800000012, 0, 0.800000012]
     roughness: 0.899999976
     texture_coordinates_multiplier: 1
-    texture_id: -1
-    metallic_texture_id: -1
-    normal_texture_id: -1
+    texture_id: 12
+    metallic_texture_id: 14
+    normal_texture_id: 13
+  - albedo: [0, 0, 0]
+    roughness: 0
+    texture_coordinates_multiplier: 1
+    texture_id: 15
+    metallic_texture_id: 17
+    normal_texture_id: 16
 textures:
+  - assets/grass/albedo.png
+  - assets/grass/normal.png
+  - assets/grass/metallic.png
   - assets/stone/albedo.png
   - assets/stone/normal.png
   - assets/stone/metallic.psd
+  - assets/granite/albedo.png
+  - assets/granite/normal.png
+  - assets/granite/metallic.psd
+  - assets/ice/albedo.png
+  - assets/ice/normal.png
+  - assets/ice/metallic.psd
+  - assets/gold/albedo.png
+  - assets/gold/normal.png
+  - assets/gold/metallic.png
+  - assets/tile/albedo.png
+  - assets/tile/normal.png
+  - assets/tile/metallic.psd

@@ -1,6 +1,7 @@
 #include "textures.h"
 
 #include <GL/glew.h>
+#include <nfd.h>
 
 #include "rt.h"
 
@@ -57,6 +58,23 @@ namespace raytracing
   {
     unload();
     load();
+  }
+
+  void textures::load_from_filesystem()
+  {
+    nfdu8char_t* outPath;
+    const nfdu8filteritem_t filters[1] = {{"Image files", "png,jpg,jpeg,hdr,psd,bmp,tga,pic"}};
+    nfdopendialogu8args_t args = {0};
+    args.filterList = filters;
+    args.filterCount = 1;
+    auto defaultPath = (std::filesystem::current_path() / "assets").string();
+    args.defaultPath = defaultPath.c_str();
+    nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
+    if (result != NFD_OKAY)
+      return;
+
+    add_texture(outPath);
+    NFD_FreePathU8(outPath);
   }
 
   void textures::add_texture(const std::string& name)

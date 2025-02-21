@@ -16,16 +16,19 @@ namespace raytracing
 
     void reload();
 
+    void load_from_filesystem();
+
     void add_texture(const std::string& name);
 
   private:
     uint32_t
       mTextureWidth = 2048, mTextureHeight = 2048,
-      mTexturesCount = 16;
+      mTexturesCount = 32;
 
     uint32_t mTextureArray = -1;
     std::vector<std::string> mTextureFilenames;
 
     friend class scene_serializer;
+    friend class imgui;
   };
 }
