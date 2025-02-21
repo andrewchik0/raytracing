@@ -31,6 +31,8 @@ namespace raytracing
     void delete_plane(size_t index);
     void delete_material(size_t index);
 
+    void render_to_image(const std::string& image_path);
+
     static rt* get() { return sInstance; }
 
   private:

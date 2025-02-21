@@ -21,7 +21,7 @@ namespace raytracing
   public:
     void init();
     void clear();
-    void draw(sf::RenderWindow* window);
+    void draw(sf::RenderTarget* window);
     void resize(uint32_t width, uint32_t height);
 
     void push_scene();

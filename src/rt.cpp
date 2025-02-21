@@ -57,6 +57,26 @@ namespace raytracing
     }
   }
 
+  void rt::render_to_image(const std::string& image_path)
+  {
+    sf::RenderTexture rt({ 3840, 2160 });
+    uint32_t samples = mRender.mSamplesCount;
+    uint32_t bounces = mRender.mBouncesCount;
+    uint32_t width = mWindowWidth, height = mWindowHeight;
+    mWindowWidth = 3840; mWindowHeight = 2160;
+    resize();
+    mRender.mSamplesCount = 1024;
+    mRender.mBouncesCount = 64;
+    mRender.clear();
+    mRender.draw(&rt);
+    rt.display();
+    rt.getTexture().copyToImage().saveToFile(image_path);
+    mRender.mSamplesCount = samples;
+    mRender.mBouncesCount = bounces;
+    mWindowWidth = width; mWindowHeight = height;
+    resize();
+  }
+
 
   void rt::handle_messages()
   {
@@ -64,6 +84,15 @@ namespace raytracing
     {
       ImGui::SFML::ProcessEvent(mWindow, *event);
       mInput.handle(event);
+
+      if (event->is<sf::Event::KeyPressed>())
+      {
+        if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R)
+        {
+          mRender.load_shaders();
+          mRender.resize(mWindowWidth, mWindowHeight);
+        }
+      }
 
       if (event->is<sf::Event::Closed>())
       {

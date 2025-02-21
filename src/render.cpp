@@ -44,7 +44,7 @@ namespace raytracing
     mTexture.clear();
   }
 
-  void render::draw(sf::RenderWindow* window)
+  void render::draw(sf::RenderTarget* window)
   {
     set_uniforms();
     push_scene();

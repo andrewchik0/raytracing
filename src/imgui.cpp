@@ -23,8 +23,12 @@ namespace raytracing
     ImGui::Checkbox("Enable FXAA", &rt::get()->mRender.mUseFXAA);
     ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount);
     ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount);
+    static char filename[256] = "screenshot.png";
     ImGui::Separator();
-    ImGui::DragFloat3("Light Direction", &rt::get()->mRender.mLightDirection.x, 0.01f, -1.0f, 1.0f, "%.2f");
+    ImGui::InputText("###RenderToFileName", filename, 256);
+    ImGui::SameLine();
+    if (ImGui::Button("Render to file"))
+      rt::get()->render_to_image(filename);
     ImGui::Separator();
     if (ImGui::Button("Reload shaders"))
     {

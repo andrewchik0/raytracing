@@ -99,7 +99,6 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
   {
     vec3 org = rayOrigin, dir = rayDirection;
     vec3 sampleColor = vec3(0);
-    float multiplier = 1.0f;
 
     for (uint i = 0; i < bounces; i++)
     {
@@ -108,14 +107,18 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       {
         float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
         float phi = atan(dir.x, dir.z);
-        sampleColor += texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb * multiplier;
+        if (sampleColor == vec3(0))
+          sampleColor = texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb;
+        else
+          sampleColor *= texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb;
         break;
       }
       else
       {
-        //sampleColor += max(vec3(0), dot(hit.normal, lightDirection) * materials[hit.materialIndex].albedo) * multiplier;
-
-        multiplier *= 0.8;
+        if (sampleColor == vec3(0))
+          sampleColor = materials[hit.materialIndex].albedo;
+        else
+          sampleColor *= materials[hit.materialIndex].albedo;
 
         org = hit.position + hit.normal * 0.0001;
         dir = reflect(dir, hit.normal + rand3(dir + sampleCounter) * materials[hit.materialIndex].roughness);
