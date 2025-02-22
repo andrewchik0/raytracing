@@ -1,9 +1,9 @@
-exposure: 2.5
-gamma: 1
+exposure: 2.06999993
+gamma: 1.35000002
 sky_filename: assets/night.jpg
 camera:
-  position: [3.53539491, 1.50787735, 5.31835794]
-  direction: [0.00063591823, -0.0917861685, -0.995666921]
+  position: [3.90408134, 1.71650803, -5.47236538]
+  direction: [0.00419525616, -0.0317367762, 0.999373853]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -36,10 +36,10 @@ objects:
     materialIndex: 0
 materials:
   - albedo: [0.800000012, 0.800000012, 0.800000012]
-    roughness: 1
+    roughness: 0
     texture_coordinates_multiplier: 1.38999999
     texture_id: 0
-    metallic_texture_id: 2
+    metallic_texture_id: -1
     normal_texture_id: 1
   - albedo: [0.689999998, 0.639999986, 0]
     roughness: 0
