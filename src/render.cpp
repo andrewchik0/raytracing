@@ -175,5 +175,7 @@ namespace raytracing
     mShader.setUniform("bounces", static_cast<int>(mBouncesCount));
     mShader.setUniform("sky", mSkyTexture);
     mPostShader.setUniform("useFXAA", mUseFXAA);
+    mPostShader.setUniform("gamma", mGamma);
+    mPostShader.setUniform("exposure", mExposure);
   }
 }

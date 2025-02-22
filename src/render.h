@@ -41,6 +41,9 @@ namespace raytracing
     uint32_t mBouncesCount = 6;
     glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
 
+    float mGamma = 1.0;
+    float mExposure = 2.5;
+
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
     std::array<TriangleObject, MAX_TRIANGLES> mTriangles;
