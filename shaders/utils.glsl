@@ -1,3 +1,16 @@
+uint pcg_hash(uint input)
+{
+  uint state = input * 747796405u + 2891336453u;
+  uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+  return (word >> 22u) ^ word;
+}
+
+float randomFloat(uint seed)
+{
+  seed = pcg_hash(seed);
+  return float(seed) / float(1u << 33);
+}
+
 float random(vec2 st)
 {
   return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);

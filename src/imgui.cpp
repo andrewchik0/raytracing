@@ -18,9 +18,25 @@ namespace raytracing
 
     ImGui::Begin("Stats");
     ImGui::Text("Frame time: %.3f ms", static_cast<float>(rt::get()->mElapsedTime.asMicroseconds()) / 1000.0);
-    ImGui::Text("FPS: %.1f", 1.0 / rt::get()->mElapsedTime.asSeconds());
+
+    static float secondsCounter = 0.0;
+    static int framesCounter = 0.0;
+    static float fps = 60;
+    secondsCounter += rt::get()->mElapsedTime.asSeconds();
+    framesCounter++;
+    ImGui::Text("FPS: %.1f", fps);
+    if (secondsCounter > 0.25)
+    {
+      fps = framesCounter / secondsCounter;
+      secondsCounter = 0.0;
+      framesCounter = 0;
+    }
+
     ImGui::Separator();
-    ImGui::Checkbox("Enable FXAA", &rt::get()->mRender.mUseFXAA);
+    ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA);
+    static bool vSync = false;
+    if (ImGui::Checkbox("V-Sync", &vSync))
+      rt::get()->mWindow.setVerticalSyncEnabled(vSync);
     ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount);
     ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount);
     static char filename[256] = "screenshot.png";

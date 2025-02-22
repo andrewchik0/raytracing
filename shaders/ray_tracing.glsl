@@ -35,7 +35,8 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       float theta = atan(sqrt(result.normal.x * result.normal.x + result.normal.z * result.normal.z), result.normal.y);
       float phi = atan(result.normal.x, result.normal.z);
       result.textureCoordinates = vec2(phi / PI / 2.0f + 0.5, theta / PI);
-      result.tangent = normalize(vec3(-cos(theta) * sin(phi), 0, cos(theta) * cos(phi)));
+      vec3 arbitrary = abs(result.normal.y) < (1 - 1e-5) ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+      result.tangent = normalize(cross(arbitrary, result.normal));
       result.bitangent = cross(result.normal, result.tangent);
     }
   }
@@ -86,41 +87,32 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       {
         float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
         float phi = atan(dir.x, dir.z);
-        if (sampleColor == vec3(0))
-          sampleColor = texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb;
-        else
-          sampleColor *= texture(sky, vec2(phi / PI / 2.0f + 0.5, theta / PI)).rgb;
+        vec3 skyColor = texture(sky, vec2(phi / PI / 2.0 + 0.5, theta / PI)).rgb;
+        sampleColor = mix(skyColor, sampleColor * skyColor, step(1e-6, length(sampleColor)));
         break;
       }
       else
       {
+        vec2 texCoords = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
 
-        vec3 albedo;
-        if (materials[hit.materialIndex].textureIndex != -1)
-          albedo = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].textureIndex)).rgb;
-        else
-          albedo = materials[hit.materialIndex].albedo;
+        vec3 albedo =
+          float(materials[hit.materialIndex].textureIndex != -1) *
+          texture(texArray, vec3(texCoords, materials[hit.materialIndex].textureIndex)).rgb +
+          float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].albedo;
 
-        float roughness;
-        if (materials[hit.materialIndex].metallicTextureIndex != -1)
-          roughness = 1.0 - texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].metallicTextureIndex)).r;
-        else
-          roughness = materials[hit.materialIndex].roughness;
+        float roughness =
+          float(materials[hit.materialIndex].metallicTextureIndex != -1) *
+          (1.0 - texture(texArray, vec3(texCoords, materials[hit.materialIndex].metallicTextureIndex)).r) +
+          float(materials[hit.materialIndex].metallicTextureIndex == -1) * materials[hit.materialIndex].roughness;
 
         vec3 normal;
-        if (materials[hit.materialIndex].normalTextureIndex != -1)
-        {
-          normal = texture(texArray, vec3(hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1;
-          mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
-          normal = TBN * normal;
-        }
-        else
-          normal = hit.normal;
+        mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
+        normal =
+          float((materials[hit.materialIndex].normalTextureIndex != -1)) *
+          TBN * (texture(texArray, vec3(texCoords, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1) +
+          float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
 
-        if (sampleColor == vec3(0))
-          sampleColor = albedo;
-        else
-          sampleColor *= albedo;
+        sampleColor = mix(albedo, sampleColor * albedo, step(1e-6, length(sampleColor)));
 
         org = hit.position + normal * 1e-6;
         dir = reflect(dir, normal + rand3(dir + sampleCounter) * roughness);
