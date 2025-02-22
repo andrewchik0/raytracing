@@ -1,0 +1,92 @@
+exposure: 2.5
+gamma: 1
+sky_filename: assets/night.jpg
+camera:
+  position: [3.53539491, 1.50787735, 5.31835794]
+  direction: [0.00063591823, -0.0917861685, -0.995666921]
+objects:
+  - type: sphere
+    position: [0, 1, 0]
+    radius: 1
+    materialIndex: 1
+  - type: sphere
+    position: [2, 1, 0]
+    radius: 1
+    materialIndex: 2
+  - type: sphere
+    position: [4, 1, 0]
+    radius: 1
+    materialIndex: 3
+  - type: sphere
+    position: [6, 1, 0]
+    radius: 1
+    materialIndex: 4
+  - type: sphere
+    position: [8, 1, 0]
+    radius: 1
+    materialIndex: 5
+  - type: plane
+    normal: [0, 1, 0]
+    distance: 0
+    materialIndex: 0
+  - type: triangle
+    a: [-0.49000001, 2.61999989, 0.589999974]
+    b: [-1.69000006, -0.699999988, 0.970000029]
+    c: [-0.730000019, 0.430000007, 2.52999997]
+    materialIndex: 0
+materials:
+  - albedo: [0.800000012, 0.800000012, 0.800000012]
+    roughness: 1
+    texture_coordinates_multiplier: 1.38999999
+    texture_id: 0
+    metallic_texture_id: 2
+    normal_texture_id: 1
+  - albedo: [0.689999998, 0.639999986, 0]
+    roughness: 0
+    texture_coordinates_multiplier: 1
+    texture_id: 3
+    metallic_texture_id: 5
+    normal_texture_id: 4
+  - albedo: [0.800000012, 0.800000012, 0.300000012]
+    roughness: 0.150000006
+    texture_coordinates_multiplier: 1
+    texture_id: 6
+    metallic_texture_id: 8
+    normal_texture_id: 7
+  - albedo: [0, 0.800000012, 0.800000012]
+    roughness: 0.300000012
+    texture_coordinates_multiplier: 1
+    texture_id: 9
+    metallic_texture_id: 11
+    normal_texture_id: 10
+  - albedo: [0.800000012, 0, 0.800000012]
+    roughness: 0.899999976
+    texture_coordinates_multiplier: 1
+    texture_id: 12
+    metallic_texture_id: 14
+    normal_texture_id: 13
+  - albedo: [0, 0, 0]
+    roughness: 0
+    texture_coordinates_multiplier: 1
+    texture_id: 15
+    metallic_texture_id: 17
+    normal_texture_id: 16
+textures:
+  - assets/grass/albedo.png
+  - assets/grass/normal.png
+  - assets/grass/metallic.png
+  - assets/stone/albedo.png
+  - assets/stone/normal.png
+  - assets/stone/metallic.psd
+  - assets/granite/albedo.png
+  - assets/granite/normal.png
+  - assets/granite/metallic.psd
+  - assets/ice/albedo.png
+  - assets/ice/normal.png
+  - assets/ice/metallic.psd
+  - assets/gold/albedo.png
+  - assets/gold/normal.png
+  - assets/gold/metallic.png
+  - assets/tile/albedo.png
+  - assets/tile/normal.png
+  - assets/tile/metallic.psd

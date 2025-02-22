@@ -1,6 +1,9 @@
+exposure: 2.5
+gamma: 1
+sky_filename: assets/sky.hdr
 camera:
-  position: [3.96864939, 1.50787735, 5.08979177]
-  direction: [-0.0837242901, -0.111679584, -0.99009943]
+  position: [3.53539491, 1.50787735, 5.31835794]
+  direction: [0.00063591823, -0.0917861685, -0.995666921]
 objects:
   - type: sphere
     position: [0, 1, 0]

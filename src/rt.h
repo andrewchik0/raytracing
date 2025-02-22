@@ -52,6 +52,8 @@ namespace raytracing
     imgui mGui;
     scene_serializer mSceneSerializer;
 
+    std::string mSkyFilename;
+
     void handle_messages();
     void resize();
 

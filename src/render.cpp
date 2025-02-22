@@ -30,8 +30,6 @@ namespace raytracing
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Red);
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
-
-    mSkyTexture = sf::Texture("assets/sky.hdr");
   }
 
   void render::clear()

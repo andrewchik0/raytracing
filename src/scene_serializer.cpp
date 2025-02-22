@@ -49,6 +49,12 @@ namespace raytracing
     YAML::Node scene = YAML::LoadFile(filename.string());
 
     {
+      rt::get()->mSkyFilename = scene["sky_filename"].as<std::string>();
+      rt::get()->mRender.mSkyTexture = sf::Texture(rt::get()->mSkyFilename);
+      rt::get()->mRender.mSkyTexture.setSmooth(true);
+      rt::get()->mRender.mGamma = scene["gamma"].as<float>();
+      rt::get()->mRender.mExposure = scene["exposure"].as<float>();
+
       if (scene["camera"])
       {
         rt::get()->mCamera.mPosition = scene["camera"]["position"].as<glm::vec3>();
@@ -149,6 +155,10 @@ namespace raytracing
   {
     YAML::Emitter out;
     out << YAML::BeginMap;
+
+    out << YAML::Key << "exposure" << YAML::Value << rt::get()->mRender.mExposure;
+    out << YAML::Key << "gamma" << YAML::Value << rt::get()->mRender.mGamma;
+    out << YAML::Key << "sky_filename" << YAML::Value << rt::get()->mSkyFilename;
 
     {
       out << YAML::Key << "camera";
