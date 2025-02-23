@@ -31,26 +31,54 @@ namespace raytracing
 
     resize();
 
+    mLoading = true;
     mSceneSerializer.load(options.scene_filename);
   }
 
   void rt::run()
   {
+    if (!mLoading) return;
+
+    sf::Texture loadingTexture("assets/loading.png");
+    sf::Sprite loadingSprite(loadingTexture);
+    loadingSprite.setOrigin((sf::Vector2f)loadingTexture.getSize() / 2.f);
+    loadingSprite.setPosition((sf::Vector2f)mWindow.getSize() / 2.f);
+
     while (mWindow.isOpen())
     {
-      mWindow.clear();
-      mRender.clear();
-      mInput.clear();
+      if (!mLoading)
+      {
+        if (!mLoaded)
+        {
+          mRender.mTextures.load_to_gpu();
+          mLoaded = true;
+        }
 
-      handle_messages();
-      mGui.update();
+        mWindow.clear();
+        mRender.clear();
+        mInput.clear();
 
-      mCamera.update(mElapsedTime.asSeconds());
-      mRender.draw(&mWindow);
+        handle_messages();
+        mGui.update();
 
-      ImGui::SFML::Render(mWindow);
+        mCamera.update(mElapsedTime.asSeconds());
+        mRender.draw(&mWindow);
 
-      mWindow.display();
+        ImGui::SFML::Render(mWindow);
+
+        mWindow.display();
+      }
+      else
+      {
+        mWindow.clear();
+        handle_messages();
+
+        mElapsedTime = mClock.getElapsedTime();
+        mClock.restart();
+        loadingSprite.rotate(sf::degrees(mElapsedTime.asSeconds() * 200.0f));
+        mWindow.draw(loadingSprite);
+        mWindow.display();
+      }
     }
   }
 

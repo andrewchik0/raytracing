@@ -19,6 +19,7 @@ namespace raytracing
   class rt
   {
   public:
+    rt() {}
     ~rt();
 
     void init(const init_options& options);
@@ -44,11 +45,14 @@ namespace raytracing
 
     float mTime = 0.0f;
 
+    bool mLoading = false;
+    bool mLoaded = false;
+
     uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
     input mInput;
     camera mCamera;
-    render mRender;
+    render mRender {};
     imgui mGui;
     scene_serializer mSceneSerializer;
 

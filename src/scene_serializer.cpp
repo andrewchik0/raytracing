@@ -64,6 +64,7 @@ namespace raytracing
       {
         rt::get()->mRender.mSpheresCount = 0;
         rt::get()->mRender.mPlanesCount = 0;
+        rt::get()->mRender.mTrianglesCount = 0;
 
         auto objects = scene["objects"].as<YAML::Node>();
         for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it)
@@ -136,6 +137,8 @@ namespace raytracing
 
   void scene_serializer::load()
   {
+    rt::get()->mLoading = true;
+    rt::get()->mLoaded = false;
     nfdu8char_t* outPath;
     const nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
     nfdopendialogu8args_t args = {0};

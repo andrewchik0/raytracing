@@ -1,8 +1,13 @@
 #include "textures.h"
 
+#include <future>
+
 #include <GL/glew.h>
+
 #include <nfd.h>
+
 #include <stb_image.h>
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <stb_image_resize2.h>
 
 #include "rt.h"
@@ -15,7 +20,26 @@ namespace raytracing
     unload();
   }
 
-  void textures::load()
+  void textures::load_to_memory()
+  {
+    for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
+    {
+      int w, h, channels;
+      mTexturesData.push_back(stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4));
+    }
+
+    int w, h, channels;
+    if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
+    {
+      for (size_t i = 0; i < w * h * channels; ++i)
+        if (data[i] > 1000.0)
+          data[i] = 1000.0;
+      mSkyTextureData = stbir_resize_float_linear(data, w, h, 0, nullptr, mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
+      stbi_image_free(data);
+    }
+  }
+
+  void textures::load_to_gpu()
   {
     int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
 
@@ -31,11 +55,10 @@ namespace raytracing
 
     for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
     {
-      sf::Texture texture;
-      texture.loadFromFile(mTextureFilenames[i]);
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
-        1, GL_RGBA, GL_UNSIGNED_BYTE, texture.copyToImage().getPixelsPtr());
+        1, GL_RGBA, GL_UNSIGNED_BYTE, mTexturesData[i]);
+      stbi_image_free(mTexturesData[i]);
     }
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
@@ -48,30 +71,26 @@ namespace raytracing
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    int w, h, channels;
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA16F, mSkyWidth, mSkyHeight, 1);
+    glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, mSkyWidth, mSkyHeight,
+        1, GL_RGBA, GL_FLOAT, mSkyTextureData);
 
-    if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
-    {
-      for (size_t i = 0; i < w * h * channels; ++i)
-        if (data[i] > 1000.0)
-          data[i] = 1000.0;
-      glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA16F, w, h, 1);
-      glTexSubImage3D(
-          GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, w, h,
-          1, GL_RGBA, GL_FLOAT, data);
-
-      stbi_image_free(data);
-    }
+    stbi_image_free(mSkyTextureData);
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
+
+
   void textures::unload()
   {
     if (glIsTexture(mTextureArray))
     {
       glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
       glDeleteTextures(1, &mTextureArray);
+      glDeleteTextures(1, &mSky);
       mTextureArray = 0;
+      mTexturesData.clear();
     }
   }
 
@@ -88,7 +107,11 @@ namespace raytracing
   void textures::reload()
   {
     unload();
-    load();
+    std::thread([&]
+    {
+      load_to_memory();
+      rt::get()->mLoading = false;
+    }).detach();
   }
 
   void textures::load_from_filesystem()
