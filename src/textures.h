@@ -26,6 +26,7 @@ namespace raytracing
       mTexturesCount = 32;
 
     uint32_t mTextureArray = -1;
+    uint32_t mSky = 0;
     std::vector<std::string> mTextureFilenames;
 
     friend class scene_serializer;

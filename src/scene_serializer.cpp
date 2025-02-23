@@ -50,8 +50,6 @@ namespace raytracing
 
     {
       rt::get()->mSkyFilename = scene["sky_filename"].as<std::string>();
-      rt::get()->mRender.mSkyTexture = sf::Texture(rt::get()->mSkyFilename);
-      rt::get()->mRender.mSkyTexture.setSmooth(true);
       rt::get()->mRender.mGamma = scene["gamma"].as<float>();
       rt::get()->mRender.mExposure = scene["exposure"].as<float>();
 

@@ -1,9 +1,9 @@
-exposure: 2.5
-gamma: 1
+exposure: 3.8599999
+gamma: 1.20000005
 sky_filename: assets/sky.hdr
 camera:
-  position: [3.53539491, 1.50787735, 5.31835794]
-  direction: [0.00063591823, -0.0917861685, -0.995666921]
+  position: [3.6958313, 1.22652459, 4.62066889]
+  direction: [0.00218759477, -0.0316427983, -0.999377787]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -36,10 +36,10 @@ objects:
     materialIndex: 0
 materials:
   - albedo: [0.800000012, 0.800000012, 0.800000012]
-    roughness: 1
+    roughness: 0
     texture_coordinates_multiplier: 1.38999999
     texture_id: 0
-    metallic_texture_id: 2
+    metallic_texture_id: -1
     normal_texture_id: 1
   - albedo: [0.689999998, 0.639999986, 0]
     roughness: 0

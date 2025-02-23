@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 #include <nfd.h>
+#include <stb_image.h>
+#include <stb_image_resize2.h>
 
 #include "rt.h"
 
@@ -37,6 +39,31 @@ namespace raytracing
     }
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
+    glGenTextures(1, &mSky);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    int w, h, channels;
+
+    if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
+    {
+      for (size_t i = 0; i < w * h * channels; ++i)
+        if (data[i] > 1000.0)
+          data[i] = 1000.0;
+      glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA16F, w, h, 1);
+      glTexSubImage3D(
+          GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, w, h,
+          1, GL_RGBA, GL_FLOAT, data);
+
+      stbi_image_free(data);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
   void textures::unload()
   {
@@ -53,6 +80,9 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
     rt::get()->mRender.mShader.setUniform("texArray", 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
+    rt::get()->mRender.mShader.setUniform("sky", 1);
   }
 
   void textures::reload()

@@ -171,7 +171,6 @@ namespace raytracing
     mShader.setUniform("time", rt::get()->mTime);
     mShader.setUniform("samples", static_cast<int>(mSamplesCount));
     mShader.setUniform("bounces", static_cast<int>(mBouncesCount));
-    mShader.setUniform("sky", mSkyTexture);
     mPostShader.setUniform("useFXAA", mUseFXAA);
     mPostShader.setUniform("gamma", mGamma);
     mPostShader.setUniform("exposure", mExposure);

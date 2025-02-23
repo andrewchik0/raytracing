@@ -34,11 +34,10 @@ namespace raytracing
       mShader, mPostShader;
     sf::RectangleShape mRenderQuad;
     sf::RenderTexture mTexture;
-    sf::Texture mSkyTexture;
 
     bool mUseFXAA = true;
-    uint32_t mSamplesCount = 12;
-    uint32_t mBouncesCount = 6;
+    uint32_t mSamplesCount = 8;
+    uint32_t mBouncesCount = 5;
     glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
 
     float mGamma = 1.0;

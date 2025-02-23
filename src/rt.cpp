@@ -63,7 +63,7 @@ namespace raytracing
     uint32_t width = mWindowWidth, height = mWindowHeight;
     mWindowWidth = renderWidth; mWindowHeight = renderHeight;
     resize();
-    mRender.mSamplesCount = 2048;
+    mRender.mSamplesCount = 1024;
     mRender.mBouncesCount = 64;
     mRender.clear();
     mRender.draw(&rt);

@@ -1,6 +1,6 @@
-exposure: 2.06999993
-gamma: 1.35000002
-sky_filename: assets/night.jpg
+exposure: 14.1300001
+gamma: 0.870000005
+sky_filename: assets/night.hdr
 camera:
   position: [3.90408134, 1.71650803, -5.47236538]
   direction: [0.00419525616, -0.0317367762, 0.999373853]

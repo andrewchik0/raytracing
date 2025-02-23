@@ -73,6 +73,7 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
 
 vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
 {
+  float bias = 1e-12;
   vec3 resultColor = vec3(0);
 
   for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
@@ -87,8 +88,11 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       {
         float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
         float phi = atan(dir.x, dir.z);
-        vec3 skyColor = texture(sky, vec2(phi / PI / 2.0 + 0.5, theta / PI)).rgb;
-        sampleColor = mix(skyColor, sampleColor * skyColor, step(1e-6, length(sampleColor)));
+        vec3 skyColor = min(texture(sky, vec3(phi / PI / 2.0 + 0.5, theta / PI, 0)).rgb, vec3(42.0));
+        if (sampleColor == vec3(0))
+          sampleColor = skyColor;
+        else
+          sampleColor = sampleColor * skyColor;
         break;
       }
       else
@@ -112,10 +116,14 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           TBN * (texture(texArray, vec3(texCoords, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1) +
           float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
 
-        sampleColor = mix(albedo, sampleColor * albedo, step(1e-6, length(sampleColor)));
+        if (sampleColor == vec3(0))
+          sampleColor = albedo;
+        else
+          sampleColor = sampleColor * albedo;
 
-        org = hit.position + normal * 1e-6;
-        dir = reflect(dir, normal + rand3(dir + sampleCounter) * roughness);
+        org = hit.position + normal * bias;
+        normal = normalize(normal + rand3(dir + sampleCounter + i) * roughness);
+        dir = reflect(dir, normal);
       }
     }
 

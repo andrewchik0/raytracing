@@ -39,8 +39,9 @@ namespace raytracing
       rt::get()->mWindow.setVerticalSyncEnabled(vSync);
     ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f");
     ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f");
-    ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount);
-    ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount);
+    int min = 1;
+    ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &min);
+    ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &min);
     static char filename[256] = "screenshot.png";
     ImGui::Separator();
     ImGui::InputText("###RenderToFileName", filename, 256);
