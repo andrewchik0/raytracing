@@ -1,5 +1,5 @@
-exposure: 3.8599999
-gamma: 1.20000005
+exposure: 1.96000004
+gamma: 1.62
 sky_filename: assets/sky.hdr
 camera:
   position: [3.6958313, 1.22652459, 4.62066889]
