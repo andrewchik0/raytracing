@@ -10,35 +10,29 @@ uniform vec2 windowSize;
 uniform bool useFXAA;
 uniform float gamma;
 uniform float exposure;
+uniform float blurSize;
+uniform float time;
 
+#include "utils.glsl"
 #include "fxaa.glsl"
 
 void main()
 {
-  float r = 20;
-  float x, y, rr = r * r, d, w, w0;
-  vec2 p = 0.5 * (vec2(1.0, 1.0) + passTexCoord * 2 - 1);
-  vec4 col1 = vec4(0.0, 0.0, 0.0, 0.0);
-  w0 = 0.5135 / pow(r, 0.96);
+  float radiusSquared = blurSize * blurSize;
+  float pixelSizeX = 1.0 / windowSize.x;
+  float pixelSizeY = 1.0 / windowSize.y;
+  vec2 center = passTexCoord;
+  float baseWeight = 1 / (2.0 * PI * radiusSquared);
+  vec3 resultColor = vec3(0.0);
 
-  for (d = 1.0 / windowSize.x, x = -r, p.x += x * d; x <= r; x++)
+  for (float x = center.x - pixelSizeX * blurSize; x <= center.x + pixelSizeX * blurSize; x += pixelSizeX)
   {
-    w = w0 * exp((-x * x) / (2.0 * rr));
-    col1 += texture(bloomTexture, p) * w;
-    p.x += d;
+    for (float y = center.y - pixelSizeY * blurSize; y <= center.y + pixelSizeY * blurSize; y += pixelSizeY)
+    {
+      float weight = baseWeight * exp(-(x * x + y * y) / (2.0 * radiusSquared));
+      resultColor += texture(bloomTexture, vec2(x, y)).rgb * weight;
+    }
   }
-
-  p = 0.5 * (vec2(1.0, 1.0) + passTexCoord * 2 - 1);
-  vec4 col2 = vec4(0.0, 0.0, 0.0, 0.0);
-  w0 = 0.5135 / pow(r, 0.96);
-
-  for (d = 1.0 / windowSize.y, y = -r, p.y += y * d; y <= r; y++)
-  {
-    w = w0 * exp((- y * y) / (2.0 * rr));
-    col2 += texture(bloomTexture, p) * w;
-    p.y += d;
-  }
-  vec4 col = max(col1, col2);
 
   if (useFXAA)
   {
@@ -49,7 +43,7 @@ void main()
     outColor = vec4(texture(renderedTexture, passTexCoord).xyz, 1.0);
   }
 
-  outColor += col;
+  outColor.rgb += max(resultColor, vec3(0.0));
 
   vec3 mapped = vec3(1.0) - exp(-outColor.rgb * exposure);
   mapped = pow(mapped, vec3(1.0 / gamma));

@@ -181,5 +181,6 @@ namespace raytracing
     mPostShader.setUniform("useFXAA", mUseFXAA);
     mPostShader.setUniform("gamma", mGamma);
     mPostShader.setUniform("exposure", mExposure);
+    mPostShader.setUniform("blurSize", mBlurSize);
   }
 }

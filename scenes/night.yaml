@@ -1,9 +1,10 @@
-exposure: 0.75
-gamma: 1.34000003
+exposure: 2.16000009
+gamma: 1.03999996
+blur_radius: 15.3000002
 sky_filename: assets/night.hdr
 camera:
-  position: [4.56972075, 3.16604328, -6.05769634]
-  direction: [-0.0931884199, -0.00986033957, 0.995421946]
+  position: [7.79606724, 2.60448289, -4.80594826]
+  direction: [-0.460558295, -0.105889365, 0.881074846]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -26,21 +27,16 @@ objects:
     radius: 1
     materialIndex: 5
   - type: sphere
-    position: [1.36000001, 11.1099997, 0]
-    radius: 3.51999998
+    position: [1.36000001, 6.05999994, 0]
+    radius: 1.12
     materialIndex: 6
   - type: sphere
-    position: [6.53000021, 8.59000015, 0]
-    radius: 1.12
+    position: [6.53000021, 4.4000001, 0]
+    radius: 0.959999979
     materialIndex: 7
   - type: plane
     normal: [0, 1, 0]
     distance: 0
-    materialIndex: 0
-  - type: triangle
-    a: [-0.49000001, 2.61999989, 0.589999974]
-    b: [-1.69000006, -0.699999988, 0.970000029]
-    c: [-0.730000019, 0.430000007, 2.52999997]
     materialIndex: 0
   - type: triangle
     a: [-0.49000001, 2.61999989, 0.589999974]
@@ -91,14 +87,14 @@ materials:
     metallic_texture_id: 17
     normal_texture_id: 16
   - albedo: [0, 0, 0]
-    emissivity: [1.89999998, 0, 0.479999989]
+    emissivity: [1.95000005, 0.100000001, 1.83000004]
     roughness: 1
     texture_coordinates_multiplier: 1
     texture_id: -1
     metallic_texture_id: -1
     normal_texture_id: -1
   - albedo: [0, 0, 0]
-    emissivity: [0, 1.38999999, 1.57000005]
+    emissivity: [0.150000006, 1.5, 1.5]
     roughness: 1
     texture_coordinates_multiplier: 1
     texture_id: -1

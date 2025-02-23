@@ -52,6 +52,7 @@ namespace raytracing
       rt::get()->mSkyFilename = scene["sky_filename"].as<std::string>();
       rt::get()->mRender.mGamma = scene["gamma"].as<float>();
       rt::get()->mRender.mExposure = scene["exposure"].as<float>();
+      rt::get()->mRender.mBlurSize = scene["blur_radius"].as<float>();
 
       if (scene["camera"])
       {
@@ -157,6 +158,7 @@ namespace raytracing
 
     out << YAML::Key << "exposure" << YAML::Value << rt::get()->mRender.mExposure;
     out << YAML::Key << "gamma" << YAML::Value << rt::get()->mRender.mGamma;
+    out << YAML::Key << "blur_radius" << YAML::Value << rt::get()->mRender.mBlurSize;
     out << YAML::Key << "sky_filename" << YAML::Value << rt::get()->mSkyFilename;
 
     {

@@ -43,6 +43,7 @@ namespace raytracing
 
     float mGamma = 1.0;
     float mExposure = 2.5;
+    float mBlurSize = 5.0;
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
