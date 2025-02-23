@@ -35,6 +35,7 @@ namespace raytracing
   void render::clear()
   {
     mTexture.clear();
+    mBloomTexture.clear();
   }
 
   void render::draw(sf::RenderTarget* window)
@@ -46,7 +47,12 @@ namespace raytracing
     mTexture.draw(mRenderQuad, &mShader);
     mTexture.display();
 
+    mBloomShader.setUniform("renderedTexture", mTexture.getTexture());
+    mBloomTexture.draw(mRenderQuad, &mBloomShader);
+    mBloomTexture.display();
+
     mPostShader.setUniform("renderedTexture", mTexture.getTexture());
+    mPostShader.setUniform("bloomTexture", mBloomTexture.getTexture());
     window->draw(mRenderQuad, &mPostShader);
   }
 
@@ -54,9 +60,9 @@ namespace raytracing
   void render::resize(uint32_t width, uint32_t height)
   {
     if (!mTexture.resize({ width, height}))
-    {
-      std::cerr << "Failed to resize texture\n";
-    }
+      return;
+    if (!mBloomTexture.resize({ width, height}))
+      return;
     mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
     mShader.setUniform("halfHeight", rt::get()->mCamera.mHalfHeight);
     mShader.setUniform("halfWidth", rt::get()->mCamera.mHalfWidth);
@@ -141,6 +147,7 @@ namespace raytracing
 
     load_shader(&mShader, "./shaders/quad.vert", "./shaders/main.frag");
     load_shader(&mPostShader, "./shaders/quad.vert", "./shaders/post.frag");
+    load_shader(&mBloomShader, "./shaders/quad.vert", "./shaders/bloom.frag");
 
     return status::success;
   }

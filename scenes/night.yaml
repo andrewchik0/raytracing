@@ -1,9 +1,9 @@
-exposure: 14.1300001
-gamma: 0.870000005
+exposure: 0.75
+gamma: 1.34000003
 sky_filename: assets/night.hdr
 camera:
-  position: [3.90408134, 1.71650803, -5.47236538]
-  direction: [0.00419525616, -0.0317367762, 0.999373853]
+  position: [4.56972075, 3.16604328, -6.05769634]
+  direction: [-0.0931884199, -0.00986033957, 0.995421946]
 objects:
   - type: sphere
     position: [0, 1, 0]
@@ -25,6 +25,14 @@ objects:
     position: [8, 1, 0]
     radius: 1
     materialIndex: 5
+  - type: sphere
+    position: [1.36000001, 11.1099997, 0]
+    radius: 3.51999998
+    materialIndex: 6
+  - type: sphere
+    position: [6.53000021, 8.59000015, 0]
+    radius: 1.12
+    materialIndex: 7
   - type: plane
     normal: [0, 1, 0]
     distance: 0
@@ -34,43 +42,68 @@ objects:
     b: [-1.69000006, -0.699999988, 0.970000029]
     c: [-0.730000019, 0.430000007, 2.52999997]
     materialIndex: 0
+  - type: triangle
+    a: [-0.49000001, 2.61999989, 0.589999974]
+    b: [-1.69000006, -0.699999988, 0.970000029]
+    c: [-0.730000019, 0.430000007, 2.52999997]
+    materialIndex: 0
 materials:
   - albedo: [0.800000012, 0.800000012, 0.800000012]
+    emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1.38999999
     texture_id: 0
-    metallic_texture_id: -1
+    metallic_texture_id: 2
     normal_texture_id: 1
   - albedo: [0.689999998, 0.639999986, 0]
+    emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 3
     metallic_texture_id: 5
     normal_texture_id: 4
   - albedo: [0.800000012, 0.800000012, 0.300000012]
+    emissivity: [0, 0, 0]
     roughness: 0.150000006
     texture_coordinates_multiplier: 1
     texture_id: 6
     metallic_texture_id: 8
     normal_texture_id: 7
   - albedo: [0, 0.800000012, 0.800000012]
+    emissivity: [0, 0, 0]
     roughness: 0.300000012
     texture_coordinates_multiplier: 1
     texture_id: 9
     metallic_texture_id: 11
     normal_texture_id: 10
   - albedo: [0.800000012, 0, 0.800000012]
+    emissivity: [0, 0, 0]
     roughness: 0.899999976
     texture_coordinates_multiplier: 1
     texture_id: 12
     metallic_texture_id: 14
     normal_texture_id: 13
   - albedo: [0, 0, 0]
+    emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 15
     metallic_texture_id: 17
     normal_texture_id: 16
+  - albedo: [0, 0, 0]
+    emissivity: [1.89999998, 0, 0.479999989]
+    roughness: 1
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+  - albedo: [0, 0, 0]
+    emissivity: [0, 1.38999999, 1.57000005]
+    roughness: 1
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
 textures:
   - assets/grass/albedo.png
   - assets/grass/normal.png

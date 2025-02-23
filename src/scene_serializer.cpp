@@ -107,6 +107,7 @@ namespace raytracing
 
           Material material {};
           material.albedo = materialNode["albedo"].as<glm::vec3>();
+          material.emissivity = materialNode["emissivity"].as<glm::vec3>();
           material.roughness = materialNode["roughness"].as<float>();
           material.textureIndex = materialNode["texture_id"].as<int>();
           material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
@@ -212,6 +213,7 @@ namespace raytracing
       {
         out << YAML::BeginMap;
         out << YAML::Key << "albedo" << YAML::Value << rt::get()->mRender.mMaterials[i].albedo;
+        out << YAML::Key << "emissivity" << YAML::Value << rt::get()->mRender.mMaterials[i].emissivity;
         out << YAML::Key << "roughness" << YAML::Value << rt::get()->mRender.mMaterials[i].roughness;
         out << YAML::Key << "texture_coordinates_multiplier" << YAML::Value << rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier;
         out << YAML::Key << "texture_id" << YAML::Value << rt::get()->mRender.mMaterials[i].textureIndex;

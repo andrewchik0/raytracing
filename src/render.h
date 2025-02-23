@@ -31,8 +31,9 @@ namespace raytracing
 
   private:
     sf::Shader
-      mShader, mPostShader;
+      mShader, mPostShader, mBloomShader;
     sf::RectangleShape mRenderQuad;
+    sf::RenderTexture mBloomTexture;
     sf::RenderTexture mTexture;
 
     bool mUseFXAA = true;

@@ -116,10 +116,16 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           TBN * (texture(texArray, vec3(texCoords, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1) +
           float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
 
+        vec3 e = materials[hit.materialIndex].emissivity;
+        if (e.x + e.y + e.z != 0)
+        {
+          sampleColor = e;
+          break;
+        }
         if (sampleColor == vec3(0))
-          sampleColor = albedo + materials[hit.materialIndex].emissivity;
+          sampleColor = albedo + e;
         else
-          sampleColor = sampleColor * albedo + materials[hit.materialIndex].emissivity;
+          sampleColor = sampleColor * albedo + e;
 
         org = hit.position + normal * bias;
         normal = normalize(normal + rand3(dir + sampleCounter + i) * roughness);
