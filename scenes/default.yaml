@@ -7,82 +7,85 @@ camera:
   direction: [3.40025872e-06, -0.0466598831, 0.998712122]
 objects:
   - type: sphere
-    position: [0, 1, 0]
+    name: Sphere brick
+    position: [ 0, 1, 0 ]
     radius: 1
     materialIndex: 1
   - type: sphere
-    position: [2, 1, 0]
+    name: Sphere tiles
+    position: [ 2, 1, 0 ]
     radius: 1
     materialIndex: 2
   - type: sphere
-    position: [4, 1, 0]
+    name: Sphere ice
+    position: [ 4, 1, 0 ]
     radius: 1
     materialIndex: 3
   - type: sphere
-    position: [6, 1, 0]
+    name: Sphere gold
+    position: [ 6, 1, 0 ]
     radius: 1
     materialIndex: 4
   - type: sphere
-    position: [8, 1, 0]
+    name: Sphere tiles
+    position: [ 8, 1, 0 ]
     radius: 1
     materialIndex: 5
   - type: plane
-    normal: [0, 1, 0]
+    name: Plane
+    normal: [ 0, 1, 0 ]
     distance: 0
     materialIndex: 0
   - type: triangle
-    a: [-0.49000001, 2.61999989, 0.589999974]
-    b: [-1.69000006, -0.699999988, 0.970000029]
-    c: [-0.730000019, 0.430000007, 2.52999997]
-    materialIndex: 0
-  - type: triangle
-    a: [-0.49000001, 2.61999989, 0.589999974]
-    b: [-1.69000006, -0.699999988, 0.970000029]
-    c: [-0.730000019, 0.430000007, 2.52999997]
-    materialIndex: 0
-  - type: triangle
-    a: [-0.49000001, 2.61999989, 0.589999974]
-    b: [-1.69000006, -0.699999988, 0.970000029]
-    c: [-0.730000019, 0.430000007, 2.52999997]
+    name: Triangle
+    a: [ -0.49000001, 2.61999989, 0.589999974 ]
+    b: [ -1.69000006, -0.699999988, 0.970000029 ]
+    c: [ -0.730000019, 0.430000007, 2.52999997 ]
     materialIndex: 0
 materials:
-  - albedo: [0.800000012, 0.800000012, 0.800000012]
-    emissivity: [0, 0, 0]
+  - name: Plane material
+    albedo: [ 0.800000012, 0.800000012, 0.800000012 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0
     texture_coordinates_multiplier: 1.38999999
     texture_id: 0
     metallic_texture_id: 2
     normal_texture_id: 1
-  - albedo: [0.689999998, 0.639999986, 0]
-    emissivity: [0, 0, 0]
+  - name: Brick
+    albedo: [ 0.689999998, 0.639999986, 0 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 3
     metallic_texture_id: 5
     normal_texture_id: 4
-  - albedo: [0.800000012, 0.800000012, 0.300000012]
-    emissivity: [0, 0, 0]
+  - name: Tiles black
+    albedo: [ 0.800000012, 0.800000012, 0.300000012 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0.150000006
     texture_coordinates_multiplier: 1
     texture_id: 6
     metallic_texture_id: 8
     normal_texture_id: 7
-  - albedo: [0, 0.800000012, 0.800000012]
-    emissivity: [0, 0, 0]
+  - name: Ice
+    albedo: [ 0, 0.800000012, 0.800000012 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0.300000012
     texture_coordinates_multiplier: 1
     texture_id: 9
     metallic_texture_id: 11
     normal_texture_id: 10
-  - albedo: [0.800000012, 0, 0.800000012]
-    emissivity: [0, 0, 0]
+  - name: Gold
+    albedo: [ 0.800000012, 0, 0.800000012 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0.899999976
     texture_coordinates_multiplier: 1
     texture_id: 12
     metallic_texture_id: 14
     normal_texture_id: 13
-  - albedo: [0, 0, 0]
-    emissivity: [0, 0, 0]
+  - name: Tiles brown
+    albedo: [ 0, 0, 0 ]
+    emissivity: [ 0, 0, 0 ]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 15

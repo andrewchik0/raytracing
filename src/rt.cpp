@@ -19,12 +19,19 @@ namespace raytracing
     if (!std::filesystem::exists("shaders/main.frag"))
       return;
 
-    mWindowWidth = options.width;
-    mWindowHeight = options.height;
-
     NFD_Init();
 
-    mWindow = sf::RenderWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), options.title);
+    if (options.width == 0 || options.height == 0)
+    {
+      mWindowWidth = sf::VideoMode().getDesktopMode().size.x - 20;
+      mWindowHeight = sf::VideoMode().getDesktopMode().size.y - 160;
+    }
+    else
+    {
+      mWindowWidth = options.width;
+      mWindowHeight = options.height;
+    }
+    mWindow = sf::RenderWindow(sf::VideoMode({ mWindowWidth, mWindowHeight }), options.title);
 
     mGui.init();
     mRender.init();
@@ -77,6 +84,8 @@ namespace raytracing
         mClock.restart();
         loadingSprite.rotate(sf::degrees(mElapsedTime.asSeconds() * 200.0f));
         mWindow.draw(loadingSprite);
+        mGui.update();
+        ImGui::SFML::Render(mWindow);
         mWindow.display();
       }
     }
@@ -139,28 +148,32 @@ namespace raytracing
     mRender.resize(mWindowWidth, mWindowHeight);
   }
 
-  void rt::add_sphere(const SphereObject& object)
+  void rt::add_sphere(const std::string& name, const SphereObject& object)
   {
     if (mRender.mSpheresCount >= MAX_SPHERES)
       return;
+    mRender.mSpheresAdditional[mRender.mSpheresCount].name = name;
     mRender.mSpheres[mRender.mSpheresCount++] = object;
   }
-  void rt::add_plane(const PlaneObject& object)
+  void rt::add_plane(const std::string& name, const PlaneObject& object)
   {
     if (mRender.mPlanesCount >= MAX_PLANES)
       return;
+    mRender.mPlanesAdditional[mRender.mPlanesCount].name = name;
     mRender.mPlanes[mRender.mPlanesCount++] = object;
   }
-  void rt::add_material(const Material& material)
+  void rt::add_material(const std::string& name, const Material& material)
   {
     if (mRender.mMaterialsCount >= MAX_MATERIALS)
       return;
+    mRender.mMaterialsAdditional[mRender.mMaterialsCount].name = name;
     mRender.mMaterials[mRender.mMaterialsCount++] = material;
   }
-  void rt::add_triangle(const TriangleObject& object)
+  void rt::add_triangle(const std::string& name, const TriangleObject& object)
   {
     if (mRender.mTrianglesCount >= MAX_TRIANGLES)
       return;
+    mRender.mTrianglesAdditional[mRender.mTrianglesCount].name = name;
     mRender.mTriangles[mRender.mTrianglesCount++] = object;
   }
   void rt::delete_sphere(size_t index)

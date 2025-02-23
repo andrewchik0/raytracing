@@ -19,6 +19,11 @@ namespace raytracing
     file_not_found = 2,
   };
 
+  struct object_additional
+  {
+    std::string name;
+  };
+
   class render
   {
   public:
@@ -54,6 +59,12 @@ namespace raytracing
       mPlanesCount = 0,
       mTrianglesCount = 0,
       mMaterialsCount = 1;
+
+    // Additional data stored separately in order to easily pass object data to the shader
+    std::array<object_additional, MAX_SPHERES> mSpheresAdditional;
+    std::array<object_additional, MAX_PLANES> mPlanesAdditional;
+    std::array<object_additional, MAX_TRIANGLES> mTrianglesAdditional;
+    std::array<object_additional, MAX_MATERIALS> mMaterialsAdditional;
 
     uniform_buffer mSceneBuffer;
     textures mTextures;

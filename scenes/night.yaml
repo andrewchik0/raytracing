@@ -3,97 +3,114 @@ gamma: 1.03999996
 blur_radius: 15.3000002
 sky_filename: assets/night.hdr
 camera:
-  position: [7.79606724, 2.60448289, -4.80594826]
-  direction: [-0.460558295, -0.105889365, 0.881074846]
+  position: [7.45077896, 3.39637923, -4.94415903]
+  direction: [-0.396938145, -0.229166374, 0.888559043]
 objects:
   - type: sphere
+    name: Sphere brick
     position: [0, 1, 0]
     radius: 1
     materialIndex: 1
   - type: sphere
+    name: Sphere tiles
     position: [2, 1, 0]
     radius: 1
     materialIndex: 2
   - type: sphere
+    name: Sphere ice
     position: [4, 1, 0]
     radius: 1
     materialIndex: 3
   - type: sphere
+    name: Sphere gold
     position: [6, 1, 0]
     radius: 1
     materialIndex: 4
   - type: sphere
+    name: Sphere tiles
     position: [8, 1, 0]
     radius: 1
     materialIndex: 5
   - type: sphere
+    name: Glowing sphere pink
     position: [1.36000001, 6.05999994, 0]
     radius: 1.12
     materialIndex: 6
   - type: sphere
+    name: Glowing sphere blue
     position: [6.53000021, 4.4000001, 0]
     radius: 0.959999979
     materialIndex: 7
   - type: plane
+    name: Plane
     normal: [0, 1, 0]
     distance: 0
     materialIndex: 0
   - type: triangle
+    name: Triangle
     a: [-0.49000001, 2.61999989, 0.589999974]
     b: [-1.69000006, -0.699999988, 0.970000029]
     c: [-0.730000019, 0.430000007, 2.52999997]
     materialIndex: 0
 materials:
-  - albedo: [0.800000012, 0.800000012, 0.800000012]
+  - name: Plane material
+    albedo: [0.800000012, 0.800000012, 0.800000012]
     emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1.38999999
     texture_id: 0
     metallic_texture_id: 2
     normal_texture_id: 1
-  - albedo: [0.689999998, 0.639999986, 0]
+  - name: Brick
+    albedo: [0.689999998, 0.639999986, 0]
     emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 3
     metallic_texture_id: 5
     normal_texture_id: 4
-  - albedo: [0.800000012, 0.800000012, 0.300000012]
+  - name: Tiles black
+    albedo: [0.800000012, 0.800000012, 0.300000012]
     emissivity: [0, 0, 0]
     roughness: 0.150000006
     texture_coordinates_multiplier: 1
     texture_id: 6
     metallic_texture_id: 8
     normal_texture_id: 7
-  - albedo: [0, 0.800000012, 0.800000012]
+  - name: Ice
+    albedo: [0, 0.800000012, 0.800000012]
     emissivity: [0, 0, 0]
     roughness: 0.300000012
     texture_coordinates_multiplier: 1
     texture_id: 9
     metallic_texture_id: 11
     normal_texture_id: 10
-  - albedo: [0.800000012, 0, 0.800000012]
+  - name: Gold
+    albedo: [0.800000012, 0, 0.800000012]
     emissivity: [0, 0, 0]
     roughness: 0.899999976
     texture_coordinates_multiplier: 1
     texture_id: 12
     metallic_texture_id: 14
     normal_texture_id: 13
-  - albedo: [0, 0, 0]
+  - name: Tiles brown
+    albedo: [0, 0, 0]
     emissivity: [0, 0, 0]
     roughness: 0
     texture_coordinates_multiplier: 1
     texture_id: 15
     metallic_texture_id: 17
     normal_texture_id: 16
-  - albedo: [0, 0, 0]
+  - name: Emissive pink
+    albedo: [0, 0, 0]
     emissivity: [1.95000005, 0.100000001, 1.83000004]
     roughness: 1
     texture_coordinates_multiplier: 1
     texture_id: -1
     metallic_texture_id: -1
     normal_texture_id: -1
-  - albedo: [0, 0, 0]
+  - name: Emissive blue
+    albedo: [0, 0, 0]
     emissivity: [0.150000006, 1.5, 1.5]
     roughness: 1
     texture_coordinates_multiplier: 1

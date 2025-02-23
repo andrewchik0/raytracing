@@ -24,7 +24,8 @@ namespace raytracing
     }
     if (event->is<sf::Event::MouseButtonPressed>() && !io.WantCaptureMouse)
     {
-      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonPressed>()->button)] = true;
+      if (event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mGuiWidth)
+        mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonPressed>()->button)] = true;
     }
     if (event->is<sf::Event::MouseButtonReleased>() && !io.WantCaptureMouse)
     {

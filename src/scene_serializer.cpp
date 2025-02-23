@@ -46,6 +46,8 @@ namespace raytracing
 
   void scene_serializer::load(const std::filesystem::path& filename)
   {
+    rt::get()->mSceneFilename = filename.string();
+    rt::get()->mSceneFilename.resize(256, 0);
     YAML::Node scene = YAML::LoadFile(filename.string());
 
     {
@@ -67,7 +69,8 @@ namespace raytracing
         rt::get()->mRender.mTrianglesCount = 0;
 
         auto objects = scene["objects"].as<YAML::Node>();
-        for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it)
+        size_t i = 0;
+        for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it, ++i)
         {
           auto object = it->as<YAML::Node>();
           if (strcmp(object["type"].as<std::string>().c_str(), "sphere") == 0)
@@ -76,7 +79,9 @@ namespace raytracing
             sphere.center = object["position"].as<glm::vec3>();
             sphere.radius = object["radius"].as<float>();
             sphere.materialIndex = object["materialIndex"].as<int>();
-            rt::get()->add_sphere(sphere);
+            std::string name = "Sphere " + std::to_string(rt::get()->mRender.mSpheresCount + 1);
+            if (object["name"]) name = object["name"].as<std::string>();
+            rt::get()->add_sphere(name, sphere);
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "plane") == 0)
           {
@@ -84,7 +89,9 @@ namespace raytracing
             plane.normal = object["normal"].as<glm::vec3>();
             plane.distance = object["distance"].as<float>();
             plane.materialIndex = object["materialIndex"].as<int>();
-            rt::get()->add_plane(plane);
+            std::string name = "Plane " + std::to_string(rt::get()->mRender.mPlanesCount + 1);
+            if (object["name"]) name = object["name"].as<std::string>();
+            rt::get()->add_plane(name, plane);
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "triangle") == 0)
           {
@@ -93,7 +100,9 @@ namespace raytracing
             triangle.b = object["b"].as<glm::vec3>();
             triangle.c = object["c"].as<glm::vec3>();
             triangle.materialIndex = object["materialIndex"].as<int>();
-            rt::get()->add_triangle(triangle);
+            std::string name = "Triangle " + std::to_string(rt::get()->mRender.mTrianglesCount + 1);
+            if (object["name"]) name = object["name"].as<std::string>();
+            rt::get()->add_triangle(name, triangle);
           }
         }
       }
@@ -103,7 +112,8 @@ namespace raytracing
         rt::get()->mRender.mMaterialsCount = 0;
 
         auto materials = scene["materials"].as<YAML::Node>();
-        for(YAML::const_iterator it = materials.begin(); it != materials.end(); ++it)
+        size_t i = 0;
+        for(YAML::const_iterator it = materials.begin(); it != materials.end(); ++it, ++i)
         {
           auto materialNode = it->as<YAML::Node>();
 
@@ -115,7 +125,9 @@ namespace raytracing
           material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
           material.metallicTextureIndex = materialNode["metallic_texture_id"].as<int>();
           material.textureCoordinatesMultiplier = materialNode["texture_coordinates_multiplier"].as<float>();
-          rt::get()->add_material(material);
+          std::string name = "Material " + std::to_string(rt::get()->mRender.mMaterialsCount + 1);
+          if (materialNode["name"]) name = materialNode["name"].as<std::string>();
+          rt::get()->add_material(name, material);
         }
       }
 
@@ -137,8 +149,6 @@ namespace raytracing
 
   void scene_serializer::load()
   {
-    rt::get()->mLoading = true;
-    rt::get()->mLoaded = false;
     nfdu8char_t* outPath;
     const nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
     nfdopendialogu8args_t args = {0};
@@ -150,6 +160,8 @@ namespace raytracing
     if (result != NFD_OKAY)
       return;
 
+    rt::get()->mLoading = true;
+    rt::get()->mLoaded = false;
     load(outPath);
     NFD_FreePathU8(outPath);
   }
@@ -183,6 +195,7 @@ namespace raytracing
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "sphere";
+        out << YAML::Key << "name" << YAML::Value << rt::get()->mRender.mSpheresAdditional[i].name;
         out << YAML::Key << "position" << YAML::Value << rt::get()->mRender.mSpheres[i].center;
         out << YAML::Key << "radius" << YAML::Value << rt::get()->mRender.mSpheres[i].radius;
         out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mSpheres[i].materialIndex;
@@ -192,6 +205,7 @@ namespace raytracing
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "plane";
+        out << YAML::Key << "name" << YAML::Value << rt::get()->mRender.mPlanesAdditional[i].name;
         out << YAML::Key << "normal" << YAML::Value << rt::get()->mRender.mPlanes[i].normal;
         out << YAML::Key << "distance" << YAML::Value << rt::get()->mRender.mPlanes[i].distance;
         out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mPlanes[i].materialIndex;
@@ -201,6 +215,7 @@ namespace raytracing
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "triangle";
+        out << YAML::Key << "name" << YAML::Value << rt::get()->mRender.mTrianglesAdditional[i].name;
         out << YAML::Key << "a" << YAML::Value << rt::get()->mRender.mTriangles[i].a;
         out << YAML::Key << "b" << YAML::Value << rt::get()->mRender.mTriangles[i].b;
         out << YAML::Key << "c" << YAML::Value << rt::get()->mRender.mTriangles[i].c;
@@ -217,6 +232,7 @@ namespace raytracing
       for (size_t i = 0; i < rt::get()->mRender.mMaterialsCount; i++)
       {
         out << YAML::BeginMap;
+        out << YAML::Key << "name" << YAML::Value << rt::get()->mRender.mMaterialsAdditional[i].name;
         out << YAML::Key << "albedo" << YAML::Value << rt::get()->mRender.mMaterials[i].albedo;
         out << YAML::Key << "emissivity" << YAML::Value << rt::get()->mRender.mMaterials[i].emissivity;
         out << YAML::Key << "roughness" << YAML::Value << rt::get()->mRender.mMaterials[i].roughness;

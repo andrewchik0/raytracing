@@ -13,7 +13,7 @@ namespace raytracing
   {
     std::string title = "Ray Tracing";
     std::filesystem::path scene_filename;
-    uint32_t width = 800, height = 600;
+    uint32_t width = 0, height = 0;
   };
 
   class rt
@@ -25,10 +25,10 @@ namespace raytracing
     void init(const init_options& options);
     void run();
 
-    void add_sphere(const SphereObject& object);
-    void add_plane(const PlaneObject& object);
-    void add_material(const Material& material);
-    void add_triangle(const TriangleObject& object);
+    void add_sphere(const std::string& name, const SphereObject& object);
+    void add_plane(const std::string& name, const PlaneObject& object);
+    void add_triangle(const std::string& name, const TriangleObject& object);
+    void add_material(const std::string& name, const Material& material);
     void delete_sphere(size_t index);
     void delete_plane(size_t index);
     void delete_material(size_t index);
@@ -55,6 +55,8 @@ namespace raytracing
     render mRender {};
     imgui mGui;
     scene_serializer mSceneSerializer;
+
+    std::string mSceneFilename = "";
 
     std::string mSkyFilename;
 
