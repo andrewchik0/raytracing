@@ -73,6 +73,12 @@ struct Material
   = -1;
 #endif
   ;
+  vec3 emissivity
+#ifdef __cplusplus
+  = vec3(0);
+#endif
+  ;
+  float _;
 };
 
 #define SceneBufferStruct SceneBuffer      \

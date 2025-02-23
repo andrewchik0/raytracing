@@ -117,9 +117,9 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
 
         if (sampleColor == vec3(0))
-          sampleColor = albedo;
+          sampleColor = albedo + materials[hit.materialIndex].emissivity;
         else
-          sampleColor = sampleColor * albedo;
+          sampleColor = sampleColor * albedo + materials[hit.materialIndex].emissivity;
 
         org = hit.position + normal * bias;
         normal = normalize(normal + rand3(dir + sampleCounter + i) * roughness);

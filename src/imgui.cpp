@@ -249,6 +249,8 @@ namespace raytracing
         ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f");
         label = "Roughness###Roughness" + std::to_string(i);
         ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f");
+        label = "Emissivity###Emissivity" + std::to_string(i);
+        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].emissivity.x, 0.01f, 0.0f, 100.0f, "%.2f");
         label = "Texture ID###TextureID" + std::to_string(i);
         ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex);
         label = "Normal Texture ID###NormalTextureID" + std::to_string(i);

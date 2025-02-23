@@ -8,7 +8,7 @@ int main()
   options.width = 1200;
   options.height = 900;
   options.title = "Ray tracing app";
-  options.scene_filename = "scenes/default.yaml";
+  options.scene_filename = "scenes/night.yaml";
 
   app.init(options);
   app.run();
