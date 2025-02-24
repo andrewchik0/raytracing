@@ -34,34 +34,60 @@ namespace raytracing
 
   void render::clear()
   {
-    mTexture.clear();
+    mLastFrameTexture.clear();
+    mFinalTexture.clear();
     mBloomTexture.clear();
   }
 
   void render::draw(sf::RenderTarget* window)
   {
+    mAccumulatingFrameIndex++;
     set_uniforms();
     push_scene();
     mTextures.push();
 
-    mTexture.draw(mRenderQuad, &mShader);
-    mTexture.display();
+    // Main pass
+    mLastFrameTexture.draw(mRenderQuad, &mShader);
+    mLastFrameTexture.display();
 
-    mBloomShader.setUniform("renderedTexture", mTexture.getTexture());
+    // Gaussian blur pass
+    mBloomShader.setUniform("renderedTexture", mLastFrameTexture.getTexture());
     mBloomTexture.draw(mRenderQuad, &mBloomShader);
     mBloomTexture.display();
 
-    mPostShader.setUniform("renderedTexture", mTexture.getTexture());
+    // Post-processing pass
+    mPostShader.setUniform("renderedTexture", mLastFrameTexture.getTexture());
     mPostShader.setUniform("bloomTexture", mBloomTexture.getTexture());
-    window->draw(mRenderQuad, &mPostShader);
+    mPostProcessedTexture.draw(mRenderQuad, &mPostShader);
+    mPostProcessedTexture.display();
+
+    // Accumulation pass
+    mAccumulationShader.setUniform("lastFrameTexture", mPostProcessedTexture.getTexture());
+    mAccumulationShader.setUniform("accumulatedTexture", mAccumulatedTexture.getTexture());
+    mAccumulationShader.setUniform("frameIndex", mAccumulatingFrameIndex);
+    mFinalTexture.draw(mRenderQuad, &mAccumulationShader);
+    mFinalTexture.display();
+
+    // Store final buffer in accumulation buffer
+    mDummyShader.setUniform("frameTexture", mFinalTexture.getTexture());
+    mAccumulatedTexture.draw(mRenderQuad, &mDummyShader);
+    mAccumulatedTexture.display();
+
+    // Draw final result on window
+    window->draw(mRenderQuad, &mDummyShader);
   }
 
 
   void render::resize(uint32_t width, uint32_t height)
   {
-    if (!mTexture.resize({ width, height}))
-      return;
-    if (!mBloomTexture.resize({ width, height}))
+    auto result =
+      mLastFrameTexture.resize({ width, height}) &&
+      mBloomTexture.resize({ width, height}) &&
+      mPostProcessedTexture.resize({ width, height}) &&
+      mAccumulatedTexture.resize({ width, height}) &&
+      mFinalTexture.resize({ width, height}) &&
+      mBloomTexture.resize({ width, height});
+    if (!result)
       return;
     mShader.setUniform("halfHeight", rt::get()->mCamera.mHalfHeight);
     mShader.setUniform("halfWidth", rt::get()->mCamera.mHalfWidth);
@@ -85,6 +111,11 @@ namespace raytracing
     buffer.spheresCount = mSpheresCount;
     buffer.trianglesCount = mTrianglesCount;
     mSceneBuffer.set(&buffer);
+  }
+
+  void render::reset_accumulation()
+  {
+    mAccumulatingFrameIndex = 0;
   }
 
   std::string render::read_shader_file(const std::string& path)
@@ -149,6 +180,8 @@ namespace raytracing
     load_shader(&mShader, "./shaders/quad.vert", "./shaders/main.frag");
     load_shader(&mPostShader, "./shaders/quad.vert", "./shaders/post.frag");
     load_shader(&mBloomShader, "./shaders/quad.vert", "./shaders/bloom.frag");
+    load_shader(&mAccumulationShader, "./shaders/quad.vert", "./shaders/accumulation.frag");
+    load_shader(&mDummyShader, "./shaders/quad.vert", "./shaders/empty.frag");
 
     return status::success;
   }

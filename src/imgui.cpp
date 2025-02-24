@@ -9,6 +9,13 @@
 
 namespace raytracing
 {
+  bool imgui::check(bool value)
+  {
+    if (value)
+      rt::get()->mRender.reset_accumulation();
+    return value;
+  }
+
   bool imgui::init()
   {
     bool result = ImGui::SFML::Init(rt::get()->mWindow);
@@ -89,15 +96,15 @@ namespace raytracing
     }
 
     ImGui::Separator();
-    ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA);
+    check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
     static bool vSync = false;
-    if (ImGui::Checkbox("V-Sync", &vSync))
+    if (check(ImGui::Checkbox("V-Sync", &vSync)))
       rt::get()->mWindow.setVerticalSyncEnabled(vSync);
     int min = 1;
-    ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &min);
-    ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &min);
+    check(ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &min));
+    check(ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &min));
     ImGui::Separator();
-    if (ImGui::Button("Reload shaders"))
+    if (check(ImGui::Button("Reload shaders")))
     {
       rt::get()->mRender.load_shaders();
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
@@ -105,7 +112,7 @@ namespace raytracing
 
     ImGui::Separator();
     ImGui::Text("Objects per node in volume hierarchy:");
-    if (ImGui::DragScalar("###ObjectsPerNodeInVolumeHierarchy", ImGuiDataType_U32,  &rt::get()->mRender.mBoundingVolumeBuilder.mObjectPerNode))
+    if (check(ImGui::DragScalar("###ObjectsPerNodeInVolumeHierarchy", ImGuiDataType_U32,  &rt::get()->mRender.mBoundingVolumeBuilder.mObjectPerNode)))
       rt::get()->mRender.mBoundingVolumeBuilder.build();
 
     ImVec2 windowSize = ImGui::GetWindowSize();
@@ -139,12 +146,12 @@ namespace raytracing
     if (ImGui::TreeNode("Camera options"))
     {
       pop_font();
-      ImGui::DragFloat3("Camera position", &rt::get()->mCamera.mPosition.x, 0.01, 0, 0, "%.2f");
-      ImGui::DragFloat3("Camera direction", &rt::get()->mCamera.mDirection.x, 0.01, -1.0, 1.0, "%.2f");
+      check(ImGui::DragFloat3("Camera position", &rt::get()->mCamera.mPosition.x, 0.01, 0, 0, "%.2f"));
+      check(ImGui::DragFloat3("Camera direction", &rt::get()->mCamera.mDirection.x, 0.01, -1.0, 1.0, "%.2f"));
       rt::get()->mCamera.mDirection = normalize(rt::get()->mCamera.mDirection);
-      ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f");
-      ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f");
-      ImGui::DragFloat("Blur size", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f");
+      check(ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f"));
+      check(ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f"));
+      check(ImGui::DragFloat("Blur size", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f"));
       ImGui::TreePop();
     }
     else
@@ -192,13 +199,13 @@ namespace raytracing
         label = "Name###SphereName" + std::to_string(i);
         ImGui::InputText(label.c_str(), &rt::get()->mRender.mSpheresAdditional[i].name);
         label = "Position###SpherePosition" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f");
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f"));
         label = "Radius###SphereRadius" + std::to_string(i);
-        ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f");
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f"));
         label = "Material ID##SphereMaterialID" + std::to_string(i);
-        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mSpheres[i].materialIndex);
+        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mSpheres[i].materialIndex));
         label = "Delete###SphereDelete" + std::to_string(i);
-        if (ImGui::Button(label.c_str()))
+        if (check(ImGui::Button(label.c_str())))
           rt::get()->delete_sphere(i);
         ImGui::TreePop();
       }
@@ -211,13 +218,13 @@ namespace raytracing
         label = "Name###PlaneName" + std::to_string(i);
         ImGui::InputText(label.c_str(), &rt::get()->mRender.mPlanesAdditional[i].name);
         label = "Normal###PlaneNormal" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f");
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f"));
         label = "Distance###PlaneDistance" + std::to_string(i);
-        ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, -100.0f, 100.0f, "%.2f");
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, -100.0f, 100.0f, "%.2f"));
         label = "Material ID##PlaneMaterialID" + std::to_string(i);
-        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mPlanes[i].materialIndex);
+        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mPlanes[i].materialIndex));
         label = "Delete###PlaneDelete" + std::to_string(i);
-        if (ImGui::Button(label.c_str()))
+        if (check(ImGui::Button(label.c_str())))
           rt::get()->delete_plane(i);
         ImGui::TreePop();
       }
@@ -298,6 +305,7 @@ namespace raytracing
         rt::get()->add_plane("Plane", plane);
 
       currentItem = nullptr;
+      check(true);
     }
     ImGui::End();
   }
@@ -314,20 +322,20 @@ namespace raytracing
         label = "Name###MaterialName" + std::to_string(i);
         ImGui::InputText(label.c_str(), &rt::get()->mRender.mMaterialsAdditional[i].name);
         label = "Albedo###Albedo" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f");
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Roughness###Roughness" + std::to_string(i);
-        ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f");
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Emissivity###Emissivity" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].emissivity.x, 0.01f, 0.0f, 100.0f, "%.2f");
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].emissivity.x, 0.01f, 0.0f, 100.0f, "%.2f"));
         label = "Texture ID###TextureID" + std::to_string(i);
-        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex);
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex));
         label = "Normal Texture ID###NormalTextureID" + std::to_string(i);
-        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].normalTextureIndex);
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].normalTextureIndex));
         label = "Metallic Texture ID###MetallicTextureID" + std::to_string(i);
-        ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].metallicTextureIndex);
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].metallicTextureIndex));
         label = "Texture Coordinates Multiplier###TextureCoordinatesMultiplier" + std::to_string(i);
-        ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f,
-                         100.0f, "%.2f");
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f,
+                         100.0f, "%.2f"));
         label = "Delete###MaterialDelete" + std::to_string(i);
         if (ImGui::Button(label.c_str()))
           rt::get()->delete_material(i);

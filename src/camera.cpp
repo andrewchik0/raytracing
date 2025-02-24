@@ -44,6 +44,18 @@ namespace raytracing
   {
     float speed = 2.0f * deltaTime;
 
+    if (
+      input::key(sf::Keyboard::Key::Space) |
+      input::key(sf::Keyboard::Key::LShift) |
+      input::key(sf::Keyboard::Key::W) |
+      input::key(sf::Keyboard::Key::A) |
+      input::key(sf::Keyboard::Key::S) |
+      input::key(sf::Keyboard::Key::D) |
+      input::key(sf::Keyboard::Key::R))
+    {
+      rt::get()->mRender.reset_accumulation();
+    }
+
     move_up(input::key(sf::Keyboard::Key::Space) * speed);
     move_down(input::key(sf::Keyboard::Key::LShift) * speed);
     move_forward(input::key(sf::Keyboard::Key::W) * speed);
@@ -57,6 +69,9 @@ namespace raytracing
       rt::get()->mWindow.setMouseCursor(cursor);
       float yaw = rt::get()->mInput.mMouseDeltaX / 200.0;
       float pitch = rt::get()->mInput.mMouseDeltaY / 200.0;
+
+      if (rt::get()->mInput.mMouseDeltaX || rt::get()->mInput.mMouseDeltaY)
+        rt::get()->mRender.reset_accumulation();
 
       glm::mat4 rotateX = glm::rotate(glm::mat4(1.0), -yaw, glm::vec3(0, 1, 0));
       glm::mat4 rotateY = glm::rotate(glm::mat4(1.0), pitch, glm::cross(glm::vec3(0, 1, 0), mDirection));

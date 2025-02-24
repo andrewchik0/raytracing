@@ -29,6 +29,8 @@ namespace raytracing
     void push_font(float scale);
     void pop_font();
 
+    bool check(bool value);
+
     bool mAddItemOpened = false;
 
     void SetupImGuiStyle( bool bStyleDark_, float alpha_  )

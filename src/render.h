@@ -34,12 +34,24 @@ namespace raytracing
 
     void push_scene();
 
+    void reset_accumulation();
+
   private:
-    sf::Shader
-      mShader, mPostShader, mBloomShader;
     sf::RectangleShape mRenderQuad;
-    sf::RenderTexture mBloomTexture;
-    sf::RenderTexture mTexture;
+    sf::Shader
+      mShader,
+      mPostShader,
+      mBloomShader,
+      mAccumulationShader,
+      mDummyShader;
+    sf::RenderTexture
+      mLastFrameTexture,
+      mBloomTexture,
+      mPostProcessedTexture,
+      mAccumulatedTexture,
+      mFinalTexture;
+
+    int32_t mAccumulatingFrameIndex = 0;
 
     bool mUseFXAA = true;
     uint32_t mSamplesCount = 1;

@@ -46,6 +46,7 @@ namespace raytracing
 
   void scene_serializer::load(const std::filesystem::path& filename)
   {
+    rt::get()->mRender.reset_accumulation();
     rt::get()->mSceneFilename = filename.string();
     rt::get()->mSceneFilename.resize(256, 0);
     YAML::Node scene = YAML::LoadFile(filename.string());
@@ -67,6 +68,8 @@ namespace raytracing
         rt::get()->mRender.mSpheresCount = 0;
         rt::get()->mRender.mPlanesCount = 0;
         rt::get()->mRender.mTrianglesCount = 0;
+        rt::get()->mRender.mBoundingVolumes.fill(BoundingVolume());
+        rt::get()->mRender.mBoundingVolumesCount = 0;
 
         auto objects = scene["objects"].as<YAML::Node>();
         size_t i = 0;
@@ -157,6 +160,7 @@ namespace raytracing
     rt::get()->mLoaded = false;
     load(outPath);
     NFD_FreePathU8(outPath);
+    rt::get()->mRender.mBoundingVolumeBuilder.build();
   }
 
   void scene_serializer::save(const std::filesystem::path& filename)
