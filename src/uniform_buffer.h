@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-#include <cstdio>
+
+#include "pch.h"
 
 namespace raytracing
 {

@@ -11,12 +11,10 @@ using ivec4 = glm::ivec4;
 
 #define FAR_PLANE 1e12
 
-#define SCENE_BINDING 1
-
 #define UNDEFINED_OBJECT 0
 
-#define MAX_SPHERES 32
 #define SPHERE_OBJECT 1
+#define MAX_SPHERES 32
 struct SphereObject
 {
   vec3 center;
@@ -25,8 +23,8 @@ struct SphereObject
   uint materialIndex;
 };
 
-#define MAX_PLANES 6
 #define PLANE_OBJECT 2
+#define MAX_PLANES 6
 struct PlaneObject
 {
   vec3 normal;
@@ -35,8 +33,8 @@ struct PlaneObject
   uint materialIndex;
 };
 
-#define MAX_TRIANGLES 1024
 #define TRIANGLE_OBJECT 3
+#define MAX_TRIANGLES 1024
 struct TriangleObject
 {
   ivec4 indices;
@@ -102,6 +100,7 @@ struct BoundingVolume
   ivec4 triangleCountTrianglesStart;
 };
 
+#define SCENE_BINDING 1
 #define SceneBufferStruct SceneBuffer           \
 {                                               \
   SphereObject spheres[MAX_SPHERES];            \
@@ -116,3 +115,26 @@ struct BoundingVolume
   uint planesCount;                             \
 }
 
+#define GLOBAL_DATA_BINDING 2
+#define GlobalDataStruct GlobalData \
+{                                   \
+  vec3 cameraPosition;              \
+  float halfHeight;                 \
+  vec3 cameraDirection;             \
+  float halfWidth;                  \
+  vec3 cameraRight;                 \
+  float time;                       \
+  vec3 cameraUp;                    \
+  int samples;                      \
+  vec2 windowSize;                  \
+  int bounces;                      \
+  bool useFXAA;                     \
+  float gamma;                      \
+  float exposure;                   \
+  float blurSize;                   \
+}
+
+#ifdef __cplusplus
+struct SceneBufferStruct;
+struct GlobalDataStruct;
+#endif

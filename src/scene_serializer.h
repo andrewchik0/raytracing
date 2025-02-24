@@ -1,6 +1,6 @@
 #pragma once
-#include <filesystem>
-#include <glm/vec3.hpp>
+
+#include "pch.h"
 
 namespace YAML
 {

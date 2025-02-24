@@ -4,21 +4,12 @@
 #include "model.h"
 #include "textures.h"
 #include "uniform_buffer.h"
-
-#include <set>
+#include "shader.h"
 
 #include <SFML/Graphics.hpp>
 
-
 namespace raytracing
 {
-  enum class status
-  {
-    success = 0,
-    error = 1,
-    file_not_found = 2,
-  };
-
   struct object_additional
   {
     std::string name;
@@ -38,7 +29,7 @@ namespace raytracing
 
   private:
     sf::RectangleShape mRenderQuad;
-    sf::Shader
+    shader
       mShader,
       mPostShader,
       mBloomShader,
@@ -82,18 +73,13 @@ namespace raytracing
     std::array<object_additional, MAX_TRIANGLES> mTrianglesAdditional;
     std::array<object_additional, MAX_MATERIALS> mMaterialsAdditional;
 
-    uniform_buffer mSceneBuffer;
+    uniform_buffer mSceneBuffer, mGlobalDataBuffer;
     textures mTextures;
     bounding_volume_builder mBoundingVolumeBuilder;
 
     void set_uniforms();
 
     status load_shaders();
-
-    static status load_shader(sf::Shader* shader, const std::string& vertexPath, const std::string& fragmentPath);
-
-    static std::string read_shader_file(const std::string& path);
-    static std::string parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles);
 
     friend class rt;
     friend class imgui;

@@ -1,7 +1,8 @@
 #pragma once
 
+#include "pch.h"
+
 #include <SFML/Graphics/Texture.hpp>
-#include <cstdint>
 
 namespace raytracing
 {

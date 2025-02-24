@@ -1,7 +1,6 @@
 #pragma once
-#include <filesystem>
 
-#include <glm/glm.hpp>
+#include "pch.h"
 
 #include "../shaders/uniforms.h"
 

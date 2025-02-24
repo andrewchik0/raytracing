@@ -1,15 +1,11 @@
 #include "render.h"
 
-#include <fstream>
-#include <iostream>
 #include <GL/glew.h>
 
 #include "rt.h"
 
 namespace raytracing
 {
-  typedef struct SceneBufferStruct SceneBuffer;
-
   sf::Glsl::Vec3 glm_to_sfml(glm::vec3 v)
   {
     return { v.x, v.y, v.z };
@@ -30,6 +26,8 @@ namespace raytracing
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Red);
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
+    mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.getNativeHandle());
+    mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.getNativeHandle());
   }
 
   void render::clear()
@@ -89,9 +87,7 @@ namespace raytracing
       mBloomTexture.resize({ width, height});
     if (!result)
       return;
-    mShader.setUniform("halfHeight", rt::get()->mCamera.mHalfHeight);
-    mShader.setUniform("halfWidth", rt::get()->mCamera.mHalfWidth);
-    mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
+    reset_accumulation();
   }
 
   void render::push_scene()
@@ -118,58 +114,6 @@ namespace raytracing
     mAccumulatingFrameIndex = 0;
   }
 
-  std::string render::read_shader_file(const std::string& path)
-  {
-    std::ifstream file(path);
-
-    if (!file.is_open())
-      std::cerr << "Failed to open file: " << path << '\n';
-
-    std::string content((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
-
-    return content;
-  }
-
-  std::string render::parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles)
-  {
-    std::filesystem::path fpath(path);
-    std::string text = read_shader_file(path);
-    std::string result;
-    size_t pos = 0;
-
-    for (auto it = text.begin(); it < text.end(); ++it)
-    {
-      if (text.size() > pos + 18 && *it == '#' && std::string(it + 1, it + 18) == "ifdef __cplusplus")
-      {
-        while (*it != '#' || std::string(it + 1, it + 6) != "endif")
-          ++it, pos++;
-        it += 6, pos += 6;
-      }
-
-      if (*it == '#' && std::string(it + 1, it + 8) == "include")
-      {
-        it += 8, pos += 8;
-        while(*it++ != '\"') pos++;
-        auto start = it;
-        while(*it++ != '\"') pos++;
-        auto end = it - 1;
-
-        auto filename =
-          fpath.parent_path().string() +
-          '/' +
-          std::string(start, end);
-
-        if (includedFiles.find(filename) == includedFiles.end())
-        {
-          includedFiles.insert(filename);
-          result += parse_shader_from_file(filename, includedFiles);
-        }
-      }
-      result += *it;
-    }
-    return result;
-  }
-
   status render::load_shaders()
   {
     if (!sf::Shader::isAvailable())
@@ -177,43 +121,32 @@ namespace raytracing
       return status::error;
     }
 
-    load_shader(&mShader, "./shaders/quad.vert", "./shaders/main.frag");
-    load_shader(&mPostShader, "./shaders/quad.vert", "./shaders/post.frag");
-    load_shader(&mBloomShader, "./shaders/quad.vert", "./shaders/bloom.frag");
-    load_shader(&mAccumulationShader, "./shaders/quad.vert", "./shaders/accumulation.frag");
-    load_shader(&mDummyShader, "./shaders/quad.vert", "./shaders/empty.frag");
+    mShader.load("./shaders/quad.vert", "./shaders/main.frag");
+    mPostShader.load("./shaders/quad.vert", "./shaders/post.frag");
+    mBloomShader.load("./shaders/quad.vert", "./shaders/bloom.frag");
+    mAccumulationShader.load("./shaders/quad.vert", "./shaders/accumulation.frag");
+    mDummyShader.load("./shaders/quad.vert", "./shaders/empty.frag");
 
     return status::success;
   }
-
-  status render::load_shader(sf::Shader* shader, const std::string& vertexPath, const std::string& fragmentPath)
-  {
-    auto
-     vertexIncluded = std::set<std::string>(),
-     fragmentIncluded = std::set<std::string>();
-    auto vertex = parse_shader_from_file(vertexPath, vertexIncluded);
-    auto fragment = parse_shader_from_file(fragmentPath, fragmentIncluded);
-
-    if (!shader->loadFromMemory(vertex, fragment))
-      return status::error;
-
-    return status::success;
-  }
-
 
   void render::set_uniforms()
   {
-    mLightDirection = glm::normalize(mLightDirection);
-    mShader.setUniform("cameraPosition", glm_to_sfml(rt::get()->mCamera.mPosition));
-    mShader.setUniform("cameraDirection", glm_to_sfml(rt::get()->mCamera.mDirection));
-    mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));
-    mShader.setUniform("cameraUp", glm_to_sfml(rt::get()->mCamera.mUp));
-    mShader.setUniform("time", rt::get()->mTime);
-    mShader.setUniform("samples", static_cast<int>(mSamplesCount));
-    mShader.setUniform("bounces", static_cast<int>(mBouncesCount));
-    mPostShader.setUniform("useFXAA", mUseFXAA);
-    mPostShader.setUniform("gamma", mGamma);
-    mPostShader.setUniform("exposure", mExposure);
-    mPostShader.setUniform("blurSize", mBlurSize);
+    GlobalData data;
+    data.cameraDirection = rt::get()->mCamera.mDirection;
+    data.cameraPosition = rt::get()->mCamera.mPosition;
+    data.cameraUp = rt::get()->mCamera.mUp;
+    data.cameraRight = rt::get()->mCamera.mRight;
+    data.time = rt::get()->mTime;
+    data.samples = mSamplesCount;
+    data.bounces = mBouncesCount;
+    data.halfHeight = rt::get()->mCamera.mHalfHeight;
+    data.halfWidth = rt::get()->mCamera.mHalfWidth;
+    data.useFXAA = mUseFXAA;
+    data.gamma = mGamma;
+    data.exposure = mExposure;
+    data.blurSize = mBlurSize;
+    data.windowSize = { rt::get()->mWindowWidth, rt::get()->mWindowHeight };
+    mGlobalDataBuffer.set(&data);
   }
 }

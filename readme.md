@@ -2,8 +2,15 @@
 
 ### Getting Started
 
-- Clone repository `git clone --recursive https://github.com/andrewchik0/raytracing.git`
-- Build via CMake
-- Run `run-ray-tracing` target
+1. Clone repository `git clone --recursive https://github.com/andrewchik0/raytracing.git`
+2. Build via CMake
+3. **CLion**:
+   - Set working directory in **Run | Edit Configurations**
+4. **VS Code**:
+   - Add this in `.vscode/launch.json` 
+   ```json
+   "cwd": "${workspaceFolder}"
+   ```
+5. Run `main` target
 
 ![Rendered image](./screenshot.png)

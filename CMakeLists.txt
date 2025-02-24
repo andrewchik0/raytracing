@@ -65,7 +65,11 @@ add_executable(main
   src/model.cpp
   src/model.h
   src/bounding_volume_builder.cpp
-  src/bounding_volume_builder.h)
+  src/bounding_volume_builder.h
+  src/shader.cpp
+  src/shader.h
+  src/pch.h)
+target_precompile_headers(main PUBLIC src/pch.h)
 target_compile_features(main PRIVATE cxx_std_20)
 
 add_subdirectory(third_party/glm)
@@ -88,11 +92,3 @@ target_link_libraries(main PUBLIC
   nfd
   assimp
 )
-
-add_custom_target(
-  run-ray-tracing
-  COMMAND main
-  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-  VERBATIM
-)
-add_dependencies(run-ray-tracing main)

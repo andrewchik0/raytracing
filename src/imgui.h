@@ -1,7 +1,8 @@
 #pragma once
-#include <cstdint>
+
+#include "pch.h"
+
 #include <imgui.h>
-#include <string>
 
 namespace raytracing
 {
