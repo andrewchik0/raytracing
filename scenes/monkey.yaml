@@ -1,0 +1,36 @@
+exposure: 5.96000004
+gamma: 0.860000014
+blur_radius: 0
+sky_filename: assets/sky.hdr
+camera:
+  position: [1.75998688, 0.858130753, 2.13128805]
+  direction: [-0.649915993, -0.377010763, -0.659903109]
+objects:
+  - type: plane
+    name: Plane
+    normal: [0, 1, 0]
+    distance: 1.30999994
+    materialIndex: 0
+  - type: model
+    filename: assets/monkey.obj
+materials:
+  - name: Plane material
+    albedo: [0.800000012, 0.800000012, 0.800000012]
+    emissivity: [0, 0, 0]
+    roughness: 0
+    texture_coordinates_multiplier: 1.38999999
+    texture_id: 0
+    metallic_texture_id: 2
+    normal_texture_id: 1
+  - name: Monkey
+    albedo: [0.5, 0.25999999, 0.100000001]
+    emissivity: [0, 0, 0]
+    roughness: 1
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+textures:
+  - assets/grass/albedo.png
+  - assets/grass/normal.png
+  - assets/grass/metallic.png

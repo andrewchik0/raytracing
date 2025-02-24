@@ -1,14 +1,14 @@
 #pragma once
 
+#include "bounding_volume_builder.h"
+#include "model.h"
 #include "textures.h"
-
+#include "uniform_buffer.h"
 
 #include <set>
 
 #include <SFML/Graphics.hpp>
 
-#include "uniform_buffer.h"
-#include "../shaders/uniforms.h"
 
 namespace raytracing
 {
@@ -42,8 +42,8 @@ namespace raytracing
     sf::RenderTexture mTexture;
 
     bool mUseFXAA = true;
-    uint32_t mSamplesCount = 8;
-    uint32_t mBouncesCount = 5;
+    uint32_t mSamplesCount = 1;
+    uint32_t mBouncesCount = 2;
     glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
 
     float mGamma = 1.0;
@@ -53,12 +53,16 @@ namespace raytracing
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
     std::array<TriangleObject, MAX_TRIANGLES> mTriangles;
+    std::array<Vertex, MAX_VERTICES> mVertices;
     std::array<Material, MAX_MATERIALS> mMaterials;
+    std::array<BoundingVolume, MAX_BOUNDING_VOLUMES> mBoundingVolumes;
     size_t
       mSpheresCount = 0,
       mPlanesCount = 0,
       mTrianglesCount = 0,
-      mMaterialsCount = 1;
+      mBoundingVolumesCount = 0,
+      mVertexCount = 0,
+      mMaterialsCount = 0;
 
     // Additional data stored separately in order to easily pass object data to the shader
     std::array<object_additional, MAX_SPHERES> mSpheresAdditional;
@@ -68,6 +72,7 @@ namespace raytracing
 
     uniform_buffer mSceneBuffer;
     textures mTextures;
+    bounding_volume_builder mBoundingVolumeBuilder;
 
     void set_uniforms();
 
@@ -82,5 +87,6 @@ namespace raytracing
     friend class imgui;
     friend class scene_serializer;
     friend class textures;
+    friend class bounding_volume_builder;
   };
 }

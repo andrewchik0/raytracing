@@ -6,7 +6,7 @@ int main()
   raytracing::rt app;
 
   options.title = "Ray tracing app";
-  options.scene_filename = "scenes/night.yaml";
+  options.scene_filename = "scenes/monkey.yaml";
 
   app.init(options);
   app.run();

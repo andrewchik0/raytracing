@@ -2,49 +2,25 @@ float rayTriangleIntersect(vec3 orig, vec3 dir, vec3 vert0, vec3 vert1, vec3 ver
 {
   vec3 edge1 = vert1 - vert0;
   vec3 edge2 = vert2 - vert0;
-  vec3 baryPosition;
+  vec3 pvec = cross(dir, edge2);
+  float det = dot(edge1, pvec);
 
-  vec3 p = cross(dir, edge2);
-  float det = dot(edge1, p);
-  vec3 Perpendicular = vec3(0);
+  if (abs(det) < 1e-6) return FAR_PLANE;
 
-  if (det > 0)
-  {
-    vec3 dist = orig - vert0;
+  float invDet = 1.0 / det;
+  vec3 tvec = orig - vert0;
+  float u = dot(tvec, pvec) * invDet;
 
-    baryPosition.x = dot(dist, p);
-    if (baryPosition.x < 0 || baryPosition.x > det)
-      return FAR_PLANE;
+  if (u < 0.0 || u > 1.0) return FAR_PLANE;
 
-    Perpendicular = cross(dist, edge1);
+  vec3 qvec = cross(tvec, edge1);
+  float v = dot(dir, qvec) * invDet;
 
-    baryPosition.y = dot(dir, Perpendicular);
-    if((baryPosition.y < 0) || ((baryPosition.x + baryPosition.y) > det))
-      return FAR_PLANE;
-  }
-  else if(det < 0)
-  {
-    vec3 dist = orig - vert0;
+  if (v < 0.0 || u + v > 1.0) return FAR_PLANE;
 
-    baryPosition.x = dot(dist, p);
-    if((baryPosition.x > 0) || (baryPosition.x < det))
-      return FAR_PLANE;
+  float t = dot(edge2, qvec) * invDet;
 
-    Perpendicular = cross(dist, edge1);
-
-    baryPosition.y = dot(dir, Perpendicular);
-    if((baryPosition.y > 0) || (baryPosition.x + baryPosition.y < det))
-      return FAR_PLANE;
-  }
-  else
-    return FAR_PLANE;
-
-  float inv_det = 1 / det;
-
-  float distance = dot(edge2, Perpendicular) * inv_det;
-  baryPosition *= inv_det;
-
-  return distance;
+  return (t > 1e-6) ? t : FAR_PLANE;
 }
 
 float raySphereIntersect(vec3 r0, vec3 rd, vec3 s0, float sr)
@@ -74,3 +50,16 @@ float rayPlaneIntersect(vec3 r0, vec3 rd, vec3 n, float d) {
 
   return t;
 }
+
+float rayAABBIntersect(vec3 rayOrigin, vec3 rayDirInv, vec3 boxMin, vec3 boxMax)
+{
+  vec3 tbot = rayDirInv * (boxMin - rayOrigin);
+  vec3 ttop = rayDirInv * (boxMax - rayOrigin);
+  vec3 tmin = min(ttop, tbot);
+  vec3 tmax = max(ttop, tbot);
+  vec2 t = max(tmin.xx, tmin.yz);
+  float t0 = max(t.x, t.y);
+  t = min(tmax.xx, tmax.yz);
+  float t1 = min(t.x, t.y);
+  return t1 > max(t0, 0.0) ? t0 : FAR_PLANE;
+};

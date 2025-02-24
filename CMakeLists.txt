@@ -61,14 +61,33 @@ add_executable(main
   src/scene_serializer.cpp
   src/scene_serializer.h
   src/textures.cpp
-  src/textures.h)
+  src/textures.h
+  src/model.cpp
+  src/model.h
+  src/bounding_volume_builder.cpp
+  src/bounding_volume_builder.h)
 target_compile_features(main PRIVATE cxx_std_20)
 
 add_subdirectory(third_party/glm)
+add_subdirectory(third_party/assimp)
 add_subdirectory(third_party/nativefiledialog-extended)
-target_include_directories(main PUBLIC third_party/glm/ third_party/nativefiledialog-extended/src/include third_party/stb ${OPENGL_INCLUDE_DIRS})
+target_include_directories(main PUBLIC
+  third_party/glm/
+  third_party/nativefiledialog-extended/src/include
+  third_party/stb
+  third_party/assimp/include
+  ${OPENGL_INCLUDE_DIRS}
+)
 
-target_link_libraries(main PUBLIC SFML::Graphics ImGui-SFML::ImGui-SFML OpenGL::GL libglew_static yaml-cpp::yaml-cpp nfd)
+target_link_libraries(main PUBLIC
+  SFML::Graphics
+  ImGui-SFML::ImGui-SFML
+  OpenGL::GL
+  libglew_static
+  yaml-cpp::yaml-cpp
+  nfd
+  assimp
+)
 
 add_custom_target(
   run-ray-tracing

@@ -25,14 +25,14 @@ namespace raytracing
     void init(const init_options& options);
     void run();
 
+    void add_model(const std::string& filename);
+
     void add_sphere(const std::string& name, const SphereObject& object);
     void add_plane(const std::string& name, const PlaneObject& object);
-    void add_triangle(const std::string& name, const TriangleObject& object);
     void add_material(const std::string& name, const Material& material);
     void delete_sphere(size_t index);
     void delete_plane(size_t index);
     void delete_material(size_t index);
-    void delete_triangle(size_t index);
 
     void render_to_image(const std::string& image_path);
 
@@ -57,6 +57,7 @@ namespace raytracing
     scene_serializer mSceneSerializer;
 
     std::string mSceneFilename = "";
+    std::vector<std::string> mModelNames;
 
     std::string mSkyFilename;
 
@@ -72,5 +73,6 @@ namespace raytracing
     friend class scene_serializer;
     friend class skybox;
     friend class textures;
+    friend class bounding_volume_builder;
   };
 } // namespace raytracing

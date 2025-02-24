@@ -93,16 +93,9 @@ namespace raytracing
             if (object["name"]) name = object["name"].as<std::string>();
             rt::get()->add_plane(name, plane);
           }
-          if (strcmp(object["type"].as<std::string>().c_str(), "triangle") == 0)
+          if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0)
           {
-            TriangleObject triangle {};
-            triangle.a = object["a"].as<glm::vec3>();
-            triangle.b = object["b"].as<glm::vec3>();
-            triangle.c = object["c"].as<glm::vec3>();
-            triangle.materialIndex = object["materialIndex"].as<int>();
-            std::string name = "Triangle " + std::to_string(rt::get()->mRender.mTrianglesCount + 1);
-            if (object["name"]) name = object["name"].as<std::string>();
-            rt::get()->add_triangle(name, triangle);
+            rt::get()->add_model(object["filename"].as<std::string>());
           }
         }
       }
@@ -211,15 +204,11 @@ namespace raytracing
         out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mPlanes[i].materialIndex;
         out << YAML::EndMap;
       }
-      for (size_t i = 0; i < rt::get()->mRender.mTrianglesCount; i++)
+      for (auto it = rt::get()->mModelNames.begin(); it != rt::get()->mModelNames.end(); ++it)
       {
         out << YAML::BeginMap;
-        out << YAML::Key << "type" << YAML::Value << "triangle";
-        out << YAML::Key << "name" << YAML::Value << rt::get()->mRender.mTrianglesAdditional[i].name;
-        out << YAML::Key << "a" << YAML::Value << rt::get()->mRender.mTriangles[i].a;
-        out << YAML::Key << "b" << YAML::Value << rt::get()->mRender.mTriangles[i].b;
-        out << YAML::Key << "c" << YAML::Value << rt::get()->mRender.mTriangles[i].c;
-        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mTriangles[i].materialIndex;
+        out << YAML::Key << "type" << YAML::Value << "model";
+        out << YAML::Key << "filename" << YAML::Value << it->c_str();
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

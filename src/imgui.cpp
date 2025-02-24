@@ -68,7 +68,6 @@ namespace raytracing
       framesCounter = 0;
     }
     {
-      ImGui::Text("Frame time:");
       static float values[256] = {};
       static int values_offset = 0;
       static double refresh_time = 0.0;
@@ -82,14 +81,11 @@ namespace raytracing
         phase += 0.10f * values_offset;
         refresh_time += 1.0f / 60.0f;
       }
-      float average = 0.0f;
+      ImGui::Text("Frame time: %.3f ms", rt::get()->mElapsedTime.asSeconds() * 1000.0f);
       float max = 0.0f;
       for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-        average += values[n], max = max > values[n] ? max : values[n];
-      average /= (float)IM_ARRAYSIZE(values);
-      char overlay[32];
-      sprintf(overlay, "average: %f", average);
-      ImGui::PlotLines("###FrameTime", values, IM_ARRAYSIZE(values), values_offset, overlay, 0, max * 1.2f, ImVec2(mGuiWidth - 15, 40.0f));
+        max = max > values[n] ? max : values[n];
+      ImGui::PlotLines("###FrameTime", values, IM_ARRAYSIZE(values), values_offset, nullptr, 0, max * 1.2f, ImVec2(mGuiWidth - 15, 40.0f));
     }
 
     ImGui::Separator();
@@ -106,6 +102,11 @@ namespace raytracing
       rt::get()->mRender.load_shaders();
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
     }
+
+    ImGui::Separator();
+    ImGui::Text("Objects per node in volume hierarchy:");
+    if (ImGui::DragScalar("###ObjectsPerNodeInVolumeHierarchy", ImGuiDataType_U32,  &rt::get()->mRender.mBoundingVolumeBuilder.mObjectPerNode))
+      rt::get()->mRender.mBoundingVolumeBuilder.build();
 
     ImVec2 windowSize = ImGui::GetWindowSize();
     ImGui::SetCursorPos(ImVec2(10, windowSize.y - 65));
@@ -221,24 +222,12 @@ namespace raytracing
         ImGui::TreePop();
       }
     }
-    for (size_t i = 0; i < rt::get()->mRender.mTrianglesCount; ++i)
+    for (size_t i = 0; i < rt::get()->mModelNames.size(); ++i)
     {
-      label = rt::get()->mRender.mTrianglesAdditional[i].name + "###Triangle" + std::to_string(i);
+      label = rt::get()->mModelNames[i] + "###Model" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
-        label = "Name###TriangleName" + std::to_string(i);
-        ImGui::InputText(label.c_str(), &rt::get()->mRender.mTrianglesAdditional[i].name);
-        label = "Vertex 1###TriangleVertex1" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].a.x, 0.01f);
-        label = "Vertex 2###TriangleVertex2" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].b.x, 0.01f);
-        label = "Vertex 3###TriangleVertex3" + std::to_string(i);
-        ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mTriangles[i].c.x, 0.01f);
-        label = "Material ID##TriangleMaterialID" + std::to_string(i);
-        ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mTriangles[i].materialIndex);
-        label = "Delete###TriangleDelete" + std::to_string(i);
-        if (ImGui::Button(label.c_str()))
-          rt::get()->delete_triangle(i);
+        ImGui::Text(rt::get()->mModelNames[i].c_str());
         ImGui::TreePop();
       }
     }
@@ -254,7 +243,7 @@ namespace raytracing
   {
     ImGui::Begin("Add object");
 
-    const char* items[] = {"Sphere", "Plane", "Triangle"};
+    const char* items[] = {"Sphere", "Plane"};
     static const char* currentItem = nullptr;
 
     if (ImGui::BeginCombo("Object Type##combo", currentItem))
@@ -295,20 +284,6 @@ namespace raytracing
       ImGui::Separator();
     }
 
-    static TriangleObject triangle{};
-    if (currentItem && strncmp(currentItem, "Triangle", 8) == 0)
-    {
-      std::string label = "Vertex 1###TriangleVertex1New";
-      ImGui::DragFloat3(label.c_str(), &triangle.a.x, 0.01f);
-      label = "Vertex 2###TriangleVertex2New";
-      ImGui::DragFloat3(label.c_str(), &triangle.b.x, 0.01f);
-      label = "Vertex 3###TriangleVertex3New";
-      ImGui::DragFloat3(label.c_str(), &triangle.c.x, 0.01f);
-      label = "Material ID##TriangleMaterialID";
-      ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &triangle.materialIndex);
-      ImGui::Separator();
-    }
-
     if (ImGui::Button("Cancel###NewObjectCancel"))
       mAddItemOpened = false;
     ImGui::SameLine(0.0f);
@@ -321,9 +296,6 @@ namespace raytracing
 
       if (strncmp(currentItem, "Plane", 5) == 0)
         rt::get()->add_plane("Plane", plane);
-
-      if (strncmp(currentItem, "Triangle", 8) == 0)
-        rt::get()->add_triangle("Triangle", triangle);
 
       currentItem = nullptr;
     }

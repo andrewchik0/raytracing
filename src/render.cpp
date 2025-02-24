@@ -63,7 +63,6 @@ namespace raytracing
       return;
     if (!mBloomTexture.resize({ width, height}))
       return;
-    mShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
     mShader.setUniform("halfHeight", rt::get()->mCamera.mHalfHeight);
     mShader.setUniform("halfWidth", rt::get()->mCamera.mHalfWidth);
     mPostShader.setUniform("windowSize", sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
@@ -79,7 +78,9 @@ namespace raytracing
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
     memcpy(buffer.triangles, mTriangles.data(), sizeof(TriangleObject) * MAX_TRIANGLES);
+    memcpy(buffer.vertices, mVertices.data(), sizeof(Vertex) * MAX_VERTICES);
     memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
+    memcpy(buffer.volumes, mBoundingVolumes.data(), sizeof(BoundingVolume) * MAX_BOUNDING_VOLUMES);
     buffer.planesCount = mPlanesCount;
     buffer.spheresCount = mSpheresCount;
     buffer.trianglesCount = mTrianglesCount;
@@ -174,7 +175,6 @@ namespace raytracing
     mShader.setUniform("cameraDirection", glm_to_sfml(rt::get()->mCamera.mDirection));
     mShader.setUniform("cameraRight", glm_to_sfml(rt::get()->mCamera.mRight));
     mShader.setUniform("cameraUp", glm_to_sfml(rt::get()->mCamera.mUp));
-    mShader.setUniform("lightDirection", glm_to_sfml(mLightDirection));
     mShader.setUniform("time", rt::get()->mTime);
     mShader.setUniform("samples", static_cast<int>(mSamplesCount));
     mShader.setUniform("bounces", static_cast<int>(mBouncesCount));

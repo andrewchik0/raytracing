@@ -1,11 +1,74 @@
 #include "utils.glsl"
 #include "intersections.glsl"
 
+#define STACK_SIZE 128
+
 vec3 calculateRayDirection()
 {
   float u = (2.0f * passTexCoord.x - 1.0f) * halfWidth;
   float v = (1.0f - 2.0f * (1.0 - passTexCoord.y)) * halfHeight;
   return normalize(cameraDirection + cameraRight * u + cameraUp * v);
+}
+
+struct BVHHit
+{
+  int triangleIndex;
+  float distance;
+};
+
+BVHHit intersectBVH(vec3 orig, vec3 dir)
+{
+  vec3 invDir = 1.0 / dir;
+  BVHHit hit;
+  hit.distance = FAR_PLANE;
+  hit.triangleIndex = -1;
+
+  int stack[STACK_SIZE];
+  int stackPtr = 0;
+  stack[stackPtr++] = 0;
+
+  while (stackPtr > 0)
+  {
+    int nodeIndex = stack[--stackPtr];
+
+    BoundingVolume volume = volumes[nodeIndex];
+
+    if (rayAABBIntersect(orig, invDir, volume.min, volume.max) == FAR_PLANE)
+      continue;
+
+    if (volume.triangleCountTrianglesStart.x > 0)
+    {
+      int triStart = volume.triangleCountTrianglesStart.y;
+      int triCount = volume.triangleCountTrianglesStart.x;
+
+      for (int i = 0; i < triCount; i++)
+      {
+        TriangleObject tri = triangles[triStart + i];
+
+        vec3 v0 = vertices[tri.indices.x].position.xyz;
+        vec3 v1 = vertices[tri.indices.y].position.xyz;
+        vec3 v2 = vertices[tri.indices.z].position.xyz;
+
+        float t = rayTriangleIntersect(orig, dir, v0, v1, v2);
+        if (t > 0.0 && t < hit.distance)
+        {
+          hit.distance = t;
+          hit.triangleIndex = triStart + i;
+        }
+      }
+    }
+    else
+    {
+      if (volume.nodeLeft != -1)
+        stack[stackPtr++] = volume.nodeLeft;
+      if (volume.nodeRight != -1)
+        stack[stackPtr++] = volume.nodeRight;
+    }
+
+    if (stackPtr >= STACK_SIZE) break;
+  }
+
+  return hit;
 }
 
 struct ClosestHit
@@ -52,28 +115,31 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
       result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
       result.tangent = vec3(1, 0, 0);
       result.bitangent = vec3(0, 0, 1);
+      result.normal = vec3(0, 1, 0);
     }
   }
-  for (uint i = 0; i < trianglesCount; i++)
+
+  BVHHit bvhHit = intersectBVH(rayOrigin, rayDirection);
+  if (result.distance > bvhHit.distance)
   {
-    float d = rayTriangleIntersect(rayOrigin, rayDirection, triangles[i].a, triangles[i].b, triangles[i].c);
-    if (d > 0 && result.distance > d)
-    {
-      result.distance = d;
-      result.normal = normalize(cross(triangles[i].a - triangles[i].b, triangles[i].a - triangles[i].c));
-      result.materialIndex = triangles[i].materialIndex;
-      result.textureCoordinates = (rayDirection * d + rayOrigin).xz;
-      result.tangent = vec3(1, 0, 0);
-      result.bitangent = vec3(0, 0, 1);
-    }
+    Vertex a = vertices[triangles[bvhHit.triangleIndex].indices[0]];
+    Vertex b = vertices[triangles[bvhHit.triangleIndex].indices[1]];
+    Vertex c = vertices[triangles[bvhHit.triangleIndex].indices[2]];
+    result.distance = bvhHit.distance;
+    result.normal = normalize(a.normal.xyz + c.normal.xyz + b.normal.xyz);
+    result.materialIndex = 1;
+    result.textureCoordinates = a.position.xy;
+    result.tangent = a.tangent.xyz;
+    result.bitangent = a.bitangent.xyz;
   }
+
   result.position = rayDirection * (result.distance) + rayOrigin;
   return result;
 }
 
 vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
 {
-  float bias = 1e-12;
+  float bias = 1e-6;
   vec3 resultColor = vec3(0);
 
   for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
@@ -128,7 +194,7 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           sampleColor = sampleColor * albedo + e;
 
         org = hit.position + normal * bias;
-        normal = normalize(normal + rand3(dir + sampleCounter + i) * roughness);
+        normal = normalize(normal + rand3((dir + org) * (sampleCounter + 1.0)) * roughness);
         dir = reflect(dir, normal);
       }
     }

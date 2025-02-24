@@ -40,11 +40,13 @@ namespace raytracing
 
     mLoading = true;
     mSceneSerializer.load(options.scene_filename);
+    mRender.mBoundingVolumeBuilder.build();
   }
 
   void rt::run()
   {
-    if (!mLoading) return;
+    if (!mLoading)
+      return;
 
     sf::Texture loadingTexture("assets/loading.png");
     sf::Sprite loadingSprite(loadingTexture);
@@ -91,6 +93,16 @@ namespace raytracing
     }
   }
 
+  void rt::add_model(const std::string& filename)
+  {
+    model m;
+    m.load_from_file(filename.c_str());
+    mRender.mTrianglesCount = glm::min(int32_t(m.mTriangles.size()), MAX_TRIANGLES);
+    mRender.mVertexCount = glm::min(int32_t(m.mVertices.size()), MAX_VERTICES);
+    std::copy_n(m.mTriangles.begin(), mRender.mTrianglesCount, mRender.mTriangles.begin());
+    std::copy_n(m.mVertices.begin(), mRender.mVertexCount, mRender.mVertices.begin());
+  }
+
   void rt::render_to_image(const std::string& image_path)
   {
     uint32_t renderWidth = 1920, renderHeight = 1080;
@@ -100,8 +112,8 @@ namespace raytracing
     uint32_t width = mWindowWidth, height = mWindowHeight;
     mWindowWidth = renderWidth; mWindowHeight = renderHeight;
     resize();
-    mRender.mSamplesCount = 1024;
-    mRender.mBouncesCount = 64;
+    mRender.mSamplesCount = 256;
+    mRender.mBouncesCount = 12;
     mRender.clear();
     mRender.draw(&rt);
     rt.display();
@@ -169,13 +181,6 @@ namespace raytracing
     mRender.mMaterialsAdditional[mRender.mMaterialsCount].name = name;
     mRender.mMaterials[mRender.mMaterialsCount++] = material;
   }
-  void rt::add_triangle(const std::string& name, const TriangleObject& object)
-  {
-    if (mRender.mTrianglesCount >= MAX_TRIANGLES)
-      return;
-    mRender.mTrianglesAdditional[mRender.mTrianglesCount].name = name;
-    mRender.mTriangles[mRender.mTrianglesCount++] = object;
-  }
   void rt::delete_sphere(size_t index)
   {
     for (size_t i = index; i < mRender.mSpheresCount; ++i)
@@ -193,11 +198,5 @@ namespace raytracing
     for (size_t i = index; i < mRender.mMaterialsCount; ++i)
       mRender.mMaterials[i] = mRender.mMaterials[i + 1];
     mRender.mMaterialsCount--;
-  }
-  void rt::delete_triangle(size_t index)
-  {
-    for (size_t i = index; i < mRender.mTrianglesCount; ++i)
-      mRender.mTriangles[i] = mRender.mTriangles[i + 1];
-    mRender.mTrianglesCount--;
   }
 } // namespace raytracing
