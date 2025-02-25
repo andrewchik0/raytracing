@@ -44,6 +44,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  assimp
+  GIT_REPOSITORY https://github.com/assimp/assimp.git
+  GIT_TAG        v5.4.3
+)
+FetchContent_MakeAvailable(assimp)
+
+FetchContent_Declare(
+  nativefiledialog
+  GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+  GIT_TAG        v1.2.1
+)
+FetchContent_MakeAvailable(nativefiledialog)
+
 add_executable(main
   src/main.cpp
   src/rt.cpp
@@ -69,17 +87,15 @@ add_executable(main
   src/shader.cpp
   src/shader.h
   src/pch.h)
+
 target_precompile_headers(main PUBLIC src/pch.h)
 target_compile_features(main PRIVATE cxx_std_20)
 
 add_subdirectory(third_party/glm)
-add_subdirectory(third_party/assimp)
-add_subdirectory(third_party/nativefiledialog-extended)
+
 target_include_directories(main PUBLIC
-  third_party/glm/
-  third_party/nativefiledialog-extended/src/include
+  third_party/glm
   third_party/stb
-  third_party/assimp/include
   ${OPENGL_INCLUDE_DIRS}
 )
 

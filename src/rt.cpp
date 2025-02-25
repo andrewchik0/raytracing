@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <imgui-SFML.h>
+#include <iostream>
 #include <nfd.h>
 
 namespace raytracing
@@ -117,7 +118,8 @@ namespace raytracing
     mRender.clear();
     mRender.draw(&rt);
     rt.display();
-    rt.getTexture().copyToImage().saveToFile(image_path);
+    if (!rt.getTexture().copyToImage().saveToFile(image_path))
+      std::cerr << "Failed to save image" << std::endl;
     mRender.mSamplesCount = samples;
     mRender.mBouncesCount = bounces;
     mWindowWidth = width; mWindowHeight = height;

@@ -21,7 +21,8 @@ namespace raytracing
     bool result = ImGui::SFML::Init(rt::get()->mWindow);
     ImGuiIO& io = ImGui::GetIO();
     mFont = io.Fonts->AddFontFromFileTTF("assets/Roboto.ttf", 16.0f);
-    ImGui::SFML::UpdateFontTexture();
+    if (!ImGui::SFML::UpdateFontTexture())
+      return false;
     SetupImGuiStyle(true, 0.75f);
     return result;
   }
