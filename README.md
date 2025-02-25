@@ -11,6 +11,6 @@
    ```json
    "cwd": "${workspaceFolder}"
    ```
-5. Run `main` target
+5. Run `ray-tracing` target
 
 ![Rendered image](./screenshot.png)
