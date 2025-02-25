@@ -35,6 +35,7 @@ namespace raytracing
     mLastFrameTexture.clear();
     mFinalTexture.clear();
     mBloomTexture.clear();
+    mPostProcessedTexture.clear();
   }
 
   void render::draw(sf::RenderTarget* window)
@@ -83,8 +84,7 @@ namespace raytracing
       mBloomTexture.resize({ width, height}) &&
       mPostProcessedTexture.resize({ width, height}) &&
       mAccumulatedTexture.resize({ width, height}) &&
-      mFinalTexture.resize({ width, height}) &&
-      mBloomTexture.resize({ width, height});
+      mFinalTexture.resize({ width, height});
     if (!result)
       return;
     reset_accumulation();

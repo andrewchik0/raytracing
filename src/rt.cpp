@@ -68,7 +68,8 @@ namespace raytracing
         mRender.clear();
         mInput.clear();
 
-        handle_messages();
+        if (!handle_messages())
+          break;
         mGui.update();
 
         mCamera.update(mElapsedTime.asSeconds());
@@ -127,7 +128,7 @@ namespace raytracing
   }
 
 
-  void rt::handle_messages()
+  bool rt::handle_messages()
   {
     while (const std::optional event = mWindow.pollEvent())
     {
@@ -146,6 +147,7 @@ namespace raytracing
       if (event->is<sf::Event::Closed>())
       {
         mWindow.close();
+        return false;
       }
       if (event->is<sf::Event::Resized>())
       {
@@ -154,6 +156,7 @@ namespace raytracing
         resize();
       }
     }
+    return true;
   }
 
   void rt::resize()

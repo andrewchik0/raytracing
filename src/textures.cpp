@@ -59,6 +59,7 @@ namespace raytracing
         1, GL_RGBA, GL_UNSIGNED_BYTE, mTexturesData[i]);
       stbi_image_free(mTexturesData[i]);
     }
+    mTexturesData.clear();
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
@@ -87,9 +88,13 @@ namespace raytracing
     {
       glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
       glDeleteTextures(1, &mTextureArray);
-      glDeleteTextures(1, &mSky);
       mTextureArray = 0;
-      mTexturesData.clear();
+    }
+    if (glIsTexture(mSky))
+    {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+      glDeleteTextures(1, &mSky);
+      mSky = 0;
     }
   }
 

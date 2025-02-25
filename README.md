@@ -2,7 +2,7 @@
 
 ### Getting Started
 
-1. Clone repository `git clone --recursive https://github.com/andrewchik0/raytracing.git`
+1. Clone repository `git clone https://github.com/andrewchik0/raytracing.git`
 2. Build via CMake
 3. **CLion**:
    - Set working directory in **Run | Edit Configurations**
