@@ -29,7 +29,9 @@ add_executable(ray-tracing
   src/bounding_volume_builder.h
   src/shader.cpp
   src/shader.h
-  src/pch.h)
+  src/pch.h
+  third_party/stb/stb_image_wrapper.cpp
+)
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)
 target_compile_features(ray-tracing PRIVATE cxx_std_20)
