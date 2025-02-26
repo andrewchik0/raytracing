@@ -12,7 +12,7 @@ namespace raytracing
   {
   public:
     static constexpr size_t
-      sMaxTextureDataSize = 8192 * 2,
+      sMaxTextureDataSize = 4096,
       sMaxTriangles = sMaxTextureDataSize * sMaxTextureDataSize,
       sMaxBoundingVolumes = sMaxTextureDataSize * sMaxTextureDataSize,
       sMaxVertices = sMaxTextureDataSize * sMaxTextureDataSize;

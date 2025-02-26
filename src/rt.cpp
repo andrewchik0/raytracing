@@ -41,8 +41,6 @@ namespace raytracing
     mGui.init();
     mRender.init();
 
-    resize();
-
     mSceneSerializer.load(options.scene_filename);
   }
 
@@ -74,12 +72,13 @@ namespace raytracing
         mRender.clear();
         mInput.clear();
 
+        mGui.update();
         if (!handle_messages())
           break;
-        mGui.update();
 
         mCamera.update(mElapsedTime.asSeconds());
-        mRender.draw(&mWindow);
+        set_viewport();
+        mRender.draw(nullptr);
 
         ImGui::SFML::Render(mWindow);
 
@@ -123,9 +122,11 @@ namespace raytracing
     uint32_t samples = mRender.mSamplesCount;
     uint32_t bounces = mRender.mBouncesCount;
     uint32_t width = mWindowWidth, height = mWindowHeight;
+    int renderMode = mRender.mRenderMode;
     mWindowWidth = renderWidth; mWindowHeight = renderHeight;
-    resize();
-    mRender.mSamplesCount = 256;
+    mRender.mRenderMode = true;
+    set_viewport(renderWidth, renderHeight);
+    mRender.mSamplesCount = 32;
     mRender.mBouncesCount = 12;
     mRender.clear();
     mRender.draw(&rt);
@@ -135,7 +136,8 @@ namespace raytracing
     mRender.mSamplesCount = samples;
     mRender.mBouncesCount = bounces;
     mWindowWidth = width; mWindowHeight = height;
-    resize();
+    mRender.mRenderMode = renderMode;
+    set_viewport();
   }
 
 
@@ -164,16 +166,20 @@ namespace raytracing
       {
         mWindowWidth = mWindow.getSize().x;
         mWindowHeight = mWindow.getSize().y;
-        resize();
       }
     }
     return true;
   }
 
-  void rt::resize()
+  void rt::set_viewport()
   {
-    mCamera.resize(mWindowWidth, mWindowHeight);
-    mRender.resize(mWindowWidth, mWindowHeight);
+    mRender.resize(mGui.mViewportSize.x, mGui.mViewportSize.y);
+    mCamera.resize(mGui.mViewportSize.x, mGui.mViewportSize.y);
+  }
+  void rt::set_viewport(const uint32_t width, const uint32_t height)
+  {
+    mRender.resize(width, height);
+    mCamera.resize(width, height);
   }
 
   void rt::add_sphere(const std::string& name, const SphereObject& object)

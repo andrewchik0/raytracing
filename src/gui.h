@@ -11,6 +11,10 @@ namespace raytracing
   public:
     uint32_t mGuiWidth = 450;
 
+    bool mIsViewPortInFocus = false;
+    ImGuiViewport *mViewport;
+    glm::ivec2 mViewportSize;
+
     bool init();
     void update();
   private:

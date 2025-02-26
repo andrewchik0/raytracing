@@ -58,7 +58,7 @@ namespace raytracing
     mPostProcessedTexture.clear();
   }
 
-  void render::draw(sf::RenderTarget* window)
+  void render::draw(sf::RenderTarget* target)
   {
     mAccumulatingFrameIndex++;
     set_uniforms();
@@ -92,13 +92,19 @@ namespace raytracing
     mAccumulatedTexture.draw(mRenderQuad, &mDummyShader);
     mAccumulatedTexture.display();
 
-    // Draw final result on window
-    window->draw(mRenderQuad, &mDummyShader);
+    if (target)
+    {
+      target->draw(mRenderQuad, &mDummyShader);
+    }
   }
 
 
   void render::resize(uint32_t width, uint32_t height)
   {
+    if (width == mViewportWidth && height == mViewportHeight) return;
+
+    mViewportWidth = width;
+    mViewportHeight = height;
     auto result =
       mLastFrameTexture.resize({ width, height}) &&
       mBloomTexture.resize({ width, height}) &&

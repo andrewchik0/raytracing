@@ -62,7 +62,9 @@ namespace raytracing
     std::string mSkyFilename;
 
     bool handle_messages();
-    void resize();
+
+    void set_viewport();
+    void set_viewport(uint32_t width, uint32_t height);
 
     static rt* sInstance;
 

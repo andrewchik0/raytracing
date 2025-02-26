@@ -18,6 +18,7 @@ namespace raytracing
   class render
   {
   public:
+    uint32_t mViewportWidth, mViewportHeight;
     textures mTextures;
 
     bool mUseFXAA = true;
@@ -33,7 +34,7 @@ namespace raytracing
     void build_bvh();
     void post_init();
     void clear();
-    void draw(sf::RenderTarget* window);
+    void draw(sf::RenderTarget* target);
     void resize(uint32_t width, uint32_t height);
 
     void push_scene();

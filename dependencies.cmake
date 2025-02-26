@@ -12,7 +12,7 @@ FetchContent_MakeAvailable(SFML)
 
 FetchContent_Declare(ImGui
   GIT_REPOSITORY https://github.com/ocornut/imgui
-  GIT_TAG v1.91.1
+  GIT_TAG docking
   GIT_SHALLOW ON
   EXCLUDE_FROM_ALL
   SYSTEM)

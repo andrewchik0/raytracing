@@ -24,6 +24,7 @@ namespace raytracing
     if (!ImGui::SFML::UpdateFontTexture())
       return false;
     setup_style(true, 0.75f);
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     return result;
   }
 
@@ -35,29 +36,50 @@ namespace raytracing
     ImGui::SFML::Update(rt::get()->mWindow, rt::get()->mClock.restart());
 
     ImGui::PushFont(mFont);
-    ImGuiViewportP* viewport = (ImGuiViewportP*)(void*)ImGui::GetMainViewport();
-    ImGui::BeginViewportSideBar("main", viewport, ImGuiDir_Left, mGuiWidth, false);
 
-    if (ImGui::BeginTabBar("main_tab_bar", false))
-    {
-      if (ImGui::BeginTabItem("General"))
-      {
-        general_tab();
-        ImGui::EndTabItem();
-      }
-      if (ImGui::BeginTabItem("Scene"))
-      {
-        scene_tab();
-        ImGui::EndTabItem();
-      }
-      if (ImGui::BeginTabItem("Render"))
-      {
-        render_tab();
-        ImGui::EndTabItem();
-      }
-      ImGui::EndTabBar();
-    }
+    static bool open = true;
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2({0.0f, 0.0f}));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::Begin("Main", &open,
+      ImGuiWindowFlags_MenuBar |
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+      ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground |
+      ImGuiConfigFlags_NoMouse
+    );
+    ImGui::PopStyleVar(2);
+
+    ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiWindowFlags_NoBackground | ImGuiConfigFlags_NoMouse);
+
     ImGui::End();
+
+    ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiConfigFlags_NoMouse | ImGuiWindowFlags_NoBackground);
+    mIsViewPortInFocus = ImGui::IsWindowFocused();
+    mViewportSize = {ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y};
+    mViewport = ImGui::GetWindowViewport();
+    ImGui::Image(rt::get()->mRender.mFinalTexture);
+    ImGui::End();
+
+    ImGui::PopStyleVar();
+
+    ImGui::Begin("Render");
+    render_tab();
+    ImGui::End();
+
+    ImGui::Begin("Scene");
+    scene_tab();
+    ImGui::End();
+
+    ImGui::Begin("General");
+    general_tab();
+    ImGui::End();
+
     ImGui::PopFont();
   }
 
@@ -159,7 +181,7 @@ namespace raytracing
       check(ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f"));
       check(ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f"));
       check(ImGui::DragFloat("Blur size", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f"));
-      check(ImGui::DragFloat("FOV", &rt::get()->mCamera.mFovY, 0.1, 30.0, 120.0, "%.1f"));
+      check(ImGui::DragFloat("FOV", &rt::get()->mCamera.mFovY, 0.1, 30.0, 150.0, "%.1f"));
       ImGui::TreePop();
     }
     else

@@ -13,7 +13,28 @@ namespace raytracing
 
   void input::handle(const std::optional<sf::Event>& event)
   {
-    ImGuiIO& io = ImGui::GetIO();
+    if (event->is<sf::Event::MouseButtonReleased>())
+    {
+      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonReleased>()->button)] = false;
+    }
+    if (
+      event->is<sf::Event::MouseButtonPressed>() &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mViewport->Pos.x &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.y > rt::get()->mGui.mViewport->Pos.y &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.x < rt::get()->mGui.mViewport->Pos.x + rt::get()->mGui.mViewport->Size.x &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.y < rt::get()->mGui.mViewport->Pos.y + rt::get()->mGui.mViewport->Size.y
+      )
+    {
+      if (!rt::get()->mGui.mIsViewPortInFocus)
+      {
+        mMouseXOld = event->getIf<sf::Event::MouseButtonPressed>()->position.x;
+        mMouseYOld = event->getIf<sf::Event::MouseButtonPressed>()->position.y;
+      }
+      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonPressed>()->button)] = true;
+    }
+    if (!rt::get()->mGui.mIsViewPortInFocus)
+      return;
+
     if (event->is<sf::Event::KeyPressed>())
     {
       mKeyPressed[static_cast<int>(event->getIf<sf::Event::KeyPressed>()->code)] = true;
@@ -22,16 +43,7 @@ namespace raytracing
     {
       mKeyPressed[static_cast<int>(event->getIf<sf::Event::KeyReleased>()->code)] = false;
     }
-    if (event->is<sf::Event::MouseButtonPressed>() && !io.WantCaptureMouse)
-    {
-      if (event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mGuiWidth)
-        mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonPressed>()->button)] = true;
-    }
-    if (event->is<sf::Event::MouseButtonReleased>() && !io.WantCaptureMouse)
-    {
-      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonReleased>()->button)] = false;
-    }
-    if (event->is<sf::Event::MouseMoved>() && !io.WantCaptureMouse)
+    if (event->is<sf::Event::MouseMoved>())
     {
       mMouseX = event->getIf<sf::Event::MouseMoved>()->position.x;
       mMouseY = event->getIf<sf::Event::MouseMoved>()->position.y;
