@@ -8,7 +8,7 @@ namespace raytracing
   {
   public:
     float mSpeed = 1.0, mMouseSensitivity = 1.0f;
-    float mFovY = glm::radians(90.0f);
+    float mFovY = 90.0f;
 
     glm::vec3 mPosition { 0, 0, 2 };
     glm::vec3 mDirection { 0, 0, -1 };

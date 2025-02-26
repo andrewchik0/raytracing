@@ -18,7 +18,7 @@ namespace raytracing
   {
     mAspect = static_cast<float>(width) / static_cast<float>(height);
 
-    mHalfHeight = tan(mFovY / 2.0f);
+    mHalfHeight = tan(glm::radians(mFovY) / 2.0f);
     mHalfWidth = mAspect * mHalfHeight;
   }
 
@@ -97,6 +97,8 @@ namespace raytracing
       rt::get()->mWindow.setMouseCursor(cursor);
     }
 
+    mHalfHeight = tan(glm::radians(mFovY) / 2.0f);
+    mHalfWidth = mAspect * mHalfHeight;
 
     mRight = glm::normalize(glm::cross(mDirection, glm::vec3(0, 1, 0)));
     mUp = glm::cross(mRight, mDirection);
