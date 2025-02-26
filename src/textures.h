@@ -12,10 +12,10 @@ namespace raytracing
   {
   public:
     static constexpr size_t
-      sMaxTexture = 4096,
-      sMaxTriangles = sMaxTexture * sMaxTexture,
-      sMaxBoundingVolumes = sMaxTexture * sMaxTexture,
-      sMaxVertices = sMaxTexture * sMaxTexture;
+      sMaxTextureDataSize = 8192 * 2,
+      sMaxTriangles = sMaxTextureDataSize * sMaxTextureDataSize,
+      sMaxBoundingVolumes = sMaxTextureDataSize * sMaxTextureDataSize,
+      sMaxVertices = sMaxTextureDataSize * sMaxTextureDataSize;
 
     ~textures();
 
@@ -36,7 +36,7 @@ namespace raytracing
 
     uint32_t
       mTextureWidth = 2048, mTextureHeight = 2048,
-      mTexturesCount = 32,
+      mTexturesCountMax = 32,
       mSkyWidth = 2048, mSkyHeight = 1024;
 
     // Textures are stored in arrays because of conflicts with SFML

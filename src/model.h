@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "../shaders/uniforms.h"
+#include "assimp/matrix4x4.h"
 
 struct aiMesh;
 struct aiNode;
@@ -21,6 +22,6 @@ namespace raytracing
   private:
 
     void process_node(aiNode* node, const aiScene* scene);
-    void process_mesh(aiMesh* mesh, const aiScene* scene);
+    void process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform);
   };
 }

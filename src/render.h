@@ -21,6 +21,7 @@ namespace raytracing
     textures mTextures;
 
     bool mUseFXAA = true;
+    bool mRenderMode = false;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 2;
 

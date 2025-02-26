@@ -21,7 +21,7 @@ namespace raytracing
 
   void textures::load_to_memory()
   {
-    for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
+    for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
     {
       int w, h, channels;
       mTexturesData.push_back(stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4));
@@ -42,17 +42,17 @@ namespace raytracing
   {
     glGenTextures(1, &mTrianglesDataTexture);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32I, sMaxTexture, sMaxTexture, 1);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32I, sMaxTextureDataSize, sMaxTextureDataSize, 1);
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
     glGenTextures(1, &mBoundingVolumesTexture);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTexture, sMaxTexture, 1);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTextureDataSize, sMaxTextureDataSize, 1);
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
     glGenTextures(1, &mVerticesDataTexture);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTexture, sMaxTexture, 1);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTextureDataSize, sMaxTextureDataSize, 1);
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   }
 
@@ -68,9 +68,9 @@ namespace raytracing
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA8, mTextureWidth, mTextureHeight, mTexturesCount);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA8, mTextureWidth, mTextureHeight, mTexturesCountMax);
 
-    for (size_t i = 0; i < mTexturesCount && i < mTextureFilenames.size(); ++i)
+    for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
     {
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
@@ -99,6 +99,8 @@ namespace raytracing
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    mTexturesData.clear();
+    mSkyTextureData = nullptr;
   }
 
 
@@ -142,7 +144,7 @@ namespace raytracing
     std::thread([&]
     {
       load_to_memory();
-      rt::get()->mLoading = false;
+      rt::get()->mTexturesLoading = false;
     }).detach();
   }
 
@@ -151,11 +153,11 @@ namespace raytracing
     {
       glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
       size_t trianglesSize = triangles.size();
-      trianglesSize = (trianglesSize / sMaxTexture + 1) * sMaxTexture;
+      trianglesSize = (trianglesSize / sMaxTextureDataSize + 1) * sMaxTextureDataSize;
       triangles.resize(trianglesSize);
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTexture, trianglesSize / sMaxTexture, 1, GL_RGBA_INTEGER, GL_INT,
+        sMaxTextureDataSize, trianglesSize / sMaxTextureDataSize, 1, GL_RGBA_INTEGER, GL_INT,
         triangles.data()
       );
       glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
@@ -165,29 +167,26 @@ namespace raytracing
       glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
       size_t boundVolumeSize = sizeof(BoundingVolume) / 16;
       size_t currentSizeVec4s = bounds.size() * boundVolumeSize;
-      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTexture - 1) / sMaxTexture) * sMaxTexture;
+      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTextureDataSize - 1) / sMaxTextureDataSize) * sMaxTextureDataSize;
       size_t newSizeVolumes = newSizeVec4s / boundVolumeSize + 1;
       bounds.resize(newSizeVolumes);
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTexture, (newSizeVec4s) / sMaxTexture, 1, GL_RGBA, GL_FLOAT,
+        sMaxTextureDataSize, (newSizeVec4s) / sMaxTextureDataSize, 1, GL_RGBA, GL_FLOAT,
         bounds.data()
       );
-
-      std::vector<glm::vec4> indices(4096 * 4096);
-      glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, GL_FLOAT, indices.data());
     }
 
     {
       glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
       size_t vertexSize = sizeof(Vertex) / 16;
       size_t currentSizeVec4s = vertices.size() * vertexSize;
-      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTexture - 1) / sMaxTexture) * sMaxTexture;
+      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTextureDataSize - 1) / sMaxTextureDataSize) * sMaxTextureDataSize;
       size_t newSizeVertices = newSizeVec4s / vertexSize + 1;
       vertices.resize(newSizeVertices);
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTexture, (newSizeVec4s) / sMaxTexture, 1, GL_RGBA, GL_FLOAT,
+        sMaxTextureDataSize, (newSizeVec4s) / sMaxTextureDataSize, 1, GL_RGBA, GL_FLOAT,
         vertices.data()
       );
     }
@@ -213,7 +212,7 @@ namespace raytracing
 
   void textures::add_texture(const std::string& name)
   {
-    if (mTextureFilenames.size() < mTexturesCount)
+    if (mTextureFilenames.size() < mTexturesCountMax)
       mTextureFilenames.push_back(name);
   }
 

@@ -42,7 +42,7 @@ namespace raytracing
 
   void camera::update(float deltaTime)
   {
-    float speed = 2.0f * deltaTime;
+    float speed = 2.0f * deltaTime * mSpeed;
 
     if (
       input::key(sf::Keyboard::Key::Space) |
@@ -67,8 +67,8 @@ namespace raytracing
     {
       const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::SizeAll).value();
       rt::get()->mWindow.setMouseCursor(cursor);
-      float yaw = rt::get()->mInput.mMouseDeltaX / 200.0;
-      float pitch = rt::get()->mInput.mMouseDeltaY / 200.0;
+      float yaw = rt::get()->mInput.mMouseDeltaX / 200.0 * mMouseSensitivity;
+      float pitch = rt::get()->mInput.mMouseDeltaY / 200.0 * mMouseSensitivity;
 
       if (rt::get()->mInput.mMouseDeltaX || rt::get()->mInput.mMouseDeltaY)
         rt::get()->mRender.reset_accumulation();

@@ -18,6 +18,8 @@ layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 
 void main()
 {
-  vec3 rayDirection = calculateRayDirection();
-  outColor = vec4(castRay(cameraPosition, rayDirection), 1.0);
+  Ray ray;
+  ray.origin = cameraPosition.xyz;
+  ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, passTexCoord, halfWidth, halfHeight);
+  outColor = vec4(castRay(ray), 1.0);
 }

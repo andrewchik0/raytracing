@@ -137,10 +137,10 @@ namespace raytracing
   void render::set_uniforms()
   {
     GlobalData data;
-    data.cameraDirection = rt::get()->mCamera.mDirection;
-    data.cameraPosition = rt::get()->mCamera.mPosition;
-    data.cameraUp = rt::get()->mCamera.mUp;
-    data.cameraRight = rt::get()->mCamera.mRight;
+    data.cameraDirection = glm::vec4(rt::get()->mCamera.mDirection, 1.0f);
+    data.cameraPosition = glm::vec4(rt::get()->mCamera.mPosition, 1.0f);
+    data.cameraUp = glm::vec4(rt::get()->mCamera.mUp, 1.0f);
+    data.cameraRight = glm::vec4(rt::get()->mCamera.mRight, 1.0f);
     data.time = rt::get()->mTime;
     data.samples = mSamplesCount;
     data.bounces = mBouncesCount;
@@ -150,8 +150,9 @@ namespace raytracing
     data.gamma = mGamma;
     data.exposure = mExposure;
     data.blurSize = mBlurSize;
-    data.windowSize = { rt::get()->mWindowWidth, rt::get()->mWindowHeight };
-    data.maxTextureSize = mTextures.sMaxTexture;
+    data.windowSize = { rt::get()->mWindowWidth, rt::get()->mWindowHeight, 0, 0 };
+    data.maxTextureSize = mTextures.sMaxTextureDataSize;
+    data.renderMode = mRenderMode;
     mGlobalDataBuffer.set(&data);
   }
 }

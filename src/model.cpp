@@ -5,6 +5,8 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
+#include "glm/gtc/type_ptr.hpp"
+
 namespace raytracing
 {
   void model::load_from_file(std::filesystem::path file)
@@ -30,42 +32,46 @@ namespace raytracing
     process_node(scene->mRootNode, scene);
   }
 
-  void model::process_mesh(aiMesh* mesh, const aiScene* scene)
+  void model::process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform)
   {
-    mTriangles.reserve(mesh->mNumFaces * 3);
+    size_t vertexOffset = mVertices.size();
+
+    mVertices.reserve(mVertices.size() + mesh->mNumVertices);
+    mTriangles.reserve(mTriangles.size() + mesh->mNumFaces);
+
+    glm::mat4 meshTransform = glm::transpose(glm::make_mat4(&transform.a1)); // Assimp uses row-major order
+
+    for (size_t i = 0; i < mesh->mNumVertices; ++i)
+    {
+      Vertex vertex;
+      glm::vec4 pos = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f);
+      glm::vec4 normal = glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0.0f);
+
+      vertex.position = meshTransform * pos;
+      vertex.normal = glm::normalize(meshTransform * normal);
+      mVertices.push_back(vertex);
+    }
+
     for (size_t i = 0; i < mesh->mNumFaces; ++i)
     {
       aiFace face = mesh->mFaces[i];
       TriangleObject triangle;
-      triangle.indices[0] = face.mIndices[0];
-      triangle.indices[1] = face.mIndices[1];
-      triangle.indices[2] = face.mIndices[2];
+      triangle.indices[0] = face.mIndices[0] + vertexOffset;
+      triangle.indices[1] = face.mIndices[1] + vertexOffset;
+      triangle.indices[2] = face.mIndices[2] + vertexOffset;
       mTriangles.push_back(triangle);
     }
-
-    mVertices.reserve(mesh->mNumVertices);
-    for (size_t i = 0; i < mesh->mNumVertices; ++i)
-    {
-      Vertex vertex;
-      vertex.position = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0);
-      vertex.normal = glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 1.0);
-      mVertices.push_back(vertex);
-    }
-
-    mMax.x = mesh->mAABB.mMax.x;
-    mMax.y = mesh->mAABB.mMax.y;
-    mMax.z = mesh->mAABB.mMax.z;
-    mMin.x = mesh->mAABB.mMin.x;
-    mMin.y = mesh->mAABB.mMin.y;
-    mMin.z = mesh->mAABB.mMin.z;
   }
+
 
   void model::process_node(aiNode* node, const aiScene* scene)
   {
+    aiMatrix4x4 nodeTransform = node->mTransformation;
+
     for (size_t i = 0; i < node->mNumMeshes; ++i)
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      process_mesh(mesh, scene);
+      process_mesh(mesh, scene, nodeTransform);
     }
     for (size_t i = 0; i < node->mNumChildren; ++i)
     {

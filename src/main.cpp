@@ -7,7 +7,7 @@ int main()
   raytracing::init_options options =
   {
     .title = "Ray tracing app",
-    .scene_filename = "scenes/monkey.yaml",
+    .scene_filename = "scenes/bmw.yaml",
   };
 
   app.init(options);

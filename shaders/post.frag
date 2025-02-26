@@ -15,18 +15,19 @@ uniform sampler2D bloomTexture;
 
 void main()
 {
-  vec3 bloomColor = gaussian_blur(bloomTexture, windowSize, passTexCoord, blurSize);
-
-  if (useFXAA)
+  if (useFXAA == 1)
   {
-    outColor = fxaa(renderedTexture, passTexCoord, windowSize);
+    outColor = fxaa(renderedTexture, passTexCoord, windowSize.xy);
   }
   else
   {
     outColor = vec4(texture(renderedTexture, passTexCoord).xyz, 1.0);
   }
 
-  outColor.rgb += max(bloomColor, vec3(0.0));
+  if (renderMode == 1)
+  {
+    outColor.rgb += max(gaussian_blur(bloomTexture, windowSize.xy, passTexCoord, blurSize), vec3(0.0));
+  }
 
   vec3 mapped = vec3(1.0) - exp(-outColor.rgb * exposure);
   mapped = pow(mapped, vec3(1.0 / gamma));

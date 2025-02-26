@@ -97,13 +97,16 @@ namespace raytracing
     }
 
     ImGui::Separator();
+    check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
     check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
     static bool vSync = false;
     if (check(ImGui::Checkbox("V-Sync", &vSync)))
       rt::get()->mWindow.setVerticalSyncEnabled(vSync);
-    int min = 1;
-    check(ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &min));
-    check(ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &min));
+    int minSamples = 1, minBounces = 2;
+    check(ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &minSamples));
+    check(ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
+    ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.1, 0.001, 0, "%.2f");
+    ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
     ImGui::Separator();
     if (check(ImGui::Button("Reload shaders")))
     {
@@ -216,7 +219,7 @@ namespace raytracing
         label = "Normal###PlaneNormal" + std::to_string(i);
         check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f"));
         label = "Distance###PlaneDistance" + std::to_string(i);
-        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, -100.0f, 100.0f, "%.2f"));
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, 0, 0, "%.2f"));
         label = "Material ID##PlaneMaterialID" + std::to_string(i);
         check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mPlanes[i].materialIndex));
         label = "Delete###PlaneDelete" + std::to_string(i);

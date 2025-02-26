@@ -42,13 +42,12 @@ namespace raytracing
 
     resize();
 
-    mLoading = true;
     mSceneSerializer.load(options.scene_filename);
   }
 
   void rt::run()
   {
-    if (!mLoading)
+    if (!mTexturesLoading)
       return;
 
     sf::Texture loadingTexture("assets/loading.png");
@@ -58,7 +57,7 @@ namespace raytracing
 
     while (mWindow.isOpen())
     {
-      if (!mLoading)
+      if (!mTexturesLoading)
       {
         if (!mLoaded)
         {

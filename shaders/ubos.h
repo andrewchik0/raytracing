@@ -13,21 +13,23 @@
 #define GLOBAL_DATA_BINDING 2
 #define GlobalDataStruct GlobalData \
 {                                   \
-  vec3 cameraPosition;              \
+  vec4 cameraPosition;              \
+  vec4 cameraDirection;             \
+  vec4 cameraRight;                 \
+  vec4 cameraUp;                    \
+  vec4 windowSize;                  \
   float halfHeight;                 \
-  vec3 cameraDirection;             \
   float halfWidth;                  \
-  vec3 cameraRight;                 \
   float time;                       \
-  vec3 cameraUp;                    \
-  int samples;                      \
-  vec2 windowSize;                  \
-  int bounces;                      \
-  bool useFXAA;                     \
   float gamma;                      \
   float exposure;                   \
   float blurSize;                   \
+  int samples;                      \
+  int bounces;                      \
   int maxTextureSize;               \
+  int useFXAA;                     \
+  int renderMode;                  \
+  float _; \
 }
 
 #ifdef __cplusplus

@@ -67,8 +67,10 @@ namespace raytracing
       {
         rt::get()->mRender.mSpheresCount = 0;
         rt::get()->mRender.mPlanesCount = 0;
+        rt::get()->mRender.mTextures.mTextureFilenames.clear();
         rt::get()->mRender.mTriangles.clear();
         rt::get()->mRender.mBoundingVolumes.clear();
+        rt::get()->mRender.mVertices.clear();
 
         auto objects = scene["objects"].as<YAML::Node>();
         size_t i = 0;
@@ -128,8 +130,7 @@ namespace raytracing
 
       if (scene["textures"])
       {
-        rt::get()->mRender.mTextures.mTextureFilenames.clear();
-
+        rt::get()->mTexturesLoading = true;
         auto textures = scene["textures"].as<YAML::Node>();
         for(YAML::const_iterator it = textures.begin(); it != textures.end(); ++it)
         {
@@ -155,11 +156,10 @@ namespace raytracing
     if (result != NFD_OKAY)
       return;
 
-    rt::get()->mLoading = true;
+    rt::get()->mTexturesLoading = true;
     rt::get()->mLoaded = false;
     load(outPath);
     NFD_FreePathU8(outPath);
-    rt::get()->mRender.post_init();
   }
 
   void scene_serializer::save(const std::filesystem::path& filename)

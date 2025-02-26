@@ -1,0 +1,36 @@
+exposure: 5.96000004
+gamma: 0.860000014
+blur_radius: 0
+sky_filename: assets/night.hdr
+camera:
+  position: [1.18913937, 0.844414473, 2.77680135]
+  direction: [-0.599942267, -0.278646529, -0.749949455]
+objects:
+  - type: plane
+    name: Plane
+    normal: [0, 1, 0]
+    distance: 0.119999997
+    materialIndex: 0
+  - type: model
+    filename: assets/bmw.fbx
+materials:
+  - name: Plane material
+    albedo: [0.800000012, 0.800000012, 0.800000012]
+    emissivity: [0, 0, 0]
+    roughness: 0
+    texture_coordinates_multiplier: 1.15999997
+    texture_id: 0
+    metallic_texture_id: 2
+    normal_texture_id: 1
+  - name: BMW
+    albedo: [0.5, 0.5, 0.5]
+    emissivity: [0, 0, 0]
+    roughness: 0.230000004
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+textures:
+  - assets/granite/albedo.png
+  - assets/granite/normal.png
+  - assets/granite/metallic.psd
