@@ -24,7 +24,7 @@ namespace raytracing
     void reload();
     void unload();
 
-    void load_triangles_to_gpu(std::vector<TriangleObject>& triangles);
+    void load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices);
     void load_to_gpu();
 
     void add_texture(const std::string& name);

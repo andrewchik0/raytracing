@@ -102,9 +102,8 @@ namespace raytracing
     model m;
     m.load_from_file(filename.c_str());
 
-    mRender.mVertexCount = glm::min(int32_t(m.mVertices.size()), MAX_VERTICES);
     mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-    std::copy_n(m.mVertices.begin(), mRender.mVertexCount, mRender.mVertices.begin());
+    mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
   }
 
   void rt::render_to_image(const std::string& image_path)

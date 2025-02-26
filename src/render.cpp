@@ -34,8 +34,7 @@ namespace raytracing
 
   void render::post_init()
   {
-    mBoundingVolumeBuilder.build();
-    mTextures.load_triangles_to_gpu(mTriangles);
+    set_texture_data_buffers();
     mTextures.load_to_gpu();
   }
 
@@ -108,9 +107,7 @@ namespace raytracing
     }
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
-    memcpy(buffer.vertices, mVertices.data(), sizeof(Vertex) * MAX_VERTICES);
     memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
-    memcpy(buffer.volumes, mBoundingVolumes.data(), sizeof(BoundingVolume) * MAX_BOUNDING_VOLUMES);
     buffer.planesCount = mPlanesCount;
     buffer.spheresCount = mSpheresCount;
     mSceneBuffer.set(&buffer);

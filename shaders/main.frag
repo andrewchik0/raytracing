@@ -6,6 +6,8 @@ in vec2 passTexCoord;
 uniform sampler2D sky;
 uniform sampler2DArray texArray;
 uniform isampler2DArray trianglesTexture;
+uniform sampler2DArray verticesTexture;
+uniform sampler2DArray boundingVolumesTexture;
 
 #include "uniforms.h"
 

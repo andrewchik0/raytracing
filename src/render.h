@@ -57,15 +57,14 @@ namespace raytracing
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
-    std::array<Vertex, MAX_VERTICES> mVertices;
     std::array<Material, MAX_MATERIALS> mMaterials;
+
+    std::vector<Vertex> mVertices;
     std::vector<TriangleObject> mTriangles;
-    std::array<BoundingVolume, MAX_BOUNDING_VOLUMES> mBoundingVolumes;
+    std::vector<BoundingVolume> mBoundingVolumes;
     size_t
       mSpheresCount = 0,
       mPlanesCount = 0,
-      mBoundingVolumesCount = 0,
-      mVertexCount = 0,
       mMaterialsCount = 0;
 
     // Additional data stored separately in order to easily pass object data to the shader
@@ -79,6 +78,12 @@ namespace raytracing
     void set_uniforms();
 
     status load_shaders();
+
+    void set_texture_data_buffers()
+    {
+      mBoundingVolumeBuilder.build();
+      mTextures.load_triangles_to_gpu(mTriangles, mBoundingVolumes, mVertices);
+    }
 
     friend class rt;
     friend class gui;

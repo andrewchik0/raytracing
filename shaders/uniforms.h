@@ -48,23 +48,5 @@ struct Material
   float _;
 };
 
-#define MAX_BOUNDING_VOLUMES 256
-struct BoundingVolume
-{
-  vec3 min;
-  int nodeLeft
-#ifdef __cplusplus
-  = -1
-#endif
-  ;
-  vec3 max;
-  int nodeRight
-#ifdef __cplusplus
-  = -1
-#endif
-  ;
-  ivec4 triangleCountTrianglesStart;
-};
-
 #include "objects.h"
 #include "ubos.h"

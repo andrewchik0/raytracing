@@ -4,9 +4,7 @@
 {                                               \
   SphereObject spheres[MAX_SPHERES];            \
   PlaneObject planes[MAX_PLANES];               \
-  Vertex vertices[MAX_VERTICES];                \
   Material materials[MAX_MATERIALS];            \
-  BoundingVolume volumes[MAX_BOUNDING_VOLUMES]; \
   uint volumesCount;                            \
   uint spheresCount;                            \
   uint planesCount;                             \

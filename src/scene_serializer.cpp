@@ -68,8 +68,7 @@ namespace raytracing
         rt::get()->mRender.mSpheresCount = 0;
         rt::get()->mRender.mPlanesCount = 0;
         rt::get()->mRender.mTriangles.clear();
-        rt::get()->mRender.mBoundingVolumes.fill(BoundingVolume());
-        rt::get()->mRender.mBoundingVolumesCount = 0;
+        rt::get()->mRender.mBoundingVolumes.clear();
 
         auto objects = scene["objects"].as<YAML::Node>();
         size_t i = 0;

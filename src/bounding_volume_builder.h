@@ -39,7 +39,7 @@ namespace raytracing
   class bounding_volume_builder
   {
   public:
-    uint32_t mObjectPerNode = 8;
+    uint32_t mObjectPerNode = 1;
 
     void build();
 

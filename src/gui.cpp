@@ -111,11 +111,6 @@ namespace raytracing
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
     }
 
-    ImGui::Separator();
-    ImGui::Text("Objects per node in volume hierarchy:");
-    if (check(ImGui::DragScalar("###ObjectsPerNodeInVolumeHierarchy", ImGuiDataType_U32,  &rt::get()->mRender.mBoundingVolumeBuilder.mObjectPerNode)))
-      rt::get()->mRender.mBoundingVolumeBuilder.build();
-
     ImVec2 windowSize = ImGui::GetWindowSize();
     ImGui::SetCursorPos(ImVec2(10, windowSize.y - 65));
     ImGui::Text("Left mouse button - Rotate");

@@ -44,6 +44,16 @@ namespace raytracing
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
     glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32I, sMaxTexture, sMaxTexture, 1);
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+    glGenTextures(1, &mBoundingVolumesTexture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTexture, sMaxTexture, 1);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+    glGenTextures(1, &mVerticesDataTexture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTexture, sMaxTexture, 1);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   }
 
   void textures::load_to_gpu()
@@ -118,6 +128,12 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
     rt::get()->mRender.mShader.setUniform("trianglesTexture", 2);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
+    rt::get()->mRender.mShader.setUniform("boundingVolumesTexture", 3);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
+    rt::get()->mRender.mShader.setUniform("verticesTexture", 4);
   }
 
   void textures::reload()
@@ -130,17 +146,51 @@ namespace raytracing
     }).detach();
   }
 
-  void textures::load_triangles_to_gpu(std::vector<TriangleObject>& triangles)
+  void textures::load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices)
   {
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
-    size_t trianglesSize = triangles.size();
-    trianglesSize = (trianglesSize / sMaxTexture + 1) * sMaxTexture;
-    triangles.resize(trianglesSize);
-    glTexSubImage3D(
-      GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-      sMaxTexture, trianglesSize / sMaxTexture, 1, GL_RGBA_INTEGER, GL_INT,
-      triangles.data()
-    );
+    {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
+      size_t trianglesSize = triangles.size();
+      trianglesSize = (trianglesSize / sMaxTexture + 1) * sMaxTexture;
+      triangles.resize(trianglesSize);
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
+        sMaxTexture, trianglesSize / sMaxTexture, 1, GL_RGBA_INTEGER, GL_INT,
+        triangles.data()
+      );
+      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+    }
+
+    {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
+      size_t boundVolumeSize = sizeof(BoundingVolume) / 16;
+      size_t currentSizeVec4s = bounds.size() * boundVolumeSize;
+      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTexture - 1) / sMaxTexture) * sMaxTexture;
+      size_t newSizeVolumes = newSizeVec4s / boundVolumeSize + 1;
+      bounds.resize(newSizeVolumes);
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
+        sMaxTexture, (newSizeVec4s) / sMaxTexture, 1, GL_RGBA, GL_FLOAT,
+        bounds.data()
+      );
+
+      std::vector<glm::vec4> indices(4096 * 4096);
+      glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, GL_FLOAT, indices.data());
+    }
+
+    {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
+      size_t vertexSize = sizeof(Vertex) / 16;
+      size_t currentSizeVec4s = vertices.size() * vertexSize;
+      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTexture - 1) / sMaxTexture) * sMaxTexture;
+      size_t newSizeVertices = newSizeVec4s / vertexSize + 1;
+      vertices.resize(newSizeVertices);
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
+        sMaxTexture, (newSizeVec4s) / sMaxTexture, 1, GL_RGBA, GL_FLOAT,
+        vertices.data()
+      );
+    }
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   }
 

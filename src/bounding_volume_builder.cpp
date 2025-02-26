@@ -9,8 +9,6 @@ namespace raytracing
 {
   void bounding_volume_builder::build_node(int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start, int32_t end)
   {
-    if (nodeIndex >= MAX_BOUNDING_VOLUMES) return;
-
     BVHNode* node = &(mBVHNodes[nodeIndex]);
     node->start = start;
     node->count = end - start;
@@ -27,7 +25,7 @@ namespace raytracing
       node->bounds.expand(v2);
     }
 
-    if (node->count <= mObjectPerNode || mBVHNodes.size() >= MAX_BOUNDING_VOLUMES - 2)
+    if (node->count <= mObjectPerNode)
     {
       return;
     }
@@ -72,19 +70,17 @@ namespace raytracing
     {
       *it = BoundingVolume {};
     }
-    rt::get()->mRender.mBoundingVolumesCount = mBVHNodes.size();
 
-    for (size_t i = 0; i < rt::get()->mRender.mBoundingVolumesCount; ++i)
+    for (auto it = mBVHNodes.begin(); it < mBVHNodes.end(); ++it)
     {
-      const BVHNode& node = mBVHNodes[i];
-      rt::get()->mRender.mBoundingVolumes[i] = BoundingVolume
+      rt::get()->mRender.mBoundingVolumes.push_back(BoundingVolume
       {
-        node.bounds.min,
-        node.left,
-        node.bounds.max,
-        node.right,
-        glm::ivec4(node.count, node.start, 0, 0)
-      };
+        it->bounds.min,
+        float(it->left),
+        it->bounds.max,
+        float(it->right),
+        glm::ivec4(it->count, it->start, 0, 0)
+      });
     }
   }
 
