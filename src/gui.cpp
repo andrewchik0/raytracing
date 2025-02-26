@@ -114,6 +114,14 @@ namespace raytracing
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
     }
 
+    ImGui::Separator();
+    if (rt::get()->mBVHLoading)
+      ImGui::Text("Building bounding volume hierarchies...");
+    if (rt::get()->mTexturesLoading)
+      ImGui::Text("Loading textures...");
+    if (rt::get()->mModelsLoading)
+      ImGui::Text("Loading 3D models...");
+
     ImVec2 windowSize = ImGui::GetWindowSize();
     ImGui::SetCursorPos(ImVec2(10, windowSize.y - 65));
     ImGui::Text("Left mouse button - Rotate");

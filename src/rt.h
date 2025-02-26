@@ -45,7 +45,7 @@ namespace raytracing
 
     float mTime = 0.0f;
 
-    bool mTexturesLoading = false;
+    bool mTexturesLoading = false, mModelsLoading = false, mBVHLoading = false, mBVHBuilt = false;
     bool mLoaded = false;
 
     uint32_t mWindowWidth = 0, mWindowHeight = 0;

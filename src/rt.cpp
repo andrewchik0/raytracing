@@ -4,6 +4,7 @@
 #include <imgui-SFML.h>
 #include <iostream>
 #include <nfd.h>
+#include <thread>
 
 namespace raytracing
 {
@@ -57,7 +58,11 @@ namespace raytracing
 
     while (mWindow.isOpen())
     {
-      if (!mTexturesLoading)
+      if (!mTexturesLoading && !mModelsLoading && !mBVHLoading && !mBVHBuilt)
+      {
+        mRender.build_bvh();
+      }
+      if (!mTexturesLoading && !mModelsLoading && !mBVHLoading)
       {
         if (!mLoaded)
         {
@@ -98,11 +103,16 @@ namespace raytracing
 
   void rt::add_model(const std::string& filename)
   {
-    model m;
-    m.load_from_file(filename.c_str());
+    std::thread([&, filename]
+    {
+      model m;
+      m.load_from_file(filename.c_str());
 
-    mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-    mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+      mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
+      mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+
+      mModelsLoading = false;
+    }).detach();
   }
 
   void rt::render_to_image(const std::string& image_path)

@@ -30,6 +30,7 @@ namespace raytracing
     float mBlurSize = 5.0;
 
     void init();
+    void build_bvh();
     void post_init();
     void clear();
     void draw(sf::RenderTarget* window);
@@ -79,12 +80,6 @@ namespace raytracing
     void set_uniforms();
 
     status load_shaders();
-
-    void set_texture_data_buffers()
-    {
-      mBoundingVolumeBuilder.build();
-      mTextures.load_triangles_to_gpu(mTriangles, mBoundingVolumes, mVertices);
-    }
 
     friend class rt;
     friend class gui;

@@ -49,6 +49,8 @@ namespace raytracing
     rt::get()->mRender.reset_accumulation();
     rt::get()->mSceneFilename = filename.string();
     rt::get()->mSceneFilename.resize(256, 0);
+    rt::get()->mBVHBuilt = false;
+
     YAML::Node scene = YAML::LoadFile(filename.string());
 
     {
@@ -99,6 +101,7 @@ namespace raytracing
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0)
           {
+            rt::get()->mModelsLoading = true;
             rt::get()->add_model(object["filename"].as<std::string>());
           }
         }
@@ -156,7 +159,6 @@ namespace raytracing
     if (result != NFD_OKAY)
       return;
 
-    rt::get()->mTexturesLoading = true;
     rt::get()->mLoaded = false;
     load(outPath);
     NFD_FreePathU8(outPath);

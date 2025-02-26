@@ -6,10 +6,6 @@ namespace raytracing
 {
   uniform_buffer::~uniform_buffer()
   {
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, 0);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glDeleteBuffers(1, &mBuffer);
-    mBuffer = 0;
   }
 
   void uniform_buffer::create(const uint32_t bindingPoint, const size_t size, const char* name, const int32_t shaderID)
