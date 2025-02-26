@@ -3,7 +3,7 @@ layout(location = 0) out vec4 outColor;
 
 in vec2 passTexCoord;
 
-uniform sampler2DArray sky;
+uniform sampler2D sky;
 uniform sampler2DArray texArray;
 uniform isampler2DArray trianglesTexture;
 

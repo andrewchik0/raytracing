@@ -163,7 +163,7 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
       {
         float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
         float phi = atan(dir.x, dir.z);
-        vec3 skyColor = min(texture(sky, vec3(phi / PI / 2.0 + 0.5, theta / PI, 0)).rgb, vec3(42.0));
+        vec3 skyColor = min(texture(sky, vec2(phi / PI / 2.0 + 0.5, theta / PI)).rgb, vec3(42.0));
         sampleColor *= skyColor;
         break;
       }

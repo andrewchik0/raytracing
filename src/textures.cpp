@@ -70,21 +70,25 @@ namespace raytracing
     mTexturesData.clear();
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
     glGenTextures(1, &mSky);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
+    glBindTexture(GL_TEXTURE_2D, mSky);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA16F, mSkyWidth, mSkyHeight, 1);
-    glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, mSkyWidth, mSkyHeight,
-        1, GL_RGBA, GL_FLOAT, mSkyTextureData);
+    glTexStorage2D(GL_TEXTURE_2D, mipLevels, GL_RGBA16F, mSkyWidth, mSkyHeight);
+
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, mSkyWidth, mSkyHeight,
+        GL_RGBA, GL_FLOAT, mSkyTextureData);
 
     stbi_image_free(mSkyTextureData);
 
-    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
   }
 
 
@@ -109,7 +113,7 @@ namespace raytracing
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
     rt::get()->mRender.mShader.setUniform("texArray", 0);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
+    glBindTexture(GL_TEXTURE_2D, mSky);
     rt::get()->mRender.mShader.setUniform("sky", 1);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);

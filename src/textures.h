@@ -11,8 +11,11 @@ namespace raytracing
   class textures
   {
   public:
-    static constexpr size_t sMaxTexture = 4096;
-    static constexpr size_t sMaxTriangles = sMaxTexture * sMaxTexture;
+    static constexpr size_t
+      sMaxTexture = 4096,
+      sMaxTriangles = sMaxTexture * sMaxTexture,
+      sMaxBoundingVolumes = sMaxTexture * sMaxTexture,
+      sMaxVertices = sMaxTexture * sMaxTexture;
 
     ~textures();
 
@@ -37,9 +40,11 @@ namespace raytracing
       mSkyWidth = 2048, mSkyHeight = 1024;
 
     // Textures are stored in arrays because of conflicts with SFML
-    uint32_t mTextureArray = 0;           // Usual material textures
-    uint32_t mSky = 0;                    // Sky texture
-    uint32_t mTrianglesDataTexture = 0;   // Triangles data encoded into a texture
+    uint32_t mTextureArray = 0;              // Usual material textures
+    uint32_t mSky = 0;                       // Sky texture
+    uint32_t mTrianglesDataTexture = 0;      // Triangles data encoded into a texture
+    uint32_t mVerticesDataTexture = 0;       // Vertices data encoded into a texture
+    uint32_t mBoundingVolumesTexture = 0;    // Bounding volumes data encoded into a texture
 
     std::vector<std::string> mTextureFilenames;
     std::vector<uint8_t *> mTexturesData;
