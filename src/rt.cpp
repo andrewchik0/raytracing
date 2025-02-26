@@ -103,6 +103,7 @@ namespace raytracing
 
   void rt::add_model(const std::string& filename)
   {
+    mModelNames.push_back(filename);
     std::thread([&, filename]
     {
       model m;
