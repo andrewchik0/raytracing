@@ -38,6 +38,14 @@ namespace raytracing
     }
   }
 
+  void textures::allocate_triangles_buffer()
+  {
+    glGenTextures(1, &mTrianglesDataTexture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32I, sMaxTexture, sMaxTexture, 1);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+  }
+
   void textures::load_to_gpu()
   {
     int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
@@ -66,10 +74,8 @@ namespace raytracing
     glGenTextures(1, &mSky);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA16F, mSkyWidth, mSkyHeight, 1);
     glTexSubImage3D(
@@ -84,21 +90,20 @@ namespace raytracing
 
   void textures::unload()
   {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
     if (glIsTexture(mTextureArray))
     {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
       glDeleteTextures(1, &mTextureArray);
       mTextureArray = 0;
     }
     if (glIsTexture(mSky))
     {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
       glDeleteTextures(1, &mSky);
       mSky = 0;
     }
   }
 
-  void textures::push()
+  void textures::bind()
   {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
@@ -106,6 +111,9 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mSky);
     rt::get()->mRender.mShader.setUniform("sky", 1);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
+    rt::get()->mRender.mShader.setUniform("trianglesTexture", 2);
   }
 
   void textures::reload()
@@ -116,6 +124,20 @@ namespace raytracing
       load_to_memory();
       rt::get()->mLoading = false;
     }).detach();
+  }
+
+  void textures::load_triangles_to_gpu(std::vector<TriangleObject>& triangles)
+  {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
+    size_t trianglesSize = triangles.size();
+    trianglesSize = (trianglesSize / sMaxTexture + 1) * sMaxTexture;
+    triangles.resize(trianglesSize);
+    glTexSubImage3D(
+      GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
+      sMaxTexture, trianglesSize / sMaxTexture, 1, GL_RGBA_INTEGER, GL_INT,
+      triangles.data()
+    );
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   }
 
   void textures::load_from_filesystem()

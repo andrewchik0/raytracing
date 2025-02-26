@@ -67,7 +67,7 @@ namespace raytracing
       {
         rt::get()->mRender.mSpheresCount = 0;
         rt::get()->mRender.mPlanesCount = 0;
-        rt::get()->mRender.mTrianglesCount = 0;
+        rt::get()->mRender.mTriangles.clear();
         rt::get()->mRender.mBoundingVolumes.fill(BoundingVolume());
         rt::get()->mRender.mBoundingVolumesCount = 0;
 
@@ -160,7 +160,7 @@ namespace raytracing
     rt::get()->mLoaded = false;
     load(outPath);
     NFD_FreePathU8(outPath);
-    rt::get()->mRender.mBoundingVolumeBuilder.build();
+    rt::get()->mRender.post_init();
   }
 
   void scene_serializer::save(const std::filesystem::path& filename)

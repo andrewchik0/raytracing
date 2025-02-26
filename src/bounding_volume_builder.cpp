@@ -90,20 +90,20 @@ namespace raytracing
 
   void bounding_volume_builder::build()
   {
-    std::vector<uint32_t> triangleIndices(rt::get()->mRender.mTrianglesCount);
+    std::vector<uint32_t> triangleIndices(rt::get()->mRender.mTriangles.size());
     std::iota(triangleIndices.begin(), triangleIndices.end(), 0);
 
     mBVHNodes.clear();
     mBVHNodes.emplace_back();
 
-    build_node(0, triangleIndices, 0, rt::get()->mRender.mTrianglesCount);
+    build_node(0, triangleIndices, 0, rt::get()->mRender.mTriangles.size());
     store_bvh();
 
-    std::array<TriangleObject, MAX_TRIANGLES> triangleCopies;
+    std::vector<TriangleObject> triangleCopies(rt::get()->mRender.mTriangles.size());
     for (size_t i = 0; i < triangleIndices.size(); ++i)
     {
       triangleCopies[i] = rt::get()->mRender.mTriangles[triangleIndices[i]];
     }
-    std::copy_n(triangleCopies.begin(), MAX_TRIANGLES, rt::get()->mRender.mTriangles.begin());
+    std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mRender.mTriangles.begin());
   }
 }

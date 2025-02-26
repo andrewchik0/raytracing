@@ -28,6 +28,15 @@ namespace raytracing
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.getNativeHandle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.getNativeHandle());
+
+    mTextures.allocate_triangles_buffer();
+  }
+
+  void render::post_init()
+  {
+    mBoundingVolumeBuilder.build();
+    mTextures.load_triangles_to_gpu(mTriangles);
+    mTextures.load_to_gpu();
   }
 
   void render::clear()
@@ -43,7 +52,7 @@ namespace raytracing
     mAccumulatingFrameIndex++;
     set_uniforms();
     push_scene();
-    mTextures.push();
+    mTextures.bind();
 
     // Main pass
     mLastFrameTexture.draw(mRenderQuad, &mShader);
@@ -99,13 +108,11 @@ namespace raytracing
     }
     memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
-    memcpy(buffer.triangles, mTriangles.data(), sizeof(TriangleObject) * MAX_TRIANGLES);
     memcpy(buffer.vertices, mVertices.data(), sizeof(Vertex) * MAX_VERTICES);
     memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
     memcpy(buffer.volumes, mBoundingVolumes.data(), sizeof(BoundingVolume) * MAX_BOUNDING_VOLUMES);
     buffer.planesCount = mPlanesCount;
     buffer.spheresCount = mSpheresCount;
-    buffer.trianglesCount = mTrianglesCount;
     mSceneBuffer.set(&buffer);
   }
 
@@ -147,6 +154,7 @@ namespace raytracing
     data.exposure = mExposure;
     data.blurSize = mBlurSize;
     data.windowSize = { rt::get()->mWindowWidth, rt::get()->mWindowHeight };
+    data.maxTextureSize = mTextures.sMaxTexture;
     mGlobalDataBuffer.set(&data);
   }
 }

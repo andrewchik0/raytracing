@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera.h"
-#include "imgui.h"
+#include "gui.h"
 #include "input.h"
 #include "render.h"
 #include "scene_serializer.h"
@@ -53,7 +53,7 @@ namespace raytracing
     input mInput;
     camera mCamera;
     render mRender {};
-    imgui mGui;
+    gui mGui;
     scene_serializer mSceneSerializer;
 
     std::string mSceneFilename = "";
@@ -69,7 +69,7 @@ namespace raytracing
     friend class camera;
     friend class input;
     friend class render;
-    friend class imgui;
+    friend class gui;
     friend class scene_serializer;
     friend class skybox;
     friend class textures;

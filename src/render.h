@@ -18,7 +18,18 @@ namespace raytracing
   class render
   {
   public:
+    textures mTextures;
+
+    bool mUseFXAA = true;
+    uint32_t mSamplesCount = 1;
+    uint32_t mBouncesCount = 2;
+
+    float mGamma = 1.0;
+    float mExposure = 2.5;
+    float mBlurSize = 5.0;
+
     void init();
+    void post_init();
     void clear();
     void draw(sf::RenderTarget* window);
     void resize(uint32_t width, uint32_t height);
@@ -44,25 +55,15 @@ namespace raytracing
 
     int32_t mAccumulatingFrameIndex = 0;
 
-    bool mUseFXAA = true;
-    uint32_t mSamplesCount = 1;
-    uint32_t mBouncesCount = 2;
-    glm::vec3 mLightDirection = glm::vec3(0.8, 1.0, 1.0);
-
-    float mGamma = 1.0;
-    float mExposure = 2.5;
-    float mBlurSize = 5.0;
-
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
-    std::array<TriangleObject, MAX_TRIANGLES> mTriangles;
     std::array<Vertex, MAX_VERTICES> mVertices;
     std::array<Material, MAX_MATERIALS> mMaterials;
+    std::vector<TriangleObject> mTriangles;
     std::array<BoundingVolume, MAX_BOUNDING_VOLUMES> mBoundingVolumes;
     size_t
       mSpheresCount = 0,
       mPlanesCount = 0,
-      mTrianglesCount = 0,
       mBoundingVolumesCount = 0,
       mVertexCount = 0,
       mMaterialsCount = 0;
@@ -70,11 +71,9 @@ namespace raytracing
     // Additional data stored separately in order to easily pass object data to the shader
     std::array<object_additional, MAX_SPHERES> mSpheresAdditional;
     std::array<object_additional, MAX_PLANES> mPlanesAdditional;
-    std::array<object_additional, MAX_TRIANGLES> mTrianglesAdditional;
     std::array<object_additional, MAX_MATERIALS> mMaterialsAdditional;
 
     uniform_buffer mSceneBuffer, mGlobalDataBuffer;
-    textures mTextures;
     bounding_volume_builder mBoundingVolumeBuilder;
 
     void set_uniforms();
@@ -82,7 +81,7 @@ namespace raytracing
     status load_shaders();
 
     friend class rt;
-    friend class imgui;
+    friend class gui;
     friend class scene_serializer;
     friend class textures;
     friend class bounding_volume_builder;

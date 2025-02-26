@@ -13,8 +13,15 @@ vec3 calculateRayDirection()
 struct BVHHit
 {
   int triangleIndex;
+  int materialIndex;
   float distance;
 };
+
+// XYZ - are vertex indices, W is material index
+ivec4 getTriangle(int index)
+{
+  return texelFetch(trianglesTexture, ivec3(index % maxTextureSize, index / maxTextureSize, 0), 0);
+}
 
 BVHHit intersectBVH(vec3 orig, vec3 dir)
 {
@@ -43,17 +50,18 @@ BVHHit intersectBVH(vec3 orig, vec3 dir)
 
       for (int i = 0; i < triCount; i++)
       {
-        TriangleObject tri = triangles[triStart + i];
+        ivec4 triangle = getTriangle(triStart + i);
 
-        vec3 v0 = vertices[tri.indices.x].position.xyz;
-        vec3 v1 = vertices[tri.indices.y].position.xyz;
-        vec3 v2 = vertices[tri.indices.z].position.xyz;
+        vec3 v0 = vertices[triangle.x].position.xyz;
+        vec3 v1 = vertices[triangle.y].position.xyz;
+        vec3 v2 = vertices[triangle.z].position.xyz;
 
         float t = rayTriangleIntersect(orig, dir, v0, v1, v2);
         if (t > 0.0 && t < hit.distance)
         {
           hit.distance = t;
           hit.triangleIndex = triStart + i;
+          hit.materialIndex = 1;
         }
       }
     }
@@ -122,12 +130,13 @@ ClosestHit closestHit(vec3 rayOrigin, vec3 rayDirection)
   BVHHit bvhHit = intersectBVH(rayOrigin, rayDirection);
   if (result.distance > bvhHit.distance)
   {
-    Vertex a = vertices[triangles[bvhHit.triangleIndex].indices[0]];
-    Vertex b = vertices[triangles[bvhHit.triangleIndex].indices[1]];
-    Vertex c = vertices[triangles[bvhHit.triangleIndex].indices[2]];
+    ivec4 triangle = getTriangle(bvhHit.triangleIndex);
+    Vertex a = vertices[triangle[0]];
+    Vertex b = vertices[triangle[1]];
+    Vertex c = vertices[triangle[2]];
     result.distance = bvhHit.distance;
     result.normal = normalize(a.normal.xyz + c.normal.xyz + b.normal.xyz);
-    result.materialIndex = 1;
+    result.materialIndex = bvhHit.materialIndex;
     result.textureCoordinates = a.position.xy;
     result.tangent = a.tangent.xyz;
     result.bitangent = a.bitangent.xyz;
@@ -145,7 +154,7 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
   for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
   {
     vec3 org = rayOrigin, dir = rayDirection;
-    vec3 sampleColor = vec3(0);
+    vec3 sampleColor = vec3(1);
 
     for (uint i = 0; i < bounces; i++)
     {
@@ -155,10 +164,7 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
         float theta = atan(sqrt(dir.x * dir.x + dir.z * dir.z), dir.y);
         float phi = atan(dir.x, dir.z);
         vec3 skyColor = min(texture(sky, vec3(phi / PI / 2.0 + 0.5, theta / PI, 0)).rgb, vec3(42.0));
-        if (sampleColor == vec3(0))
-          sampleColor = skyColor;
-        else
-          sampleColor = sampleColor * skyColor;
+        sampleColor *= skyColor;
         break;
       }
       else
@@ -188,10 +194,7 @@ vec3 castRay(vec3 rayOrigin, vec3 rayDirection)
           sampleColor = e;
           break;
         }
-        if (sampleColor == vec3(0))
-          sampleColor = albedo + e;
-        else
-          sampleColor = sampleColor * albedo + e;
+        sampleColor = sampleColor * albedo + e;
 
         org = hit.position + normal * bias;
         normal = normalize(normal + rand3((dir + org) * (sampleCounter + 1.0)) * roughness);

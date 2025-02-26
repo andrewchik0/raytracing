@@ -18,7 +18,10 @@ namespace raytracing
   {
     sInstance = this;
     if (!std::filesystem::exists("shaders/main.frag"))
+    {
+      std::cerr << "Filed to load shaders, folder does not exist!\n";
       return;
+    }
 
     NFD_Init();
 
@@ -41,7 +44,6 @@ namespace raytracing
 
     mLoading = true;
     mSceneSerializer.load(options.scene_filename);
-    mRender.mBoundingVolumeBuilder.build();
   }
 
   void rt::run()
@@ -60,7 +62,7 @@ namespace raytracing
       {
         if (!mLoaded)
         {
-          mRender.mTextures.load_to_gpu();
+          mRender.post_init();
           mLoaded = true;
         }
 
@@ -99,9 +101,9 @@ namespace raytracing
   {
     model m;
     m.load_from_file(filename.c_str());
-    mRender.mTrianglesCount = glm::min(int32_t(m.mTriangles.size()), MAX_TRIANGLES);
+
     mRender.mVertexCount = glm::min(int32_t(m.mVertices.size()), MAX_VERTICES);
-    std::copy_n(m.mTriangles.begin(), mRender.mTrianglesCount, mRender.mTriangles.begin());
+    mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
     std::copy_n(m.mVertices.begin(), mRender.mVertexCount, mRender.mVertices.begin());
   }
 

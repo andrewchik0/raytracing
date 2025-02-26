@@ -17,8 +17,8 @@ add_executable(ray-tracing
   src/render.h
   src/uniform_buffer.cpp
   src/uniform_buffer.h
-  src/imgui.cpp
-  src/imgui.h
+  src/gui.cpp
+  src/gui.h
   src/scene_serializer.cpp
   src/scene_serializer.h
   src/textures.cpp
