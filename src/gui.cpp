@@ -199,6 +199,8 @@ namespace raytracing
       rt::get()->mRender.load_shaders();
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
     }
+    if (rt::get()->mRender.mShaderErrors.size() > 0)
+      ImGui::Text(rt::get()->mRender.mShaderErrors.c_str());
 
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();

@@ -29,11 +29,11 @@ namespace raytracing
       textureLoadingThreads.emplace_back([&, i]
         {
           int w, h, channels;
-          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
+          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 3))
           {
             mTexturesData[i] = stbir_resize_uint8_linear(
               data, w, h, 0, nullptr,
-              mTextureWidth, mTextureHeight, 0, STBIR_RGBA);
+              mTextureWidth, mTextureHeight, 0, STBIR_RGB);
             stbi_image_free(data);
           }
         }
@@ -43,14 +43,14 @@ namespace raytracing
     textureLoadingThreads.emplace_back([&]
     {
       int w, h, channels;
-      if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
+      if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 3))
       {
         for (size_t i = 0; i < w * h * channels; ++i)
           if (data[i] > 1000.0)
             data[i] = 1000.0;
         mSkyTextureData = stbir_resize_float_linear(
           data, w, h, 0, nullptr,
-          mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
+          mSkyWidth, mSkyHeight, 0, STBIR_RGB);
         stbi_image_free(data);
       }
     });
@@ -84,18 +84,18 @@ namespace raytracing
     glGenTextures(1, &mTextureArray);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA8, mTextureWidth, mTextureHeight, mTexturesCountMax);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGB8, mTextureWidth, mTextureHeight, mTexturesCountMax);
 
     for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
     {
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
-        1, GL_RGBA, GL_UNSIGNED_BYTE, mTexturesData[i]);
+        1, GL_RGB, GL_UNSIGNED_BYTE, mTexturesData[i]);
       stbi_image_free(mTexturesData[i]);
     }
     mTexturesData.clear();
@@ -109,11 +109,11 @@ namespace raytracing
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexStorage2D(GL_TEXTURE_2D, mipLevels, GL_RGBA16F, mSkyWidth, mSkyHeight);
+    glTexStorage2D(GL_TEXTURE_2D, mipLevels, GL_RGB16F, mSkyWidth, mSkyHeight);
 
     glTexSubImage2D(
         GL_TEXTURE_2D, 0, 0, 0, mSkyWidth, mSkyHeight,
-        GL_RGBA, GL_FLOAT, mSkyTextureData);
+        GL_RGB, GL_FLOAT, mSkyTextureData);
 
     stbi_image_free(mSkyTextureData);
 

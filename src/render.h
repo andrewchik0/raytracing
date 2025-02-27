@@ -39,6 +39,8 @@ namespace raytracing
       mPlanesCount = 0,
       mMaterialsCount = 0;
 
+    std::string mShaderErrors;
+
     void init();
     void post_init();
     void clear();

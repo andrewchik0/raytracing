@@ -3,10 +3,16 @@
 #include <fstream>
 #include <iostream>
 
+#include "SFML/System/Err.hpp"
+#include "rt.h"
+
 namespace raytracing
 {
   status shader::load(const std::string& vertexPath, const std::string& fragmentPath)
   {
+    std::ostringstream errorBuffer;
+    std::streambuf* oldBuffer = sf::err().rdbuf(errorBuffer.rdbuf());
+
     auto
      vertexIncluded = std::set<std::string>(),
      fragmentIncluded = std::set<std::string>();
@@ -14,8 +20,13 @@ namespace raytracing
     auto fragment = parse_shader_from_file(fragmentPath, fragmentIncluded);
 
     if (!this->loadFromMemory(vertex, fragment))
+    {
+      sf::err().rdbuf(oldBuffer);
+      rt::get()->mRender.mShaderErrors += errorBuffer.str();
       return status::error;
+    }
 
+    sf::err().rdbuf(oldBuffer);
     return status::success;
   }
 
