@@ -18,3 +18,4 @@
 ### Troubleshooting
 
 - Depending on the compiler, `STB_IMAGE_IMPLEMENTATION` may conflict with SMFL's implementation. If so, navigate to  `third_party/stb/stb_image_wrapper.cpp` and remove the `#define STB_IMAGE_IMPLEMENTATION` preprocessor define
+- If CMake fails to load the project due to a version compatibility error, use `CMake 3.28.3`

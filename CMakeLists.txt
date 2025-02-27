@@ -52,3 +52,5 @@ target_link_libraries(ray-tracing PUBLIC
   nfd
   assimp
 )
+
+set_property(TARGET ray-tracing PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
