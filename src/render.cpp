@@ -33,17 +33,6 @@ namespace raytracing
     mTextures.allocate_triangles_buffer();
   }
 
-  void render::build_bvh()
-  {
-    rt::get()->mBVHLoading = true;
-    std::thread([&]
-    {
-      mBoundingVolumeBuilder.build();
-      rt::get()->mBVHLoading = false;
-      rt::get()->mBVHBuilt = true;
-    }).detach();
-  }
-
   void render::post_init()
   {
     mTextures.load_triangles_to_gpu(mTriangles, mBoundingVolumes, mVertices);

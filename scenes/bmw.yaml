@@ -12,7 +12,7 @@ objects:
     distance: 0.119999997
     materialIndex: 0
   - type: model
-    filename: assets/bmw.fbx
+    filename: assets/bmw/bmw.fbx
 materials:
   - name: Plane material
     albedo: [0.800000012, 0.800000012, 0.800000012]

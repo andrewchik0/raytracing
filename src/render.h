@@ -31,8 +31,15 @@ namespace raytracing
     float mExposure = 2.5;
     float mBlurSize = 5.0;
 
+    std::array<SphereObject, MAX_SPHERES> mSpheres;
+    std::array<PlaneObject, MAX_PLANES> mPlanes;
+    std::array<Material, MAX_MATERIALS> mMaterials;
+    size_t
+      mSpheresCount = 0,
+      mPlanesCount = 0,
+      mMaterialsCount = 0;
+
     void init();
-    void build_bvh();
     void post_init();
     void clear();
     void draw(sf::RenderTarget* target);
@@ -59,17 +66,10 @@ namespace raytracing
 
     int32_t mAccumulatingFrameIndex = 0;
 
-    std::array<SphereObject, MAX_SPHERES> mSpheres;
-    std::array<PlaneObject, MAX_PLANES> mPlanes;
-    std::array<Material, MAX_MATERIALS> mMaterials;
 
     std::vector<Vertex> mVertices;
     std::vector<TriangleObject> mTriangles;
     std::vector<BoundingVolume> mBoundingVolumes;
-    size_t
-      mSpheresCount = 0,
-      mPlanesCount = 0,
-      mMaterialsCount = 0;
 
     // Additional data stored separately in order to easily pass object data to the shader
     std::array<object_additional, MAX_SPHERES> mSpheresAdditional;

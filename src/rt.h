@@ -27,6 +27,13 @@ namespace raytracing
   class rt
   {
   public:
+
+    input mInput;
+    camera mCamera;
+    render mRender {};
+    gui mGui;
+    render_options mRenderOptions;
+
     ~rt();
 
     void init(const init_options& options);
@@ -52,17 +59,12 @@ namespace raytracing
 
     float mTime = 0.0f;
 
-    bool mTexturesLoading = false, mModelsLoading = false, mBVHLoading = false, mBVHBuilt = false;
+    bool mTexturesLoading = false, mModelsLoading = false, mBVHLoading = false;
     bool mLoaded = false;
 
     uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
-    input mInput;
-    camera mCamera;
-    render mRender {};
-    gui mGui;
     scene_serializer mSceneSerializer;
-    render_options mRenderOptions;
 
     std::string mSceneFilename = "";
     std::vector<std::string> mModelNames;
@@ -73,6 +75,8 @@ namespace raytracing
 
     void set_viewport();
     void set_viewport(uint32_t width, uint32_t height);
+
+    void load_async();
 
     static rt* sInstance;
 

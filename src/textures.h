@@ -27,7 +27,7 @@ namespace raytracing
     void load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices);
     void load_to_gpu();
 
-    void add_texture(const std::string& name);
+    size_t add_texture(const std::string& name);
     void load_from_filesystem();
 
     void allocate_triangles_buffer();
@@ -36,7 +36,7 @@ namespace raytracing
 
     uint32_t
       mTextureWidth = 2048, mTextureHeight = 2048,
-      mTexturesCountMax = 32,
+      mTexturesCountMax = 64,
       mSkyWidth = 2048, mSkyHeight = 1024;
 
     // Textures are stored in arrays because of conflicts with SFML

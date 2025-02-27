@@ -21,21 +21,34 @@ namespace raytracing
 
   void textures::load_to_memory()
   {
-    for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
+    mTexturesData.resize(glm::min(mTexturesCountMax, (uint32_t)mTextureFilenames.size()));
+    std::vector<std::thread> textureLoadingThreads;
+
+    for (size_t i = 0; i < mTexturesData.size(); ++i)
     {
-      int w, h, channels;
-      mTexturesData.push_back(stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4));
+      textureLoadingThreads.emplace_back([&]
+        {
+          int w, h, channels;
+          mTexturesData[i] = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4);
+        }
+      );
     }
 
-    int w, h, channels;
-    if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
+    textureLoadingThreads.emplace_back([&]
     {
-      for (size_t i = 0; i < w * h * channels; ++i)
-        if (data[i] > 1000.0)
-          data[i] = 1000.0;
-      mSkyTextureData = stbir_resize_float_linear(data, w, h, 0, nullptr, mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
-      stbi_image_free(data);
-    }
+      int w, h, channels;
+      if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 4))
+      {
+        for (size_t i = 0; i < w * h * channels; ++i)
+          if (data[i] > 1000.0)
+            data[i] = 1000.0;
+        mSkyTextureData = stbir_resize_float_linear(data, w, h, 0, nullptr, mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
+        stbi_image_free(data);
+      }
+    });
+
+    for (auto& thread : textureLoadingThreads)
+      thread.join();
   }
 
   void textures::allocate_triangles_buffer()
@@ -141,11 +154,7 @@ namespace raytracing
   void textures::reload()
   {
     unload();
-    std::thread([&]
-    {
-      load_to_memory();
-      rt::get()->mTexturesLoading = false;
-    }).detach();
+    load_to_memory();
   }
 
   void textures::load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices)
@@ -210,10 +219,11 @@ namespace raytracing
     NFD_FreePathU8(outPath);
   }
 
-  void textures::add_texture(const std::string& name)
+  size_t textures::add_texture(const std::string& name)
   {
     if (mTextureFilenames.size() < mTexturesCountMax)
       mTextureFilenames.push_back(name);
+    return mTextureFilenames.size() - 1;
   }
 
 } // namespace raytracing

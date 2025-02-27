@@ -48,9 +48,9 @@ namespace raytracing
   {
     rt::get()->mRender.reset_accumulation();
     rt::get()->mRender.clear();
+    rt::get()->mModelNames.clear();
     rt::get()->mSceneFilename = filename.string();
     rt::get()->mSceneFilename.resize(256, 0);
-    rt::get()->mBVHBuilt = false;
 
     YAML::Node scene = YAML::LoadFile(filename.string());
 
@@ -102,7 +102,6 @@ namespace raytracing
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0)
           {
-            rt::get()->mModelsLoading = true;
             rt::get()->add_model(object["filename"].as<std::string>());
           }
         }
@@ -141,9 +140,9 @@ namespace raytracing
           auto texture = it->as<std::string>();
           rt::get()->mRender.mTextures.add_texture(texture);
         }
-        rt::get()->mRender.mTextures.reload();
       }
     }
+    rt::get()->load_async();
   }
 
 

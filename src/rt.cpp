@@ -46,9 +46,8 @@ namespace raytracing
 
   void rt::run()
   {
-    if (!mTexturesLoading)
+    if (!std::filesystem::exists("assets/loading.png"))
       return;
-
     sf::Texture loadingTexture("assets/loading.png");
     sf::Sprite loadingSprite(loadingTexture);
     loadingSprite.setOrigin((sf::Vector2f)loadingTexture.getSize() / 2.f);
@@ -56,10 +55,6 @@ namespace raytracing
 
     while (mWindow.isOpen())
     {
-      if (!mTexturesLoading && !mModelsLoading && !mBVHLoading && !mBVHBuilt)
-      {
-        mRender.build_bvh();
-      }
       if (!mTexturesLoading && !mModelsLoading && !mBVHLoading)
       {
         if (!mLoaded)
@@ -103,16 +98,6 @@ namespace raytracing
   void rt::add_model(const std::string& filename)
   {
     mModelNames.push_back(filename);
-    std::thread([&, filename]
-    {
-      model m;
-      m.load_from_file(filename.c_str());
-
-      mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-      mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
-
-      mModelsLoading = false;
-    }).detach();
   }
 
   void rt::render_to_image()
@@ -181,6 +166,42 @@ namespace raytracing
   {
     mRender.resize(width, height);
     mCamera.resize(width, height);
+  }
+
+  void rt::load_async()
+  {
+    mModelsLoading = true;
+    std::thread([&]
+    {
+      std::vector<std::thread> modelThreads;
+
+      for (auto& modelName : mModelNames)
+      {
+        modelThreads.emplace_back([&]
+        {
+          model m;
+          m.load_from_file(modelName);
+
+          mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
+          mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+        });
+      }
+
+      for (auto& thread : modelThreads)
+        thread.join();
+
+      mTexturesLoading = true;
+      mModelsLoading = false;
+
+      mRender.mTextures.reload();
+
+      mBVHLoading = true;
+      mTexturesLoading = false;
+
+      mRender.mBoundingVolumeBuilder.build();
+
+      mBVHLoading = false;
+    }).detach();
   }
 
   void rt::add_sphere(const std::string& name, const SphereObject& object)
