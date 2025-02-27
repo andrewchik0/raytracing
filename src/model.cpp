@@ -126,7 +126,7 @@ namespace raytracing
       mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
     }
 
-    aiColor3D emissivity(1.0f, 1.0f, 1.0f);
+    aiColor3D emissivity(0, 0, 0);
     if (material->Get(AI_MATKEY_COLOR_EMISSIVE, diffuse) == AI_SUCCESS)
     {
       mat.emissivity = glm::vec3(emissivity.r, emissivity.g, emissivity.b);

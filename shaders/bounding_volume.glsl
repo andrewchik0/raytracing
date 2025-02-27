@@ -141,6 +141,7 @@ HitData intersectBVH(Ray ray)
     vec2 texCoords1 = vec2(v1.tangent.w, v1.bitangent.w);
     vec2 texCoords2 = vec2(v2.tangent.w, v2.bitangent.w);
     hit.textureCoordinates = w * texCoords0 + u * texCoords1 + v * texCoords2;
+    hit.textureCoordinates.y = 1.0 - hit.textureCoordinates.y;
     hit.materialIndex = triangle.w;
   }
 

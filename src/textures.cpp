@@ -26,10 +26,16 @@ namespace raytracing
 
     for (size_t i = 0; i < mTexturesData.size(); ++i)
     {
-      textureLoadingThreads.emplace_back([&]
+      textureLoadingThreads.emplace_back([&, i]
         {
           int w, h, channels;
-          mTexturesData[i] = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4);
+          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
+          {
+            mTexturesData[i] = stbir_resize_uint8_linear(
+              data, w, h, 0, nullptr,
+              mTextureWidth, mTextureHeight, 0, STBIR_RGBA);
+            stbi_image_free(data);
+          }
         }
       );
     }
@@ -42,7 +48,9 @@ namespace raytracing
         for (size_t i = 0; i < w * h * channels; ++i)
           if (data[i] > 1000.0)
             data[i] = 1000.0;
-        mSkyTextureData = stbir_resize_float_linear(data, w, h, 0, nullptr, mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
+        mSkyTextureData = stbir_resize_float_linear(
+          data, w, h, 0, nullptr,
+          mSkyWidth, mSkyHeight, 0, STBIR_RGBA);
         stbi_image_free(data);
       }
     });
