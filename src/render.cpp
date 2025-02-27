@@ -60,7 +60,7 @@ namespace raytracing
     mLastFrameTexture.draw(mRenderQuad, &mShader);
     mLastFrameTexture.display();
 
-    // Gaussian blur pass
+    // Bloom pass
     mBloomShader.setUniform("renderedTexture", mLastFrameTexture.getTexture());
     mBloomTexture.draw(mRenderQuad, &mBloomShader);
     mBloomTexture.display();

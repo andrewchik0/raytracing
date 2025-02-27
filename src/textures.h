@@ -36,7 +36,7 @@ namespace raytracing
 
     uint32_t
       mTextureWidth = 2048, mTextureHeight = 2048,
-      mTexturesCountMax = 64,
+      mTexturesCountMax = 128,
       mSkyWidth = 2048, mSkyHeight = 1024;
 
     // Textures are stored in arrays because of conflicts with SFML

@@ -15,7 +15,7 @@ using ivec4 = glm::ivec4;
 
 #define FAR_PLANE 1e12
 
-#define MAX_MATERIALS 64
+#define MAX_MATERIALS 128
 struct Material
 {
   vec3 albedo;

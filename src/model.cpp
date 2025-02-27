@@ -135,13 +135,21 @@ namespace raytracing
     std::string baseColorTexture = get_texture_path(material, aiTextureType_DIFFUSE);
     std::string metallicTexture = get_texture_path(material, aiTextureType_METALNESS);
     std::string normalTexture = get_texture_path(material, aiTextureType_NORMALS);
+    std::string normalPBR = get_texture_path(material, aiTextureType_NORMAL_CAMERA);
+    std::string heightTexture = get_texture_path(material, aiTextureType_HEIGHT);
+
 
     if (baseColorTexture.size() > 0)
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());
     if (metallicTexture.size() > 0)
       mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string());
+
     if (normalTexture.size() > 0)
       mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalTexture).string());
+    else if (normalPBR.size() > 0)
+      mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalPBR).string());
+    else if (heightTexture.size() > 0)
+      mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / heightTexture).string());
 
     rt::get()->add_material(get_material_name(material), mat);
     return rt::get()->mRender.mMaterialsCount - 1;
