@@ -37,11 +37,13 @@ namespace raytracing
   {
     mTextures.load_triangles_to_gpu(mTriangles, mBoundingVolumes, mVertices);
     mTextures.load_to_gpu();
+    mAccumulatingFrameIndex = 0;
+    clear();
   }
 
   void render::clear()
   {
-    if (mAccumulatingFrameIndex > 32) return;
+    if (mAccumulatingFrameIndex > mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex)) return;
     mLastFrameTexture.clear();
     mFinalTexture.clear();
     mBloomTexture.clear();
@@ -50,7 +52,7 @@ namespace raytracing
 
   void render::draw(sf::RenderTarget* target)
   {
-    if (mAccumulatingFrameIndex > 32) return;
+    if (mAccumulatingFrameIndex > mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex)) return;
     mAccumulatingFrameIndex++;
     set_uniforms();
     push_scene();

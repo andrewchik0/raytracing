@@ -48,5 +48,7 @@ namespace raytracing
 
     void store_bvh();
     void build_node(int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start, int32_t end);
+
+    friend class gui;
   };
 }

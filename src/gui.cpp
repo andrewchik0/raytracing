@@ -189,8 +189,9 @@ namespace raytracing
     static bool vSync = false;
     if (check(ImGui::Checkbox("V-Sync", &vSync)))
       rt::get()->mWindow.setVerticalSyncEnabled(vSync);
-    int minSamples = 1, minBounces = 2;
+    int minAccumulation = 1, minBounces = 2;
     check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
+    check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
     ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.1, 0.001, 0, "%.2f");
     ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
     ImGui::Separator();
@@ -205,7 +206,11 @@ namespace raytracing
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
     if (rt::get()->mBVHLoading)
-      ImGui::Text("Building bounding volume hierarchies...");
+      ImGui::Text("Building bounding volume hierarchies... %.1f%%",
+        float(rt::get()->mRender.mBoundingVolumeBuilder.mBVHNodes.size()) /
+        float(rt::get()->mRender.mTriangles.size() * 2) *
+        100.0f
+      );
     if (rt::get()->mTexturesLoading)
       ImGui::Text("Loading textures...");
     if (rt::get()->mModelsLoading)

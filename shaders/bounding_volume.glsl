@@ -1,7 +1,7 @@
 #include "uniforms.h"
 
 // DO NOT TOUCH IN CLion it will crash GLGL plugin
-#define STACK_SIZE 128
+#define STACK_SIZE 2048
 
 struct HitData
 {

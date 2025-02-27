@@ -27,7 +27,7 @@ namespace raytracing
   private:
 
     uint32_t process_material(const aiMaterial* material);
-    void process_node(aiNode* node, const aiScene* scene);
+    void process_node(aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform);
     void process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform);
     static std::string get_material_name(const aiMaterial* material);
     static std::string get_texture_path(const aiMaterial* mat, aiTextureType type);

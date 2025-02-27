@@ -29,11 +29,11 @@ namespace raytracing
       textureLoadingThreads.emplace_back([&, i]
         {
           int w, h, channels;
-          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 3))
+          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
           {
             mTexturesData[i] = stbir_resize_uint8_linear(
               data, w, h, 0, nullptr,
-              mTextureWidth, mTextureHeight, 0, STBIR_RGB);
+              mTextureWidth, mTextureHeight, 0, STBIR_RGBA);
             stbi_image_free(data);
           }
         }
@@ -89,13 +89,13 @@ namespace raytracing
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGB8, mTextureWidth, mTextureHeight, mTexturesCountMax);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevels, GL_RGBA8, mTextureWidth, mTextureHeight, mTexturesCountMax);
 
     for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
     {
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
-        1, GL_RGB, GL_UNSIGNED_BYTE, mTexturesData[i]);
+        1, GL_RGBA, GL_UNSIGNED_BYTE, mTexturesData[i]);
       stbi_image_free(mTexturesData[i]);
     }
     mTexturesData.clear();

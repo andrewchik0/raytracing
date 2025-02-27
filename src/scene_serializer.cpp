@@ -50,7 +50,13 @@ namespace raytracing
     rt::get()->mRender.clear();
     rt::get()->mModelNames.clear();
     rt::get()->mSceneFilename = filename.string();
+    rt::get()->mRender.mBoundingVolumes.clear();
+    rt::get()->mRender.mTriangles.clear();
+    rt::get()->mRender.mVertices.clear();
     rt::get()->mSceneFilename.resize(256, 0);
+    rt::get()->mRender.mSpheresCount = 0;
+    rt::get()->mRender.mPlanesCount = 0;
+    rt::get()->mRender.mTextures.mTextureFilenames.clear();
 
     YAML::Node scene = YAML::LoadFile(filename.string());
 
@@ -68,13 +74,6 @@ namespace raytracing
 
       if (scene["objects"])
       {
-        rt::get()->mRender.mSpheresCount = 0;
-        rt::get()->mRender.mPlanesCount = 0;
-        rt::get()->mRender.mTextures.mTextureFilenames.clear();
-        rt::get()->mRender.mTriangles.clear();
-        rt::get()->mRender.mBoundingVolumes.clear();
-        rt::get()->mRender.mVertices.clear();
-
         auto objects = scene["objects"].as<YAML::Node>();
         size_t i = 0;
         for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it, ++i)
@@ -133,7 +132,6 @@ namespace raytracing
 
       if (scene["textures"])
       {
-        rt::get()->mTexturesLoading = true;
         auto textures = scene["textures"].as<YAML::Node>();
         for(YAML::const_iterator it = textures.begin(); it != textures.end(); ++it)
         {

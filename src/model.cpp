@@ -4,6 +4,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "assimp/pbrmaterial.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -33,7 +34,7 @@ namespace raytracing
       std::cerr << "Failed to load object: " << file << std::endl;
     }
 
-    process_node(scene->mRootNode, scene);
+    process_node(scene->mRootNode, scene, aiMatrix4x4());
   }
 
   void model::process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform)
@@ -50,7 +51,7 @@ namespace raytracing
     mVertices.reserve(mVertices.size() + mesh->mNumVertices);
     mTriangles.reserve(mTriangles.size() + mesh->mNumFaces);
 
-    glm::mat4 meshTransform = glm::transpose(glm::make_mat4(&transform.a1)); // Assimp uses row-major order
+    glm::mat4 meshTransform = glm::transpose(glm::make_mat4(&transform.a1));
 
     for (size_t i = 0; i < mesh->mNumVertices; ++i)
     {
@@ -101,9 +102,9 @@ namespace raytracing
   }
 
 
-  void model::process_node(aiNode* node, const aiScene* scene)
+  void model::process_node(aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform)
   {
-    aiMatrix4x4 nodeTransform = node->mTransformation;
+    aiMatrix4x4 nodeTransform = parentTransform * node->mTransformation;
 
     for (size_t i = 0; i < node->mNumMeshes; ++i)
     {
@@ -112,7 +113,7 @@ namespace raytracing
     }
     for (size_t i = 0; i < node->mNumChildren; ++i)
     {
-      process_node(node->mChildren[i], scene);
+      process_node(node->mChildren[i], scene, nodeTransform);
     }
   }
 
@@ -134,9 +135,21 @@ namespace raytracing
 
     std::string baseColorTexture = get_texture_path(material, aiTextureType_DIFFUSE);
     std::string metallicTexture = get_texture_path(material, aiTextureType_METALNESS);
+    std::string roughnessTexture = get_texture_path(material, aiTextureType_DIFFUSE_ROUGHNESS);
+    std::string ambientOcclusionTexture = get_texture_path(material, aiTextureType_AMBIENT_OCCLUSION);
     std::string normalTexture = get_texture_path(material, aiTextureType_NORMALS);
     std::string normalPBR = get_texture_path(material, aiTextureType_NORMAL_CAMERA);
+    std::string emissiveTexture = get_texture_path(material, aiTextureType_EMISSIVE);
+    std::string opacityTexture = get_texture_path(material, aiTextureType_OPACITY);
+    std::string displacementTexture = get_texture_path(material, aiTextureType_DISPLACEMENT);
     std::string heightTexture = get_texture_path(material, aiTextureType_HEIGHT);
+    std::string specularTexture = get_texture_path(material, aiTextureType_SPECULAR);
+    std::string shininessTexture = get_texture_path(material, aiTextureType_SHININESS);
+    std::string reflectionTexture = get_texture_path(material, aiTextureType_REFLECTION);
+    std::string lightmapTexture = get_texture_path(material, aiTextureType_LIGHTMAP);
+    std::string sheensTexture = get_texture_path(material, aiTextureType_SHEEN);
+    std::string clearcoatTexture = get_texture_path(material, aiTextureType_CLEARCOAT);
+    std::string transmissionTexture = get_texture_path(material, aiTextureType_TRANSMISSION);
 
 
     if (baseColorTexture.size() > 0)

@@ -113,12 +113,24 @@ vec3 castRay(Ray inputRay)
         }
         sampleColor = sampleColor * albedo + e;
 
+        float alpha = texture(texArray, vec3(texCoords, materials[hit.materialIndex].textureIndex)).a;
+
         if (renderMode != 1)
         {
           sampleColor = albedo * max(dot(normalize((vec3(1.0))), normal), 0.1);
           break;
         }
 
+//        if (alpha == 1.0)
+//        {
+//          ray.origin = hit.position + normal * bias;
+//          normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
+//          ray.direction = reflect(ray.direction, normal);
+//        }
+//        else
+//        {
+//          ray.origin = hit.position + ray.direction * bias;
+//        }
         ray.origin = hit.position + normal * bias;
         normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
         ray.direction = reflect(ray.direction, normal);

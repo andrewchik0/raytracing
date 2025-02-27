@@ -101,5 +101,7 @@ namespace raytracing
       triangleCopies[i] = rt::get()->mRender.mTriangles[triangleIndices[i]];
     }
     std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mRender.mTriangles.begin());
+
+    mBVHNodes.clear();
   }
 }

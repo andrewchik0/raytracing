@@ -26,6 +26,7 @@ namespace raytracing
     bool mInterpolateNormals = true;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
+    uint32_t mMaxAccumulation = 32;
 
     float mGamma = 1.0;
     float mExposure = 2.5;
