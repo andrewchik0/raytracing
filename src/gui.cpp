@@ -200,7 +200,8 @@ namespace raytracing
       rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
     }
 
-    ImGui::Separator();
+    if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
+      ImGui::Separator();
     if (rt::get()->mBVHLoading)
       ImGui::Text("Building bounding volume hierarchies...");
     if (rt::get()->mTexturesLoading)

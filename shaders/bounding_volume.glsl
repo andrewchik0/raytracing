@@ -64,6 +64,8 @@ HitData intersectBVH(Ray ray)
   vec3 invDir = 1.0 / ray.direction;
   HitData hit;
   hit.distance = FAR_PLANE;
+  int triangleIndex = -1;
+  vec2 foundUV;
 
   float stack[STACK_SIZE];
   int stackPtr = 0;
@@ -95,26 +97,9 @@ HitData intersectBVH(Ray ray)
         float t = rayTriangleIntersect(ray, v0.position.xyz, v1.position.xyz, v2.position.xyz, u, v);
         if (t < hit.distance)
         {
-          float w = 1.0 - u - v;
-
+          triangleIndex = triStart + i;
           hit.distance = t;
-          if (interpolateNormals == 1)
-          {
-            hit.normal = normalize(w * v0.normal.xyz + u * v1.normal.xyz + v * v2.normal.xyz);
-            hit.tangent = normalize(w * v0.tangent.xyz + u * v1.tangent.xyz + v * v2.tangent.xyz);
-            hit.bitangent = normalize(w * v0.bitangent.xyz + u * v1.bitangent.xyz + v * v2.bitangent.xyz);
-          }
-          else
-          {
-            hit.normal = normalize(v0.normal.xyz + v1.normal.xyz + v2.normal.xyz);
-            hit.tangent = normalize(v0.tangent.xyz + v1.tangent.xyz + v2.tangent.xyz);
-            hit.bitangent = normalize(v0.bitangent.xyz + v1.bitangent.xyz + v2.bitangent.xyz);
-          }
-          vec2 texCoords0 = vec2(v0.tangent.w, v0.bitangent.w);
-          vec2 texCoords1 = vec2(v1.tangent.w, v1.bitangent.w);
-          vec2 texCoords2 = vec2(v2.tangent.w, v2.bitangent.w);
-          hit.textureCoordinates = w * texCoords0 + u * texCoords1 + v * texCoords2;
-          hit.materialIndex = 1;
+          foundUV = vec2(u, v);
         }
       }
     }
@@ -127,6 +112,36 @@ HitData intersectBVH(Ray ray)
     }
 
     if (stackPtr >= STACK_SIZE) break;
+  }
+
+  if (hit.distance != FAR_PLANE)
+  {
+    float u = foundUV.x;
+    float v = foundUV.y;
+    float w = 1.0 - u - v;
+    ivec4 triangle = getTriangle(triangleIndex);
+
+    Vertex v0 = getVertex(triangle.x);
+    Vertex v1 = getVertex(triangle.y);
+    Vertex v2 = getVertex(triangle.z);
+
+    if (interpolateNormals == 1)
+    {
+      hit.normal = normalize(w * v0.normal.xyz + u * v1.normal.xyz + v * v2.normal.xyz);
+      hit.tangent = normalize(w * v0.tangent.xyz + u * v1.tangent.xyz + v * v2.tangent.xyz);
+      hit.bitangent = normalize(w * v0.bitangent.xyz + u * v1.bitangent.xyz + v * v2.bitangent.xyz);
+    }
+    else
+    {
+      hit.normal = normalize(v0.normal.xyz + v1.normal.xyz + v2.normal.xyz);
+      hit.tangent = normalize(v0.tangent.xyz + v1.tangent.xyz + v2.tangent.xyz);
+      hit.bitangent = normalize(v0.bitangent.xyz + v1.bitangent.xyz + v2.bitangent.xyz);
+    }
+    vec2 texCoords0 = vec2(v0.tangent.w, v0.bitangent.w);
+    vec2 texCoords1 = vec2(v1.tangent.w, v1.bitangent.w);
+    vec2 texCoords2 = vec2(v2.tangent.w, v2.bitangent.w);
+    hit.textureCoordinates = w * texCoords0 + u * texCoords1 + v * texCoords2;
+    hit.materialIndex = 1;
   }
 
   return hit;
