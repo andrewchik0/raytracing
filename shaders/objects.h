@@ -35,8 +35,8 @@ struct Vertex
 {
   vec4 position;
   vec4 normal;
-  vec4 tangent;
-  vec4 bitangent;
+  vec4 tangent;    // 4th component used for texture coordinates U
+  vec4 bitangent;  // 4th component used for texture coordinates V
 };
 
 #define BOUND_VOLUME_SIZE 3

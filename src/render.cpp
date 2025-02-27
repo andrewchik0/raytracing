@@ -173,6 +173,7 @@ namespace raytracing
     data.windowSize = { rt::get()->mWindowWidth, rt::get()->mWindowHeight, 0, 0 };
     data.maxTextureSize = mTextures.sMaxTextureDataSize;
     data.renderMode = mRenderMode;
+    data.interpolateNormals = mInterpolateNormals;
     mGlobalDataBuffer.set(&data);
   }
 }

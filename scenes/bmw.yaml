@@ -1,10 +1,10 @@
 exposure: 7.44999981
 gamma: 1.15999997
 blur_radius: 0
-sky_filename: assets/night.hdr
+sky_filename: assets/sky.hdr
 camera:
   position: [1.46941185, 1.17562461, 3.08327079]
-  direction: [-0.613005519, -0.30733335, -0.727853417]
+  direction: [-0.476157397, -0.359194309, -0.80265373]
 objects:
   - type: plane
     name: Plane

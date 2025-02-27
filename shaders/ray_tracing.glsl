@@ -9,20 +9,9 @@ vec3 calculateRayDirection(vec3 cameraDirection, vec3 cameraRight, vec3 cameraUp
   return normalize(cameraDirection.xyz + cameraRight.xyz * u + cameraUp.xyz * v);
 }
 
-struct ClosestHit
+HitData closestHit(Ray ray)
 {
-  vec3 normal;
-  vec3 tangent;
-  vec3 bitangent;
-  vec3 position;
-  vec2 textureCoordinates;
-  float distance;
-  uint materialIndex;
-};
-
-ClosestHit closestHit(Ray ray)
-{
-  ClosestHit result;
+  HitData result;
   result.distance = FAR_PLANE;
 
   for (uint i = 0; i < spheresCount; i++)
@@ -57,19 +46,15 @@ ClosestHit closestHit(Ray ray)
     }
   }
 
-  BVHHit bvhHit = intersectBVH(ray);
+  HitData bvhHit = intersectBVH(ray);
   if (result.distance > bvhHit.distance)
   {
-    ivec4 triangle = getTriangle(bvhHit.triangleIndex);
-    Vertex a = getVertex(triangle[0]);
-    Vertex b = getVertex(triangle[1]);
-    Vertex c = getVertex(triangle[2]);
     result.distance = bvhHit.distance;
-    result.normal = normalize(a.normal.xyz + c.normal.xyz + b.normal.xyz);
+    result.normal = bvhHit.normal;
     result.materialIndex = bvhHit.materialIndex;
-    result.textureCoordinates = a.position.xy;
-    result.tangent = a.tangent.xyz;
-    result.bitangent = a.bitangent.xyz;
+    result.textureCoordinates = bvhHit.textureCoordinates;
+    result.tangent = bvhHit.tangent;
+    result.bitangent = bvhHit.bitangent;
   }
 
   result.position = ray.direction * (result.distance) + ray.origin;
@@ -90,7 +75,7 @@ vec3 castRay(Ray inputRay)
 
     for (uint i = 0; i < bounces; i++)
     {
-      ClosestHit hit = closestHit(ray);
+      HitData hit = closestHit(ray);
       if (hit.distance == FAR_PLANE)
       {
         float theta = atan(sqrt(ray.direction.x * ray.direction.x + ray.direction.z * ray.direction.z), ray.direction.y);

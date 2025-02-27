@@ -27,9 +27,9 @@
   int samples;                      \
   int bounces;                      \
   int maxTextureSize;               \
-  int useFXAA;                     \
-  int renderMode;                  \
-  float _; \
+  int useFXAA;                      \
+  int renderMode;                   \
+  int interpolateNormals;           \
 }
 
 #ifdef __cplusplus

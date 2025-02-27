@@ -23,6 +23,7 @@ namespace raytracing
 
     bool mUseFXAA = true;
     bool mRenderMode = false;
+    bool mInterpolateNormals = true;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
 

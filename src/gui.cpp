@@ -184,6 +184,7 @@ namespace raytracing
 
     ImGui::Separator();
     check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
+    check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
     check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
     static bool vSync = false;
     if (check(ImGui::Checkbox("V-Sync", &vSync)))

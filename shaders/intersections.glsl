@@ -6,7 +6,7 @@ struct Ray
   vec3 direction;
 };
 
-float rayTriangleIntersect(Ray ray, vec3 vert0, vec3 vert1, vec3 vert2)
+float rayTriangleIntersect(Ray ray, vec3 vert0, vec3 vert1, vec3 vert2, out float u, out float v)
 {
   vec3 edge1 = vert1 - vert0;
   vec3 edge2 = vert2 - vert0;
@@ -17,14 +17,14 @@ float rayTriangleIntersect(Ray ray, vec3 vert0, vec3 vert1, vec3 vert2)
 
   float invDet = 1.0 / det;
   vec3 tvec = ray.origin - vert0;
-  float u = dot(tvec, pvec) * invDet;
+  u = dot(tvec, pvec) * invDet;
 
   if (u < 0.0 || u > 1.0) return FAR_PLANE;
 
   vec3 qvec = cross(tvec, edge1);
-  float v = dot(ray.direction, qvec) * invDet;
+  v = dot(ray.direction, qvec) * invDet;
 
-  if (v < 0.0 || u + v > 1.0) return FAR_PLANE;
+  if (v < 0.0 || (u + v) > 1.0) return FAR_PLANE;
 
   float t = dot(edge2, qvec) * invDet;
 
