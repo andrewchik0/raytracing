@@ -90,7 +90,7 @@ namespace raytracing
             rt::get()->mSceneSerializer.save(outPath);
           free(outPath);
         }
-        if (ImGui::MenuItem(ICON_FA_XMARKS_LINES " Exit"))
+        if (ImGui::MenuItem(ICON_FA_XMARK " Exit"))
           exit(0);
         ImGui::EndMenu();
       }
@@ -126,7 +126,8 @@ namespace raytracing
     mIsViewPortInFocus = ImGui::IsWindowFocused();
     mViewportSize = {ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y};
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
-    ImGui::Image(rt::get()->mRender.mFinalTexture);
+    if (rt::get()->mLoaded)
+      ImGui::Image(rt::get()->mRender.mFinalTexture);
     ImGui::End();
 
     ImGui::PopStyleVar();
