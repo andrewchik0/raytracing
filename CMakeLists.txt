@@ -38,6 +38,7 @@ target_compile_features(ray-tracing PRIVATE cxx_std_20)
 
 target_include_directories(ray-tracing PUBLIC
   third_party/stb
+  third_party/FontAwesome
   ${glm_SOURCE_DIR}
   ${OPENGL_INCLUDE_DIRS}
 )

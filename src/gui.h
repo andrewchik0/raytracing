@@ -12,14 +12,14 @@ namespace raytracing
     uint32_t mGuiWidth = 450;
 
     bool mIsViewPortInFocus = false;
-    ImGuiViewport *mViewport;
+    glm::ivec2 mViewportPosition;
     glm::ivec2 mViewportSize;
 
     bool init();
     void update();
   private:
 
-    ImFont* mFont = nullptr;
+    ImFont* mFont = nullptr, *mFAFont = nullptr;
 
     float mOldFontSize = 0.0;
 
@@ -39,6 +39,6 @@ namespace raytracing
     bool mAddItemOpened = false;
     bool mShowAbout = false;
 
-    void setup_style(bool bStyleDark, float alpha_);
+    void setup_style();
   };
 }

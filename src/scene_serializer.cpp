@@ -47,6 +47,7 @@ namespace raytracing
   void scene_serializer::load(const std::filesystem::path& filename)
   {
     rt::get()->mRender.reset_accumulation();
+    rt::get()->mRender.clear();
     rt::get()->mSceneFilename = filename.string();
     rt::get()->mSceneFilename.resize(256, 0);
     rt::get()->mBVHBuilt = false;

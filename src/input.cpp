@@ -19,10 +19,10 @@ namespace raytracing
     }
     if (
       event->is<sf::Event::MouseButtonPressed>() &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mViewport->Pos.x &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.y > rt::get()->mGui.mViewport->Pos.y &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.x < rt::get()->mGui.mViewport->Pos.x + rt::get()->mGui.mViewport->Size.x &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.y < rt::get()->mGui.mViewport->Pos.y + rt::get()->mGui.mViewport->Size.y
+      event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mViewportPosition.x &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.y > rt::get()->mGui.mViewportPosition.y &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.x < rt::get()->mGui.mViewportPosition.x + rt::get()->mGui.mViewportSize.x &&
+      event->getIf<sf::Event::MouseButtonPressed>()->position.y < rt::get()->mGui.mViewportPosition.y + rt::get()->mGui.mViewportSize.y
       )
     {
       if (!rt::get()->mGui.mIsViewPortInFocus)
