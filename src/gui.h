@@ -37,6 +37,7 @@ namespace raytracing
     static bool check(bool value);
 
     bool mAddItemOpened = false;
+    bool mShowAbout = false;
 
     void setup_style(bool bStyleDark, float alpha_);
   };

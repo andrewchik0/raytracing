@@ -115,27 +115,28 @@ namespace raytracing
     }).detach();
   }
 
-  void rt::render_to_image(const std::string& image_path)
+  void rt::render_to_image()
   {
-    uint32_t renderWidth = 1920, renderHeight = 1080;
-    sf::RenderTexture rt({ renderWidth, renderHeight });
+    sf::RenderTexture rt({ mRenderOptions.width, mRenderOptions.height });
+
+    // Store data
     uint32_t samples = mRender.mSamplesCount;
     uint32_t bounces = mRender.mBouncesCount;
-    uint32_t width = mWindowWidth, height = mWindowHeight;
     int renderMode = mRender.mRenderMode;
-    mWindowWidth = renderWidth; mWindowHeight = renderHeight;
+
     mRender.mRenderMode = true;
-    set_viewport(renderWidth, renderHeight);
-    mRender.mSamplesCount = 32;
-    mRender.mBouncesCount = 12;
+    mRender.mSamplesCount = mRenderOptions.samples;
+    mRender.mBouncesCount = mRenderOptions.bounces;
+    set_viewport(mRenderOptions.width, mRenderOptions.height);
     mRender.clear();
     mRender.draw(&rt);
     rt.display();
-    if (!rt.getTexture().copyToImage().saveToFile(image_path))
+    if (!rt.getTexture().copyToImage().saveToFile(mRenderOptions.filename))
       std::cerr << "Failed to save image" << std::endl;
+
+    // Restore data
     mRender.mSamplesCount = samples;
     mRender.mBouncesCount = bounces;
-    mWindowWidth = width; mWindowHeight = height;
     mRender.mRenderMode = renderMode;
     set_viewport();
   }

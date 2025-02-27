@@ -52,6 +52,7 @@ namespace raytracing
 
   void render::clear()
   {
+    if (mAccumulatingFrameIndex > 32) return;
     mLastFrameTexture.clear();
     mFinalTexture.clear();
     mBloomTexture.clear();
@@ -60,6 +61,7 @@ namespace raytracing
 
   void render::draw(sf::RenderTarget* target)
   {
+    if (mAccumulatingFrameIndex > 32) return;
     mAccumulatingFrameIndex++;
     set_uniforms();
     push_scene();

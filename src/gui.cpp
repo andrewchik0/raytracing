@@ -5,6 +5,7 @@
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include "nfd.h"
 #include "rt.h"
 
 namespace raytracing
@@ -57,7 +58,57 @@ namespace raytracing
     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiWindowFlags_NoBackground | ImGuiConfigFlags_NoMouse);
 
+    ImGui::PopStyleVar();
+    if (ImGui::BeginMainMenuBar())
+    {
+      if (ImGui::BeginMenu("File"))
+      {
+        if (ImGui::MenuItem("Open..."))
+          rt::get()->mSceneSerializer.load();
+        if (ImGui::MenuItem("Save"))
+          rt::get()->mSceneSerializer.save(rt::get()->mSceneFilename);
+        if (ImGui::MenuItem("Save as..."))
+        {
+          nfdchar_t *outPath = nullptr;
+          nfdfilteritem_t filterItem[2] = {{ "YAML Files", "yaml" }};
+          nfdresult_t result = NFD_SaveDialog(
+            &outPath, filterItem, 1, (std::filesystem::current_path() / "scenes").string().c_str(), "scene.yaml"
+          );
+          if (result == NFD_OKAY)
+            rt::get()->mSceneSerializer.save(outPath);
+          free(outPath);
+        }
+        if (ImGui::MenuItem("Exit"))
+          exit(0);
+        ImGui::EndMenu();
+      }
+
+      if (ImGui::BeginMenu("Help"))
+      {
+        if (ImGui::MenuItem("About"))
+          mShowAbout = true;
+        ImGui::EndMenu();
+      }
+
+      ImGui::EndMainMenuBar();
+    }
+
     ImGui::End();
+
+    if (mShowAbout)
+    {
+      ImGui::Begin("About");
+      push_font(2);
+      ImGui::Text("Ray tracing App");
+      pop_font();
+      ImGui::Text("Built by andrewchik0");
+      ImGui::Text("2025");
+      if (ImGui::Button("Close"))
+        mShowAbout = false;
+      ImGui::End();
+    }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2({0.0f, 0.0f}));
 
     ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiConfigFlags_NoMouse | ImGuiWindowFlags_NoBackground);
     mIsViewPortInFocus = ImGui::IsWindowFocused();
@@ -125,8 +176,7 @@ namespace raytracing
     if (check(ImGui::Checkbox("V-Sync", &vSync)))
       rt::get()->mWindow.setVerticalSyncEnabled(vSync);
     int minSamples = 1, minBounces = 2;
-    check(ImGui::DragScalar("Samples Count", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &minSamples));
-    check(ImGui::DragScalar("Bounces Count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
+    check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
     ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.1, 0.001, 0, "%.2f");
     ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
     ImGui::Separator();
@@ -154,22 +204,6 @@ namespace raytracing
   void gui::scene_tab()
   {
     float headerFontScale = 1.0;
-    push_font(headerFontScale);
-    if (ImGui::TreeNode("Save/Load"))
-    {
-      pop_font();
-      ImGui::Text("Filename:");
-      ImGui::InputText("###SaveSceneFileName", rt::get()->mSceneFilename.data(), 256);
-      ImGui::SameLine();
-      if (ImGui::Button("Save scene"))
-        rt::get()->mSceneSerializer.save(rt::get()->mSceneFilename);
-      ImGui::Separator();
-      if (ImGui::Button("Load scene..."))
-        rt::get()->mSceneSerializer.load();
-      ImGui::TreePop();
-    }
-    else
-      pop_font();
 
     push_font(headerFontScale);
     if (ImGui::TreeNode("Camera options"))
@@ -396,11 +430,13 @@ namespace raytracing
 
   void gui::render_tab()
   {
-    static char filename[256] = "screenshot.png";
-    ImGui::InputText("###RenderToFileName", filename, 256);
+    uint32_t minSamples = 1, minBounces = 1;
+    ImGui::DragScalar("Samples", ImGuiDataType_U32, &rt::get()->mRenderOptions.samples, 1, &minSamples);
+    ImGui::DragScalar("Bounces", ImGuiDataType_U32, &rt::get()->mRenderOptions.bounces, 1, &minBounces);
+    ImGui::InputText("Filename", &rt::get()->mRenderOptions.filename);
     ImGui::SameLine();
     if (ImGui::Button("Render to file"))
-      rt::get()->render_to_image(filename);
+      rt::get()->render_to_image();
   }
 
   void gui::push_font(float scale)

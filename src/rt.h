@@ -16,10 +16,17 @@ namespace raytracing
     uint32_t width = 0, height = 0;
   };
 
+  struct render_options
+  {
+    uint32_t width = 1920, height = 1080;
+    uint32_t samples = 32;
+    uint32_t bounces = 12;
+    std::string filename = "screenshot.png";
+  };
+
   class rt
   {
   public:
-    rt() {}
     ~rt();
 
     void init(const init_options& options);
@@ -34,7 +41,7 @@ namespace raytracing
     void delete_plane(size_t index);
     void delete_material(size_t index);
 
-    void render_to_image(const std::string& image_path);
+    void render_to_image();
 
     static rt* get() { return sInstance; }
 
@@ -55,6 +62,7 @@ namespace raytracing
     render mRender {};
     gui mGui;
     scene_serializer mSceneSerializer;
+    render_options mRenderOptions;
 
     std::string mSceneFilename = "";
     std::vector<std::string> mModelNames;

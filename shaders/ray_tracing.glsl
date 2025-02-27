@@ -78,7 +78,7 @@ ClosestHit closestHit(Ray ray)
 
 vec3 castRay(Ray inputRay)
 {
-  float bias = 1e-2;
+  float bias = 1e-5;
   vec3 resultColor = vec3(0);
 
   for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
