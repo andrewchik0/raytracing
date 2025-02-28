@@ -34,6 +34,8 @@ namespace raytracing
     gui mGui;
     render_options mRenderOptions;
 
+    bool mVSyncEnabled = false;
+
     ~rt();
 
     void init(const init_options& options);

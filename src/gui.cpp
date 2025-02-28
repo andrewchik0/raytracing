@@ -186,13 +186,12 @@ namespace raytracing
     check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
     check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
     check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
-    static bool vSync = false;
-    if (check(ImGui::Checkbox("V-Sync", &vSync)))
-      rt::get()->mWindow.setVerticalSyncEnabled(vSync);
+    if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
+      rt::get()->mWindow.setVerticalSyncEnabled(rt::get()->mVSyncEnabled);
     int minAccumulation = 1, minBounces = 2;
     check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
     check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
-    ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.1, 0.001, 0, "%.2f");
+    ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
     ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
     ImGui::Separator();
     if (check(ImGui::Button("Reload shaders")))
@@ -205,7 +204,7 @@ namespace raytracing
 
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
-    if (rt::get()->mBVHLoading)
+    if (rt::get()->mBVHLoading && rt::get()->mModelNames.size())
       ImGui::Text("Building bounding volume hierarchies... %.1f%%",
         float(rt::get()->mRender.mBoundingVolumeBuilder.mBVHNodes.size()) /
         float(rt::get()->mRender.mTriangles.size() * 2) *

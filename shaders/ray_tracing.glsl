@@ -121,19 +121,16 @@ vec3 castRay(Ray inputRay)
           break;
         }
 
-//        if (alpha == 1.0)
-//        {
-//          ray.origin = hit.position + normal * bias;
-//          normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
-//          ray.direction = reflect(ray.direction, normal);
-//        }
-//        else
-//        {
-//          ray.origin = hit.position + ray.direction * bias;
-//        }
-        ray.origin = hit.position + normal * bias;
-        normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
-        ray.direction = reflect(ray.direction, normal);
+        if (alpha > 0.8)
+        {
+          ray.origin = hit.position + normal * bias;
+          normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
+          ray.direction = reflect(ray.direction, normal);
+        }
+        else
+        {
+          ray.origin = hit.position + ray.direction * bias;
+        }
       }
     }
 

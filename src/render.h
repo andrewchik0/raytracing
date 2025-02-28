@@ -71,7 +71,7 @@ namespace raytracing
 
 
     std::vector<Vertex> mVertices;
-    std::vector<TriangleObject> mTriangles;
+    std::vector<ivec4> mTriangles;
     std::vector<BoundingVolume> mBoundingVolumes;
 
     // Additional data stored separately in order to easily pass object data to the shader

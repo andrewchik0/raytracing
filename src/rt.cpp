@@ -60,6 +60,7 @@ namespace raytracing
         if (!mLoaded)
         {
           mRender.post_init();
+          mWindow.setVerticalSyncEnabled(mVSyncEnabled);
           mLoaded = true;
         }
 
@@ -83,12 +84,9 @@ namespace raytracing
       {
         mWindow.clear();
         handle_messages();
-
-        mElapsedTime = mClock.getElapsedTime();
-        mClock.restart();
-        loadingSprite.rotate(sf::degrees(mElapsedTime.asSeconds() * 200.0f));
         mWindow.draw(loadingSprite);
         mGui.update();
+        loadingSprite.rotate(sf::degrees(mElapsedTime.asSeconds() * 200.0f));
         ImGui::SFML::Render(mWindow);
         mWindow.display();
       }
@@ -170,6 +168,7 @@ namespace raytracing
 
   void rt::load_async()
   {
+    mWindow.setVerticalSyncEnabled(true);
     mModelsLoading = true;
     std::thread([&]
     {

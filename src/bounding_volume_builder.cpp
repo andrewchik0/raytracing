@@ -15,10 +15,10 @@ namespace raytracing
 
     for (size_t i = start; i < end; ++i)
     {
-      TriangleObject& tri = rt::get()->mRender.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = rt::get()->mRender.mVertices[tri.indices.x].position;
-      glm::vec3 v1 = rt::get()->mRender.mVertices[tri.indices.y].position;
-      glm::vec3 v2 = rt::get()->mRender.mVertices[tri.indices.z].position;
+      glm::ivec3 tri = rt::get()->mRender.mTriangles[triangleIndices[i]];
+      glm::vec3 v0 = rt::get()->mRender.mVertices[tri.x].position;
+      glm::vec3 v1 = rt::get()->mRender.mVertices[tri.y].position;
+      glm::vec3 v2 = rt::get()->mRender.mVertices[tri.z].position;
 
       node->bounds.expand(v0);
       node->bounds.expand(v1);
@@ -37,12 +37,12 @@ namespace raytracing
       triangleIndices.begin() + start, triangleIndices.begin() + end,
       [&](int32_t a, int32_t b)
       {
-        glm::vec3 ca = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].indices.x].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].indices.y].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].indices.z].position) / 3.0f;
-        glm::vec3 cb = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].indices.x].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].indices.y].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].indices.z].position) / 3.0f;
+        glm::vec3 ca = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].x].position +
+                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].y].position +
+                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].z].position) / 3.0f;
+        glm::vec3 cb = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].x].position +
+                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].y].position +
+                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].z].position) / 3.0f;
         return ca[axis] < cb[axis];
       }
     );
@@ -79,7 +79,11 @@ namespace raytracing
         float(it->left),
         it->bounds.max,
         float(it->right),
-        glm::ivec4(it->count, it->start, 0, 0)
+        rt::get()->mRender.mTriangles.size() > it->start &&
+        it->left == -1 &&
+        it->right == -1 ?
+          rt::get()->mRender.mTriangles[it->start] :
+          glm::ivec4(0)
       });
     }
   }
@@ -93,15 +97,15 @@ namespace raytracing
     mBVHNodes.emplace_back();
 
     build_node(0, triangleIndices, 0, rt::get()->mRender.mTriangles.size());
-    store_bvh();
 
-    std::vector<TriangleObject> triangleCopies(rt::get()->mRender.mTriangles.size());
+    std::vector<glm::ivec4> triangleCopies(rt::get()->mRender.mTriangles.size());
     for (size_t i = 0; i < triangleIndices.size(); ++i)
     {
       triangleCopies[i] = rt::get()->mRender.mTriangles[triangleIndices[i]];
     }
     std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mRender.mTriangles.begin());
 
+    store_bvh();
     mBVHNodes.clear();
   }
 }

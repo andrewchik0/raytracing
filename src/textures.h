@@ -12,8 +12,7 @@ namespace raytracing
   {
   public:
     static constexpr size_t
-      sMaxTextureDataSize = 4096,
-      sMaxTriangles = sMaxTextureDataSize * sMaxTextureDataSize,
+      sMaxTextureDataSize = 2048,
       sMaxBoundingVolumes = sMaxTextureDataSize * sMaxTextureDataSize,
       sMaxVertices = sMaxTextureDataSize * sMaxTextureDataSize;
 
@@ -24,7 +23,7 @@ namespace raytracing
     void reload();
     void unload();
 
-    void load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices);
+    void load_triangles_to_gpu(std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices);
     void load_to_gpu();
 
     size_t add_texture(const std::string& name);
@@ -42,7 +41,6 @@ namespace raytracing
     // Textures are stored in arrays because of conflicts with SFML
     uint32_t mTextureArray = 0;              // Usual material textures
     uint32_t mSky = 0;                       // Sky texture
-    uint32_t mTrianglesDataTexture = 0;      // Triangles data encoded into a texture
     uint32_t mVerticesDataTexture = 0;       // Vertices data encoded into a texture
     uint32_t mBoundingVolumesTexture = 0;    // Bounding volumes data encoded into a texture
 

@@ -92,11 +92,11 @@ namespace raytracing
     for (size_t i = 0; i < mesh->mNumFaces; ++i)
     {
       aiFace face = mesh->mFaces[i];
-      TriangleObject triangle;
-      triangle.indices[0] = face.mIndices[0] + vertexOffset;
-      triangle.indices[1] = face.mIndices[1] + vertexOffset;
-      triangle.indices[2] = face.mIndices[2] + vertexOffset;
-      triangle.materialIndex = materialIndex;
+      glm::ivec4 triangle;
+      triangle[0] = face.mIndices[0] + vertexOffset;
+      triangle[1] = face.mIndices[1] + vertexOffset;
+      triangle[2] = face.mIndices[2] + vertexOffset;
+      triangle[3] = materialIndex;
       mTriangles.push_back(triangle);
     }
   }
@@ -121,17 +121,32 @@ namespace raytracing
   {
     Material mat;
 
-    aiColor3D diffuse(1.0f, 1.0f, 1.0f);
-    if (material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == AI_SUCCESS)
-    {
-      mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
-    }
+    aiColor3D diffuse(0.0f, 0.0f, 0.0f);
+    aiColor3D ambient(0.0f, 0.0f, 0.0f);
+    aiColor3D specular(0.0f, 0.0f, 0.0f);
+    aiColor3D emissive(0.0f, 0.0f, 0.0f);
+    aiColor3D transparent(0.0f, 0.0f, 0.0f);
+    aiColor3D reflective(0.0f, 0.0f, 0.0f);
+    float shininess = 0.0f;
+    float shininessStrength = 0.0f;
+    float opacity = 1.0f;
+    float reflectivity = 0.0f;
+    float refractiveIndex = 1.0f;
 
-    aiColor3D emissivity(0, 0, 0);
-    if (material->Get(AI_MATKEY_COLOR_EMISSIVE, diffuse) == AI_SUCCESS)
-    {
-      mat.emissivity = glm::vec3(emissivity.r, emissivity.g, emissivity.b);
-    }
+    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+    material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+    material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+    material->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
+    material->Get(AI_MATKEY_COLOR_TRANSPARENT, transparent);
+    material->Get(AI_MATKEY_COLOR_REFLECTIVE, reflective);
+    material->Get(AI_MATKEY_SHININESS, shininess);
+    material->Get(AI_MATKEY_SHININESS_STRENGTH, shininessStrength);
+    material->Get(AI_MATKEY_OPACITY, opacity);
+    material->Get(AI_MATKEY_REFLECTIVITY, reflectivity);
+    material->Get(AI_MATKEY_REFRACTI, refractiveIndex);
+
+    float metallic = (reflectivity > 0.5f && specular.r > 0.5f) ? 1.0f : 0.0f;
+    float roughness = 1.0f - std::sqrt(std::max(0.0f, std::min(shininess / 100.0f, 1.0f)));
 
     std::string baseColorTexture = get_texture_path(material, aiTextureType_DIFFUSE);
     std::string metallicTexture = get_texture_path(material, aiTextureType_METALNESS);
@@ -151,6 +166,10 @@ namespace raytracing
     std::string clearcoatTexture = get_texture_path(material, aiTextureType_CLEARCOAT);
     std::string transmissionTexture = get_texture_path(material, aiTextureType_TRANSMISSION);
 
+
+    mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
+    mat.emissivity = glm::vec3(emissive.r, emissive.g, emissive.b);
+    mat.roughness = roughness;
 
     if (baseColorTexture.size() > 0)
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());

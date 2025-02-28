@@ -21,7 +21,7 @@ namespace raytracing
     void load_from_file(std::filesystem::path file);
 
     glm::vec3 mMin, mMax;
-    std::vector<TriangleObject> mTriangles;
+    std::vector<glm::ivec4> mTriangles;
     std::vector<Vertex> mVertices;
     std::filesystem::path mBasePath;
   private:

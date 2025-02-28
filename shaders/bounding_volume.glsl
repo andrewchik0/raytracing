@@ -1,7 +1,7 @@
 #include "uniforms.h"
 
 // DO NOT TOUCH IN CLion it will crash GLGL plugin
-#define STACK_SIZE 2048
+#define STACK_SIZE 32
 
 struct HitData
 {
@@ -13,12 +13,6 @@ struct HitData
   uint materialIndex;
   float distance;
 };
-
-// XYZ - are vertex indices, W is material index
-ivec4 getTriangle(int index)
-{
-  return texelFetch(trianglesTexture, ivec3(index % maxTextureSize, index / maxTextureSize, 0), 0);
-}
 
 Vertex getVertex(int index)
 {
@@ -45,11 +39,11 @@ BoundingVolume getBoundingVolume(int index)
 
   int minLeftIndex = absoluteIndex + BOUND_VOLUME_MIN_LEFT;
   int maxRightIndex = absoluteIndex + BOUND_VOLUME_MAX_RIGHT;
-  int startCount = absoluteIndex + BOUND_VOLUME_COUNT_START;
+  int triangleIndex = absoluteIndex + BOUND_VOLUME_TRIANGLE;
 
   vec4 minLeft = texelFetch(boundingVolumesTexture, ivec3(minLeftIndex % maxTextureSize, minLeftIndex / maxTextureSize, 0), 0);
   vec4 maxRight = texelFetch(boundingVolumesTexture, ivec3(maxRightIndex % maxTextureSize, maxRightIndex / maxTextureSize, 0), 0);
-  v.triangleCountTrianglesStart = texelFetch(boundingVolumesTexture, ivec3(startCount % maxTextureSize, startCount / maxTextureSize, 0), 0);
+  v.triangle = texelFetch(boundingVolumesTexture, ivec3(triangleIndex % maxTextureSize, triangleIndex / maxTextureSize, 0), 0);
 
   v.min = minLeft.xyz;
   v.nodeLeft = minLeft.w;
@@ -64,7 +58,7 @@ HitData intersectBVH(Ray ray)
   vec3 invDir = 1.0 / ray.direction;
   HitData hit;
   hit.distance = FAR_PLANE;
-  int triangleIndex = -1;
+  ivec4 foundTriangle;
   vec2 foundUV;
 
   float stack[STACK_SIZE];
@@ -80,27 +74,21 @@ HitData intersectBVH(Ray ray)
     if (rayAABBIntersect(ray.origin, invDir, volume.min, volume.max) == FAR_PLANE)
       continue;
 
-    if (volume.triangleCountTrianglesStart.x > 0.0)
+    if (volume.triangle.x != volume.triangle.y)
     {
-      int triStart = int(volume.triangleCountTrianglesStart.y);
-      int triCount = int(volume.triangleCountTrianglesStart.x);
+      ivec4 triangle = ivec4(volume.triangle);
 
-      for (int i = 0; i < triCount; i++)
+      Vertex v0 = getVertex(triangle.x);
+      Vertex v1 = getVertex(triangle.y);
+      Vertex v2 = getVertex(triangle.z);
+
+      float u, v;
+      float t = rayTriangleIntersect(ray, v0.position.xyz, v1.position.xyz, v2.position.xyz, u, v);
+      if (t < hit.distance)
       {
-        ivec4 triangle = getTriangle(triStart + i);
-
-        Vertex v0 = getVertex(triangle.x);
-        Vertex v1 = getVertex(triangle.y);
-        Vertex v2 = getVertex(triangle.z);
-
-        float u, v;
-        float t = rayTriangleIntersect(ray, v0.position.xyz, v1.position.xyz, v2.position.xyz, u, v);
-        if (t < hit.distance)
-        {
-          triangleIndex = triStart + i;
-          hit.distance = t;
-          foundUV = vec2(u, v);
-        }
+        foundTriangle = triangle;
+        hit.distance = t;
+        foundUV = vec2(u, v);
       }
     }
     else
@@ -119,11 +107,10 @@ HitData intersectBVH(Ray ray)
     float u = foundUV.x;
     float v = foundUV.y;
     float w = 1.0 - u - v;
-    ivec4 triangle = getTriangle(triangleIndex);
 
-    Vertex v0 = getVertex(triangle.x);
-    Vertex v1 = getVertex(triangle.y);
-    Vertex v2 = getVertex(triangle.z);
+    Vertex v0 = getVertex(foundTriangle.x);
+    Vertex v1 = getVertex(foundTriangle.y);
+    Vertex v2 = getVertex(foundTriangle.z);
 
     if (interpolateNormals == 1)
     {
@@ -142,7 +129,7 @@ HitData intersectBVH(Ray ray)
     vec2 texCoords2 = vec2(v2.tangent.w, v2.bitangent.w);
     hit.textureCoordinates = w * texCoords0 + u * texCoords1 + v * texCoords2;
     hit.textureCoordinates.y = 1.0 - hit.textureCoordinates.y;
-    hit.materialIndex = triangle.w;
+    hit.materialIndex = foundTriangle.w;
   }
 
   return hit;

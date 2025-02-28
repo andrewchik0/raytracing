@@ -35,7 +35,7 @@ namespace raytracing
 
   void render::post_init()
   {
-    mTextures.load_triangles_to_gpu(mTriangles, mBoundingVolumes, mVertices);
+    mTextures.load_triangles_to_gpu(mBoundingVolumes, mVertices);
     mTextures.load_to_gpu();
     mAccumulatingFrameIndex = 0;
     clear();

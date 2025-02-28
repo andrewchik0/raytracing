@@ -61,11 +61,6 @@ namespace raytracing
 
   void textures::allocate_triangles_buffer()
   {
-    glGenTextures(1, &mTrianglesDataTexture);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32I, sMaxTextureDataSize, sMaxTextureDataSize, 1);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
     glGenTextures(1, &mBoundingVolumesTexture);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
     glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTextureDataSize, sMaxTextureDataSize, 1);
@@ -106,8 +101,8 @@ namespace raytracing
     glGenTextures(1, &mSky);
     glBindTexture(GL_TEXTURE_2D, mSky);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glTexStorage2D(GL_TEXTURE_2D, mipLevels, GL_RGB16F, mSkyWidth, mSkyHeight);
 
@@ -148,9 +143,6 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, mSky);
     rt::get()->mRender.mShader.setUniform("sky", 1);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
-    rt::get()->mRender.mShader.setUniform("trianglesTexture", 2);
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
     rt::get()->mRender.mShader.setUniform("boundingVolumesTexture", 3);
@@ -165,21 +157,8 @@ namespace raytracing
     load_to_memory();
   }
 
-  void textures::load_triangles_to_gpu(std::vector<TriangleObject>& triangles, std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices)
+  void textures::load_triangles_to_gpu(std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices)
   {
-    {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, mTrianglesDataTexture);
-      size_t trianglesSize = triangles.size();
-      trianglesSize = (trianglesSize / sMaxTextureDataSize + 1) * sMaxTextureDataSize;
-      triangles.resize(trianglesSize);
-      glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTextureDataSize, trianglesSize / sMaxTextureDataSize, 1, GL_RGBA_INTEGER, GL_INT,
-        triangles.data()
-      );
-      glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-    }
-
     {
       glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
       size_t boundVolumeSize = sizeof(BoundingVolume) / 16;

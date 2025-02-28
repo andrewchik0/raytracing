@@ -16,16 +16,6 @@ struct PlaneObject
   uint materialIndex;
 };
 
-struct TriangleObject
-{
-  ivec3 indices;
-  int materialIndex
-#ifdef __cplusplus
-  = 0
-#endif
-  ;
-};
-
 #define VERTEX_SIZE 4
 #define VERTEX_POSITION 0
 #define VERTEX_NORMAL 1
@@ -42,7 +32,7 @@ struct Vertex
 #define BOUND_VOLUME_SIZE 3
 #define BOUND_VOLUME_MIN_LEFT 0
 #define BOUND_VOLUME_MAX_RIGHT 1
-#define BOUND_VOLUME_COUNT_START 2
+#define BOUND_VOLUME_TRIANGLE 2
 struct BoundingVolume
 {
   vec3 min;
@@ -57,5 +47,5 @@ struct BoundingVolume
   = -1
 #endif
   ;
-  vec4 triangleCountTrianglesStart;
+  vec4 triangle;
 };
