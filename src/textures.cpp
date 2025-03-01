@@ -79,7 +79,7 @@ namespace raytracing
     glGenTextures(1, &mTextureArray);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -208,6 +208,9 @@ namespace raytracing
 
   size_t textures::add_texture(const std::string& name)
   {
+    for (size_t i = 0; i < mTextureFilenames.size(); i++)
+      if (mTextureFilenames[i] == name) return i;
+
     if (mTextureFilenames.size() < mTexturesCountMax)
       mTextureFilenames.push_back(name);
     return mTextureFilenames.size() - 1;

@@ -169,12 +169,14 @@ namespace raytracing
 
     mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
     mat.emissivity = glm::vec3(emissive.r, emissive.g, emissive.b);
-    mat.roughness = roughness;
+    mat.roughness = specular.r;
 
     if (baseColorTexture.size() > 0)
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());
     if (metallicTexture.size() > 0)
       mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string());
+    if (specularTexture.size() > 0)
+      mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
 
     if (normalTexture.size() > 0)
       mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalTexture).string());

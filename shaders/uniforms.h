@@ -15,7 +15,7 @@ using ivec4 = glm::ivec4;
 
 #define FAR_PLANE 1e12
 
-#define MAX_MATERIALS 128
+#define MAX_MATERIALS 196
 struct Material
 {
   vec3 albedo;
@@ -45,7 +45,11 @@ struct Material
   = vec3(0);
 #endif
   ;
-  float _;
+  int specularTextureIndex
+#ifdef __cplusplus
+  = -1
+#endif
+  ;
 };
 
 #include "objects.h"

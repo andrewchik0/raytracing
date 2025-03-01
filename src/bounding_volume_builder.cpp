@@ -25,6 +25,9 @@ namespace raytracing
       node->bounds.expand(v2);
     }
 
+    node->bounds.min -= 1e-5;
+    node->bounds.max += 1e-5;
+
     if (node->count <= mObjectPerNode)
     {
       return;
@@ -71,8 +74,16 @@ namespace raytracing
       *it = BoundingVolume {};
     }
 
+    int maxTriangle = 0;
+
     for (auto it = mBVHNodes.begin(); it < mBVHNodes.end(); ++it)
     {
+      if (rt::get()->mRender.mTriangles.size() > it->start && it->left == -1 && it->right == -1)
+      {
+        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].x, maxTriangle);
+        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].y, maxTriangle);
+        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].z, maxTriangle);
+      }
       rt::get()->mRender.mBoundingVolumes.push_back(BoundingVolume
       {
         it->bounds.min,
