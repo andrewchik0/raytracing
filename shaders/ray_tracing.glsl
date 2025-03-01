@@ -124,7 +124,6 @@ vec3 castRay(Ray inputRay)
         if (renderMode != 1)
         {
           sampleColor = albedo * max(dot(normalize((vec3(1.0))), normal), 0.1);
-          sampleColor = vec3(roughness);
           break;
         }
 
