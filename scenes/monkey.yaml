@@ -5,6 +5,7 @@ sky_filename: assets/sky.hdr
 camera:
   position: [1.75998688, 0.858130753, 2.13128805]
   direction: [-0.649915993, -0.377010763, -0.659903109]
+  fov: 90
 objects:
   - type: plane
     name: Plane

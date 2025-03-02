@@ -68,6 +68,7 @@ namespace raytracing
 
       if (scene["camera"])
       {
+        rt::get()->mCamera.mFovY = scene["camera"]["fov"].as<float>();
         rt::get()->mCamera.mPosition = scene["camera"]["position"].as<glm::vec3>();
         rt::get()->mCamera.mDirection = scene["camera"]["direction"].as<glm::vec3>();
       }
@@ -176,10 +177,9 @@ namespace raytracing
       out << YAML::Key << "camera";
 
       out << YAML::BeginMap;
-      out << YAML::Key << "position";
-      out << YAML::Value << rt::get()->mCamera.mPosition;
-      out << YAML::Key << "direction";
-      out << YAML::Value << rt::get()->mCamera.mDirection;
+      out << YAML::Key << "position" << YAML::Value << rt::get()->mCamera.mPosition;
+      out << YAML::Key << "direction" << YAML::Value << rt::get()->mCamera.mDirection;
+      out << YAML::Key << "fov" << YAML::Value << rt::get()->mCamera.mFovY;
       out << YAML::EndMap;
     }
 

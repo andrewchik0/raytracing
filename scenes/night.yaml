@@ -5,6 +5,7 @@ sky_filename: assets/night.hdr
 camera:
   position: [7.45077896, 3.39637923, -4.94415903]
   direction: [-0.396938145, -0.229166374, 0.888559043]
+  fov: 90
 objects:
   - type: sphere
     name: Sphere brick
