@@ -1,28 +1,10 @@
 exposure: 7.44999981
 gamma: 1.15999997
 blur_radius: 0
-sky_filename: assets/sky.hdr
+sky_filename: assets/outdoor.hdr
 camera:
   position: [1.46941185, 1.17562461, 3.08327079]
   direction: [-0.476157397, -0.359194309, -0.80265373]
 objects:
-  - type: plane
-    name: Plane
-    normal: [0, 1, 0]
-    distance: 0.119999997
-    materialIndex: 0
   - type: model
     filename: assets/bmw/bmw.fbx
-materials:
-  - name: Plane material
-    albedo: [0.800000012, 0.800000012, 0.800000012]
-    emissivity: [0, 0, 0]
-    roughness: 0
-    texture_coordinates_multiplier: 1.15999997
-    texture_id: 0
-    metallic_texture_id: 2
-    normal_texture_id: 1
-textures:
-  - assets/granite/albedo.png
-  - assets/granite/normal.png
-  - assets/granite/metallic.psd

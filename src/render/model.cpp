@@ -122,17 +122,17 @@ namespace raytracing
   {
     Material mat;
 
-    aiColor3D diffuse(0.0f, 0.0f, 0.0f);
-    aiColor3D ambient(0.0f, 0.0f, 0.0f);
-    aiColor3D specular(0.0f, 0.0f, 0.0f);
-    aiColor3D emissive(0.0f, 0.0f, 0.0f);
-    aiColor3D transparent(0.0f, 0.0f, 0.0f);
-    aiColor3D reflective(0.0f, 0.0f, 0.0f);
-    float shininess = 0.0f;
-    float shininessStrength = 0.0f;
-    float opacity = 1.0f;
-    float reflectivity = 0.0f;
-    float refractiveIndex = 1.0f;
+    aiColor3D diffuse(-1.0f);
+    aiColor3D ambient(-1.0f);
+    aiColor3D specular(-1.0f);
+    aiColor3D emissive(-1.0f);
+    aiColor3D transparent(-1.0f);
+    aiColor3D reflective(-1.0f);
+    float shininess = -1.0f;
+    float shininessStrength = -1.0f;
+    float opacity = -1.0f;
+    float reflectivity = -1.0f;
+    float refractiveIndex = -1.0f;
 
     material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
     material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
@@ -170,7 +170,7 @@ namespace raytracing
 
     mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
     mat.emissivity = glm::vec3(emissive.r, emissive.g, emissive.b);
-    mat.roughness = specular.r;
+    mat.roughness = glm::sqrt(2.0f / (shininess + 2));
 
     if (baseColorTexture.size() > 0)
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());

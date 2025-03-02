@@ -128,10 +128,21 @@ vec3 castRay(Ray inputRay)
 
         if (alpha > 0.8)
         {
-          sampleColor = sampleColor * albedo;// + e;
+          sampleColor = sampleColor * albedo + e;
           ray.origin = hit.position + normal * bias;
-          normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
-          ray.direction = reflect(ray.direction, normal);
+
+          vec3 coatNormal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * 0.02 * (roughness + 0.912));
+          float F = fresnelSchlick(dot(ray.direction, normal), roughness + 0.978);
+
+          if (random(ray.origin.x + ray.origin.y + ray.origin.z) < F)
+          {
+            ray.direction = reflect(ray.direction, coatNormal);
+          }
+          else
+          {
+            normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
+            ray.direction = reflect(ray.direction, normal);
+          }
         }
         else
         {

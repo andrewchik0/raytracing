@@ -456,6 +456,14 @@ namespace raytracing
     uint32_t minSamples = 1, minBounces = 1;
     ImGui::DragScalar("Samples", ImGuiDataType_U32, &rt::get()->mRenderOptions.samples, 1, &minSamples);
     ImGui::DragScalar("Bounces", ImGuiDataType_U32, &rt::get()->mRenderOptions.bounces, 1, &minBounces);
+    auto width = ImGui::GetWindowWidth();
+    ImGui::PushItemWidth(width * 0.33 - 15);
+    ImGui::DragScalar("###ResolutionWidth", ImGuiDataType_U32, &rt::get()->mRenderOptions.width, 1, nullptr, nullptr, nullptr);
+    ImGui::SameLine();
+    ImGui::Text("x");
+    ImGui::SameLine();
+    ImGui::DragScalar("Resolution", ImGuiDataType_U32, &rt::get()->mRenderOptions.height);
+    ImGui::PopItemWidth();
     ImGui::InputText("Filename", &rt::get()->mRenderOptions.filename);
     ImGui::SameLine();
     if (ImGui::Button("Render to file"))

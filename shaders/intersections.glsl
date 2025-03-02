@@ -22,7 +22,7 @@ float rayTriangleIntersect(Ray ray, vec3 vert0, vec3 vert1, vec3 vert2, out floa
 
   float t = dot(edge2, qvec) * invDet;
 
-  bool valid = (abs(det) > 1e-6) && (u >= 0.0) && (v >= 0.0) && ((u + v) <= 1.0) && (t > 1e-6);
+  bool valid = bool(abs(det) > 1e-6) && (u >= 0) && (v >= 0) && ((u + v) <= 1.0) && (t > 1e-6);
   return valid ? t : FAR_PLANE;
 }
 

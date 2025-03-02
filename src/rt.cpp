@@ -103,24 +103,37 @@ namespace raytracing
     sf::RenderTexture rt({ mRenderOptions.width, mRenderOptions.height });
 
     // Store data
-    uint32_t samples = mRender.mSamplesCount;
     uint32_t bounces = mRender.mBouncesCount;
+    size_t accumulatingFrameIndex = mRender.mAccumulatingFrameIndex;
+    size_t maxAccumulation = mRender.mMaxAccumulation;
     int renderMode = mRender.mRenderMode;
 
     mRender.mRenderMode = true;
-    mRender.mSamplesCount = mRenderOptions.samples;
     mRender.mBouncesCount = mRenderOptions.bounces;
+    mRender.mAccumulatingFrameIndex = 0;
+    mRender.mMaxAccumulation = mRenderOptions.samples;
     set_viewport(mRenderOptions.width, mRenderOptions.height);
-    mRender.clear();
-    mRender.draw(&rt);
+
+    size_t sampleCounter = 0;
+
+    while (sampleCounter++ < mRenderOptions.samples)
+    {
+      mRender.clear();
+      mRender.draw(&rt);
+      mElapsedTime = mClock.getElapsedTime();
+      mTime += mElapsedTime.asSeconds();
+      mClock.restart();
+    }
+
     rt.display();
     if (!rt.getTexture().copyToImage().saveToFile(mRenderOptions.filename))
       std::cerr << "Failed to save image" << std::endl;
 
     // Restore data
-    mRender.mSamplesCount = samples;
     mRender.mBouncesCount = bounces;
     mRender.mRenderMode = renderMode;
+    mRender.mMaxAccumulation = maxAccumulation;
+    mRender.mAccumulatingFrameIndex = accumulatingFrameIndex;
     set_viewport();
   }
 

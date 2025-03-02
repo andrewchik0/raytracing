@@ -3,6 +3,11 @@ float random(vec2 st)
   return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
 }
 
+float random(float seed)
+{
+  return random(vec2(time, seed));
+}
+
 vec3 rand3(vec3 seed)
 {
   return vec3(
@@ -38,4 +43,9 @@ vec3 gaussian_blur(sampler2D tex, vec2 windowSize, vec2 texCoords, float radius)
   }
 
   return resultColor;
+}
+
+float fresnelSchlick(float cosTheta, float f0)
+{
+  return f0 + (1.0 - f0) * pow(1 - cosTheta, 5.0);
 }
