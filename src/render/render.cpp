@@ -1,6 +1,7 @@
 #include "render.h"
 
 #include <thread>
+
 #include <GL/glew.h>
 
 #include "rt.h"
@@ -26,6 +27,7 @@ namespace raytracing
 
     mRenderQuad = sf::RectangleShape({static_cast<float>(rt::get()->mWindowWidth), static_cast<float>(rt::get()->mWindowHeight)});
     mRenderQuad.setFillColor(sf::Color::Red);
+
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.getNativeHandle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.getNativeHandle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.getNativeHandle());

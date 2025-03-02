@@ -3,7 +3,7 @@
 #include "camera.h"
 #include "gui.h"
 #include "input.h"
-#include "render.h"
+#include "render/render.h"
 #include "scene_serializer.h"
 
 namespace raytracing

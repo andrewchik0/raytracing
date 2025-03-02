@@ -2,7 +2,7 @@
 
 #include <numeric>
 
-#include "../shaders/uniforms.h"
+#include "shaders/uniforms.h"
 #include "rt.h"
 
 namespace raytracing

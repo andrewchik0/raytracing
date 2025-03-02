@@ -102,9 +102,8 @@ vec3 castRay(Ray inputRay)
             bool(materials[hit.materialIndex].roughness) ?
             1.0 - texture(texArray, vec3(texCoords, materials[hit.materialIndex].specularTextureIndex)).r :
             texture(texArray, vec3(texCoords, materials[hit.materialIndex].specularTextureIndex)).r
-          ), 3);// +
-
-          //float(materials[hit.materialIndex].metallicTextureIndex == -1) * materials[hit.materialIndex].roughness;
+          ), 3) +
+          float(materials[hit.materialIndex].metallicTextureIndex == -1) * float(materials[hit.materialIndex].specularTextureIndex == -1) * materials[hit.materialIndex].roughness;
 
         vec3 normal;
         mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
@@ -115,11 +114,11 @@ vec3 castRay(Ray inputRay)
         float alpha = texture(texArray, vec3(texCoords, materials[hit.materialIndex].textureIndex)).a;
         vec3 e = materials[hit.materialIndex].emissivity;
 
-//        if (e.x + e.y + e.z != 0)
-//        {
-//          sampleColor = e;
-//          break;
-//        }
+        if (e.x + e.y + e.z != 0)
+        {
+          sampleColor = e;
+          break;
+        }
 
         if (renderMode != 1)
         {

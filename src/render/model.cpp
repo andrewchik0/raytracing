@@ -1,14 +1,15 @@
 #include "model.h"
 
+#include "rt.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
+#include <assimp/pbrmaterial.h>
 
-#include "assimp/pbrmaterial.h"
-#include "glm/gtc/type_ptr.hpp"
-#include "rt.h"
 
 namespace raytracing
 {
@@ -31,7 +32,7 @@ namespace raytracing
 
     if (!scene || !scene->mRootNode)
     {
-      std::cerr << "Failed to load object: " << file << std::endl;
+      return;
     }
 
     process_node(scene->mRootNode, scene, aiMatrix4x4());

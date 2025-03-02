@@ -2,10 +2,9 @@
 
 #include "pch.h"
 
+#include "shaders/uniforms.h"
+
 #include <assimp/matrix4x4.h>
-
-#include "../shaders/uniforms.h"
-
 
 enum aiTextureType : int;
 struct aiMesh;

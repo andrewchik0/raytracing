@@ -13,22 +13,22 @@ add_executable(ray-tracing
   src/input.h
   src/camera.cpp
   src/camera.h
-  src/render.cpp
-  src/render.h
-  src/uniform_buffer.cpp
-  src/uniform_buffer.h
+  src/render/render.cpp
+  src/render/render.h
+  src/render/uniform_buffer.cpp
+  src/render/uniform_buffer.h
   src/gui.cpp
   src/gui.h
   src/scene_serializer.cpp
   src/scene_serializer.h
-  src/textures.cpp
-  src/textures.h
-  src/model.cpp
-  src/model.h
-  src/bounding_volume_builder.cpp
-  src/bounding_volume_builder.h
-  src/shader.cpp
-  src/shader.h
+  src/render/textures.cpp
+  src/render/textures.h
+  src/render/model.cpp
+  src/render/model.h
+  src/render/bounding_volume_builder.cpp
+  src/render/bounding_volume_builder.h
+  src/render/shader.cpp
+  src/render/shader.h
   src/pch.h
   third_party/stb/stb_image_wrapper.cpp
 )
@@ -37,6 +37,8 @@ target_precompile_headers(ray-tracing PUBLIC src/pch.h)
 target_compile_features(ray-tracing PRIVATE cxx_std_20)
 
 target_include_directories(ray-tracing PUBLIC
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/src
   third_party/stb
   third_party/FontAwesome
   ${glm_SOURCE_DIR}

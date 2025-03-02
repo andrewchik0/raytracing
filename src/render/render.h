@@ -1,10 +1,10 @@
 #pragma once
 
+#include "uniform_buffer.h"
 #include "bounding_volume_builder.h"
 #include "model.h"
-#include "textures.h"
-#include "uniform_buffer.h"
 #include "shader.h"
+#include "textures.h"
 
 #include <SFML/Graphics.hpp>
 

@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics/Texture.hpp>
 
-#include "../shaders/uniforms.h"
+#include "shaders/uniforms.h"
 
 namespace raytracing
 {
