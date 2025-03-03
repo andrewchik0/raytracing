@@ -41,6 +41,9 @@ namespace raytracing
   public:
     uint32_t mObjectPerNode = 1;
 
+    bounding_volume_builder() = default;
+    bounding_volume_builder(const bounding_volume_builder&) = delete;
+
     void build();
 
   private:

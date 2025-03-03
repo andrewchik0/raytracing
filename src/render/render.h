@@ -6,7 +6,7 @@
 #include "shader.h"
 #include "textures.h"
 
-#include <SFML/Graphics.hpp>
+#include "render_texture.h"
 
 namespace raytracing
 {
@@ -18,6 +18,10 @@ namespace raytracing
   class render
   {
   public:
+
+    render() = default;
+    render(const render&) = delete;
+
     uint32_t mViewportWidth, mViewportHeight;
     textures mTextures;
 
@@ -45,7 +49,7 @@ namespace raytracing
     void init();
     void post_init();
     void clear();
-    void draw(sf::RenderTarget* target);
+    void draw(render_texture* target);
     void resize(uint32_t width, uint32_t height);
 
     void push_scene();
@@ -53,14 +57,13 @@ namespace raytracing
     void reset_accumulation();
 
   private:
-    sf::RectangleShape mRenderQuad;
     shader
       mShader,
       mPostShader,
       mBloomShader,
       mAccumulationShader,
       mDummyShader;
-    sf::RenderTexture
+    render_texture
       mLastFrameTexture,
       mBloomTexture,
       mPostProcessedTexture,
@@ -68,7 +71,6 @@ namespace raytracing
       mFinalTexture;
 
     int32_t mAccumulatingFrameIndex = 0;
-
 
     std::vector<Vertex> mVertices;
     std::vector<ivec4> mTriangles;

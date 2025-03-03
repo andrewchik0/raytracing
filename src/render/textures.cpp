@@ -79,8 +79,8 @@ namespace raytracing
     glGenTextures(1, &mTextureArray);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -137,18 +137,20 @@ namespace raytracing
 
   void textures::bind()
   {
-    glActiveTexture(GL_TEXTURE0);
+    rt::get()->mRender.mShader.use();
+    size_t index = rt::get()->mRender.mShader.get_free_texture_index();
+    glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
-    rt::get()->mRender.mShader.setUniform("texArray", 0);
-    glActiveTexture(GL_TEXTURE1);
+    rt::get()->mRender.mShader.set_uniform("texArray", index);
+    glActiveTexture(GL_TEXTURE0 + index + 1);
     glBindTexture(GL_TEXTURE_2D, mSky);
-    rt::get()->mRender.mShader.setUniform("sky", 1);
-    glActiveTexture(GL_TEXTURE3);
+    rt::get()->mRender.mShader.set_uniform("sky", index + 1);
+    glActiveTexture(GL_TEXTURE0 + index + 2);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-    rt::get()->mRender.mShader.setUniform("boundingVolumesTexture", 3);
-    glActiveTexture(GL_TEXTURE4);
+    rt::get()->mRender.mShader.set_uniform("boundingVolumesTexture", index + 2);
+    glActiveTexture(GL_TEXTURE0 + index + 3);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-    rt::get()->mRender.mShader.setUniform("verticesTexture", 4);
+    rt::get()->mRender.mShader.set_uniform("verticesTexture", index + 3);
   }
 
   void textures::reload()

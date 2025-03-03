@@ -16,6 +16,9 @@ namespace raytracing
       sMaxBoundingVolumes = sMaxTextureDataSize * sMaxTextureDataSize,
       sMaxVertices = sMaxTextureDataSize * sMaxTextureDataSize;
 
+    textures() = default;
+    textures(const textures&) = delete;
+
     ~textures();
 
     void bind();

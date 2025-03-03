@@ -1,6 +1,8 @@
 #pragma once
 
 #include <set>
+#include <unordered_map>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <imgui.h>
@@ -8,6 +10,8 @@
 #include <filesystem>
 
 #include <glm/glm.hpp>
+
+#include <GL/glew.h>
 
 namespace raytracing
 {

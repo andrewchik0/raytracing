@@ -127,7 +127,10 @@ namespace raytracing
     mViewportSize = {ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y};
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
     if (rt::get()->mLoaded)
-      ImGui::Image(rt::get()->mRender.mFinalTexture);
+      ImGui::Image(
+        rt::get()->mRender.mFinalTexture.get_texture(),
+        { float(rt::get()->mRender.mFinalTexture.width()), float(rt::get()->mRender.mFinalTexture.height())}
+      );
     ImGui::End();
 
     ImGui::PopStyleVar();
@@ -305,7 +308,8 @@ namespace raytracing
         label = "Name###PlaneName" + std::to_string(i);
         ImGui::InputText(label.c_str(), &rt::get()->mRender.mPlanesAdditional[i].name);
         label = "Normal###PlaneNormal" + std::to_string(i);
-        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f"));
+        if (check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f")))
+          rt::get()->mRender.mPlanes[i].normal=  normalize(rt::get()->mRender.mPlanes[i].normal);
         label = "Distance###PlaneDistance" + std::to_string(i);
         check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, 0, 0, "%.2f"));
         label = "Material ID##PlaneMaterialID" + std::to_string(i);

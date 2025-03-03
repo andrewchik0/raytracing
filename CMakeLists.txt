@@ -7,20 +7,21 @@ include(dependencies.cmake)
 
 add_executable(ray-tracing
   src/main.cpp
+  src/pch.h
   src/rt.cpp
   src/rt.h
   src/input.cpp
   src/input.h
   src/camera.cpp
   src/camera.h
-  src/render/render.cpp
-  src/render/render.h
-  src/render/uniform_buffer.cpp
-  src/render/uniform_buffer.h
   src/gui.cpp
   src/gui.h
   src/scene_serializer.cpp
   src/scene_serializer.h
+  src/render/render.cpp
+  src/render/render.h
+  src/render/uniform_buffer.cpp
+  src/render/uniform_buffer.h
   src/render/textures.cpp
   src/render/textures.h
   src/render/model.cpp
@@ -29,7 +30,8 @@ add_executable(ray-tracing
   src/render/bounding_volume_builder.h
   src/render/shader.cpp
   src/render/shader.h
-  src/pch.h
+  src/render/render_texture.cpp
+  src/render/render_texture.h
   third_party/stb/stb_image_wrapper.cpp
 )
 

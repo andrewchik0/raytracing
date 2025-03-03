@@ -6,6 +6,8 @@
 #include "render/render.h"
 #include "scene_serializer.h"
 
+#include <SFML/Graphics.hpp>
+
 namespace raytracing
 {
 
@@ -34,14 +36,18 @@ namespace raytracing
   class rt
   {
   public:
+    sf::RenderWindow mWindow;
 
     input mInput;
     camera mCamera;
-    render mRender {};
+    render mRender;
     gui mGui;
     render_options mRenderOptions;
 
     bool mVSyncEnabled = false;
+
+    rt() = default;
+    rt(const rt&) = delete;
 
     ~rt();
 
@@ -63,7 +69,6 @@ namespace raytracing
     static rt* get() { return sInstance; }
 
   private:
-    sf::RenderWindow mWindow;
     sf::Clock mClock;
     sf::Time mElapsedTime;
 

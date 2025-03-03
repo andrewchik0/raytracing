@@ -17,6 +17,9 @@ namespace raytracing
   class model
   {
   public:
+    model() = default;
+    model(const model&) = delete;
+
     void load_from_file(std::filesystem::path file);
 
     glm::vec3 mMin, mMax;

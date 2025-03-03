@@ -8,6 +8,7 @@ namespace raytracing
   {
   public:
     uniform_buffer() = default;
+    uniform_buffer(const uniform_buffer&) = delete;
     ~uniform_buffer();
 
     uniform_buffer(const uint32_t bindingPoint, const size_t size, const char* name, const int32_t shaderID)

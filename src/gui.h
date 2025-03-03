@@ -15,6 +15,9 @@ namespace raytracing
     glm::ivec2 mViewportPosition;
     glm::ivec2 mViewportSize;
 
+    gui() = default;
+    gui(const gui&) = delete;
+
     bool init();
     void update();
   private:

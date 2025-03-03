@@ -20,6 +20,9 @@ namespace raytracing
 
     bool mKeyPressed[sf::Keyboard::KeyCount] { false };
 
+    input() = default;
+    input(const input&) = delete;
+
     void handle(const std::optional<sf::Event>& event);
     void clear();
 

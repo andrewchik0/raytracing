@@ -1,10 +1,13 @@
 #include "rt.h"
 
 #include <filesystem>
-#include <imgui-SFML.h>
 #include <iostream>
-#include <nfd.h>
 #include <thread>
+#include <optional>
+
+#include <nfd.h>
+
+#include <imgui-SFML.h>
 
 namespace raytracing
 {
@@ -119,7 +122,7 @@ namespace raytracing
     while (sampleCounter++ < mRenderOptions.samples)
     {
       mRender.clear();
-      mRender.draw(&rt);
+      // mRender.draw(&rt);
       mElapsedTime = mClock.getElapsedTime();
       mTime += mElapsedTime.asSeconds();
       mClock.restart();
@@ -161,7 +164,7 @@ namespace raytracing
       while (sampleCounter++ < mRenderOptions.samples)
       {
         mRender.clear();
-        mRender.draw(&rt);
+        // mRender.draw(&rt);
         mElapsedTime = mClock.getElapsedTime();
         mTime += mElapsedTime.asSeconds();
         mClock.restart();

@@ -1,53 +1,129 @@
 #include "shader.h"
 
 #include <fstream>
-#include <iostream>
 
-#include "SFML/System/Err.hpp"
+#include <SFML/System/Err.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "rt.h"
 
 namespace raytracing
 {
-  status shader::load(const std::string& vertexPath, const std::string& fragmentPath)
+  shader::~shader()
   {
-    std::ostringstream errorBuffer;
-    std::streambuf* oldBuffer = sf::err().rdbuf(errorBuffer.rdbuf());
-
-    auto
-     vertexIncluded = std::set<std::string>(),
-     fragmentIncluded = std::set<std::string>();
-    auto vertex = parse_shader_from_file(vertexPath, vertexIncluded);
-    auto fragment = parse_shader_from_file(fragmentPath, fragmentIncluded);
-
-    if (!this->loadFromMemory(vertex, fragment))
-    {
-      sf::err().rdbuf(oldBuffer);
-      rt::get()->mRender.mShaderErrors += errorBuffer.str();
-      return status::error;
-    }
-
-    sf::err().rdbuf(oldBuffer);
-    return status::success;
+    glUseProgram(0);
+    glDeleteProgram(mShaderHandle);
   }
 
-  std::string shader::read_shader_file(const std::string& path)
+  status shader::load(const std::string& vertexPath, const std::string& fragmentPath)
+  {
+    mShaderHandle = glCreateProgram();
+
+    constexpr int shaderStagesCount = 2;
+
+    info shaders[shaderStagesCount];
+
+    shaders[0].path = vertexPath;
+    shaders[0].type = GL_VERTEX_SHADER;
+
+    shaders[1].path = fragmentPath;
+    shaders[1].type = GL_FRAGMENT_SHADER;
+
+    return load(shaders, shaderStagesCount);
+  }
+
+  status shader::load(const std::string& vertexPath, const std::string& geometryPath, const std::string& fragmentPath)
+  {
+    constexpr int shaderStagesCount = 3;
+
+    info shaders[shaderStagesCount];
+
+    shaders[0].path = vertexPath;
+    shaders[0].type = GL_VERTEX_SHADER;
+
+    shaders[1].path = geometryPath;
+    shaders[1].type = GL_GEOMETRY_SHADER;
+
+    shaders[2].path = fragmentPath;
+    shaders[2].type = GL_FRAGMENT_SHADER;
+
+    return load(shaders, shaderStagesCount);
+  }
+
+  status shader::load(info* shaders, size_t infoCount)
+  {
+    if (glIsProgram(mShaderHandle))
+    {
+      glUseProgram(0);
+      glDeleteProgram(mShaderHandle);
+    }
+    mTextures.clear();
+    mLocations.clear();
+    mShaderHandle = glCreateProgram();
+
+    int32_t success;
+    char infoLog[512];
+    for (uint32_t i = 0; i < infoCount; ++i)
+    {
+      std::set<std::string> includedFiles;
+      std::string text;
+      auto status = parse_shader_from_file(shaders[i].path, includedFiles, text);
+      if (status != status::success)
+        return status;
+      const char* buf = text.c_str();
+
+      shaders[i].shader = glCreateShader(shaders[i].type);
+      glShaderSource(shaders[i].shader, 1, &buf, nullptr);
+      glCompileShader(shaders[i].shader);
+      glGetShaderiv(shaders[i].shader, GL_COMPILE_STATUS, &success);
+      if (!success)
+      {
+        glGetShaderInfoLog(shaders[i].shader, 512, nullptr, infoLog);
+        rt::get()->mRender.mShaderErrors += "ERROR: Failed to compile shader: " + shaders[i].path + '\n' + infoLog + '\n';
+      }
+
+      glAttachShader(mShaderHandle, shaders[i].shader);
+    }
+
+    glLinkProgram(mShaderHandle);
+    glGetProgramiv(mShaderHandle, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+      glGetProgramInfoLog(mShaderHandle, 512, nullptr, infoLog);
+      rt::get()->mRender.mShaderErrors += "ERROR: Failed to link shaders\n" + std::string(infoLog) + '\n';
+    }
+
+    for (uint32_t i = 0; i < infoCount; ++i)
+    {
+      glDetachShader(mShaderHandle, shaders[i].shader);
+      glDeleteShader(shaders[i].shader);
+    }
+    return success ? status::success : status::error;
+  }
+
+  status shader::read_shader_file(const std::string& path, std::string& out)
   {
     std::ifstream file(path);
 
     if (!file.is_open())
-      std::cerr << "Failed to open file: " << path << '\n';
+      return status::file_not_found;
 
-    std::string content((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
+    out = std::string(std::istreambuf_iterator(file), std::istreambuf_iterator<char>());
 
-    return content;
+    return status::success;
   }
 
-  std::string shader::parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles)
+  status shader::parse_shader_from_file(const std::string& path, std::set<std::string>& includedFiles, std::string& out)
   {
     std::filesystem::path fpath(path);
-    std::string text = read_shader_file(path);
-    std::string result;
     size_t pos = 0;
+    std::string text;
+    auto status = read_shader_file(path, text);
+
+    if (status != status::success)
+    {
+      return status;
+    }
 
     for (auto it = text.begin(); it < text.end(); ++it)
     {
@@ -74,11 +150,137 @@ namespace raytracing
         if (includedFiles.find(filename) == includedFiles.end())
         {
           includedFiles.insert(filename);
-          result += parse_shader_from_file(filename, includedFiles);
+          std::string parseOut;
+          if (auto parseStatus = parse_shader_from_file(filename, includedFiles, parseOut); parseStatus != status::success)
+            return parseStatus;
+          out += parseOut;
         }
       }
-      result += *it;
+      out += *it;
     }
-    return result;
+    return status::success;
   }
-}
+
+  int32_t shader::get_uniform_location(const std::string& name)
+  {
+    if (!mLocations.contains(name))
+    {
+      int32_t location = glGetUniformLocation(mShaderHandle, name.c_str());
+      if (location != -1)
+        mLocations.insert(std::pair(name, location));
+      return location;
+    }
+    return mLocations.at(name);
+  }
+
+  void shader::use() const { glUseProgram(mShaderHandle); }
+
+  uint32_t shader::get_handle()
+  {
+    return mShaderHandle;
+  }
+
+  void shader::set_uniform(const std::string& name, int value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform1i(location, value);
+  }
+
+  void shader::set_uniform(const std::string& name, float value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform1f(location, value);
+  }
+
+  void shader::set_uniform(const std::string& name, glm::vec2 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform2fv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, glm::vec3 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform3fv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, glm::vec4 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform4fv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, glm::ivec2 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform2iv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, glm::ivec3 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform3iv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, glm::ivec4 value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniform4iv(location, 1, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, const glm::mat3& value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, const glm::mat4& value)
+  {
+    use();
+    if (int32_t location = get_uniform_location(name); location != -1)
+      glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+  }
+
+  void shader::set_uniform(const std::string& name, const render_texture& value)
+  {
+    use();
+
+    bool bound = false;
+    for (auto& texture : mTextures)
+    {
+      if (texture.handle == value.get_texture())
+        bound = true;
+    }
+
+    if (!bound)
+    {
+      mTextures.push_back({value.get_texture(), name});
+    }
+  }
+
+  size_t shader::get_free_texture_index()
+  {
+    return mTextures.size();
+  }
+
+  void shader::bind_textures()
+  {
+    use();
+    for (size_t i = 0; i < mTextures.size(); i++)
+    {
+      glActiveTexture(GL_TEXTURE0 + i);
+      glBindTexture(GL_TEXTURE_2D, mTextures[i].handle);
+      set_uniform(mTextures[i].name, i);
+    }
+  }
+
+} // namespace raytracing
