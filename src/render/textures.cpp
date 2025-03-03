@@ -29,7 +29,7 @@ namespace raytracing
       textureLoadingThreads.emplace_back([&, i]
         {
           int w, h, channels;
-          if (uint8_t* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
+          if (uchar* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
           {
             mTexturesData[i] = stbir_resize_uint8_linear(
               data, w, h, 0, nullptr,

@@ -257,13 +257,13 @@ namespace raytracing
     bool bound = false;
     for (auto& texture : mTextures)
     {
-      if (texture.handle == value.get_texture())
+      if (texture.handle == value.get_handle())
         bound = true;
     }
 
     if (!bound)
     {
-      mTextures.push_back({value.get_texture(), name});
+      mTextures.push_back({value.get_handle(), name});
     }
   }
 

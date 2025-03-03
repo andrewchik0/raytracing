@@ -48,7 +48,7 @@ namespace raytracing
     uint32_t mBoundingVolumesTexture = 0;    // Bounding volumes data encoded into a texture
 
     std::vector<std::string> mTextureFilenames;
-    std::vector<uint8_t *> mTexturesData;
+    std::vector<uchar *> mTexturesData;
     float* mSkyTextureData;
 
     void load_to_memory();

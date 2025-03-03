@@ -5,7 +5,7 @@ namespace raytracing
   uint32_t render_texture::sQuadVAO = 0;
   uint32_t render_texture::sQuadVBO = 0;
 
-  render_texture::~render_texture() { destroy(); }
+  render_texture::~render_texture() { render_texture::destroy(); }
 
   bool render_texture::resize(const uint32_t width, const uint32_t height)
   {
@@ -79,20 +79,12 @@ namespace raytracing
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
-  uint32_t render_texture::width() const { return mWidth; }
-  uint32_t render_texture::height() const { return mHeight; }
-
-  uint32_t render_texture::get_texture() const
-  {
-    return mTextureHandle;
-  }
-
   void render_texture::destroy()
   {
-    if (glIsTexture(mTextureHandle))
-      glDeleteTextures(1, &mTextureHandle);
+    texture::destroy();
     if (glIsFramebuffer(mFrameBufferHandle))
       glDeleteFramebuffers(1, &mFrameBufferHandle);
     mWidth = 0, mHeight = 0;
+    mFrameBufferHandle = 0;
   }
 } // namespace raytracing

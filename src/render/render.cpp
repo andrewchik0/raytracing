@@ -57,7 +57,7 @@ namespace raytracing
     mPostShader.set_uniform("bloomTexture", mBloomTexture);
     mPostProcessedTexture.draw(mPostShader);
 
-    glBindTexture(GL_TEXTURE_2D, mPostProcessedTexture.get_texture());
+    glBindTexture(GL_TEXTURE_2D, mPostProcessedTexture.get_handle());
     std::vector<unsigned char> pixels(mViewportWidth * mViewportHeight * 4);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
     glBindTexture(GL_TEXTURE_2D, 0);

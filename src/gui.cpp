@@ -128,7 +128,7 @@ namespace raytracing
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
     if (rt::get()->mLoaded)
       ImGui::Image(
-        rt::get()->mRender.mFinalTexture.get_texture(),
+        rt::get()->mRender.mFinalTexture.get_handle(),
         { float(rt::get()->mRender.mFinalTexture.width()), float(rt::get()->mRender.mFinalTexture.height())}
       );
     ImGui::End();

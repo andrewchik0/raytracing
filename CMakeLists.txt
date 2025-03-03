@@ -33,6 +33,8 @@ add_executable(ray-tracing
   src/render/render_texture.cpp
   src/render/render_texture.h
   third_party/stb/stb_image_wrapper.cpp
+  src/render/texture.cpp
+  src/render/texture.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)
