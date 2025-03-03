@@ -4,6 +4,43 @@
 
 #include <imgui.h>
 
+#include "render/texture.h"
+
+namespace ImGui
+{
+  inline void Image(const raytracing::texture& texture)
+  {
+    Image(texture.get_handle(), {float(texture.width()), float(texture.height())});
+  }
+
+  inline void Image(const raytracing::texture& texture, const ImVec2 center, const float angle)
+  {
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    auto halfSize = ImVec2(texture.width() * 0.5f, texture.height() * 0.5f);
+
+    ImVec2 pos[4] =
+    {
+      ImVec2(center.x - halfSize.x * cosA + halfSize.y * sinA, center.y - halfSize.x * sinA - halfSize.y * cosA),
+      ImVec2(center.x + halfSize.x * cosA + halfSize.y * sinA, center.y + halfSize.x * sinA - halfSize.y * cosA),
+      ImVec2(center.x + halfSize.x * cosA - halfSize.y * sinA, center.y + halfSize.x * sinA + halfSize.y * cosA),
+      ImVec2(center.x - halfSize.x * cosA - halfSize.y * sinA, center.y - halfSize.x * sinA + halfSize.y * cosA),
+    };
+
+    ImVec2 uv[4] =
+    {
+      ImVec2(0.0f, 0.0f), // Top-left
+      ImVec2(1.0f, 0.0f), // Top-right
+      ImVec2(1.0f, 1.0f), // Bottom-right
+      ImVec2(0.0f, 1.0f)  // Bottom-left
+    };
+
+    drawList->AddImageQuad(texture.get_handle(), pos[0], pos[1], pos[2], pos[3], uv[0], uv[1], uv[2], uv[3], IM_COL32_WHITE);
+  }
+}
+
 namespace raytracing
 {
   class gui
@@ -23,6 +60,8 @@ namespace raytracing
   private:
 
     ImFont* mFont = nullptr, *mFAFont = nullptr;
+
+    texture mLoadingTexture;
 
     float mOldFontSize = 0.0;
 

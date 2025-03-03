@@ -20,6 +20,8 @@ namespace raytracing
 
   bool gui::init()
   {
+    mLoadingTexture.from_file("assets/loading.png");
+
     bool result = ImGui::SFML::Init(rt::get()->mWindow);
     ImGuiIO& io = ImGui::GetIO();
 
@@ -127,10 +129,16 @@ namespace raytracing
     mViewportSize = {ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y};
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
     if (rt::get()->mLoaded)
-      ImGui::Image(
-        rt::get()->mRender.mFinalTexture.get_handle(),
-        { float(rt::get()->mRender.mFinalTexture.width()), float(rt::get()->mRender.mFinalTexture.height())}
-      );
+    {
+      ImGui::Image(rt::get()->mRender.mFinalTexture);
+    }
+    else
+    {
+      ImVec2 position;
+      position.x = mViewportPosition.x + mViewportSize.x / 2.0f;
+      position.y = mViewportPosition.y + mViewportSize.y / 2.0f;
+      ImGui::Image(mLoadingTexture, position, ImGui::GetTime() * 4);
+    }
     ImGui::End();
 
     ImGui::PopStyleVar();

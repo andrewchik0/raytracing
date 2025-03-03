@@ -41,21 +41,14 @@ namespace raytracing
     }
     mWindow = sf::RenderWindow(sf::VideoMode({ mWindowWidth, mWindowHeight }), options.title);
 
-    mGui.init();
     mRender.init();
+    mGui.init();
 
     mSceneSerializer.load(options.scene_filename);
   }
 
   void rt::run()
   {
-    if (!std::filesystem::exists("assets/loading.png"))
-      return;
-    sf::Texture loadingTexture("assets/loading.png");
-    sf::Sprite loadingSprite(loadingTexture);
-    loadingSprite.setOrigin((sf::Vector2f)loadingTexture.getSize() / 2.f);
-    loadingSprite.setPosition((sf::Vector2f)mWindow.getSize() / 2.f);
-
     while (mWindow.isOpen())
     {
       if (!mTexturesLoading && !mModelsLoading && !mBVHLoading)
@@ -87,9 +80,7 @@ namespace raytracing
       {
         mWindow.clear();
         handle_messages();
-        mWindow.draw(loadingSprite);
         mGui.update();
-        loadingSprite.rotate(sf::degrees(mElapsedTime.asSeconds() * 200.0f));
         ImGui::SFML::Render(mWindow);
         mWindow.display();
       }
