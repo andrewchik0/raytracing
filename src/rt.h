@@ -21,7 +21,14 @@ namespace raytracing
     uint32_t width = 1920, height = 1080;
     uint32_t samples = 128;
     uint32_t bounces = 16;
-    std::string filename = "screenshot.png";
+
+    std::string filename = "screenshot";
+
+    bool sequence = true;
+
+    std::string video_filename_base = "tmp/video";
+    uint32_t framerate = 30;
+    float duration = 10;
   };
 
   class rt
@@ -51,6 +58,7 @@ namespace raytracing
     void delete_material(size_t index);
 
     void render_to_image();
+    void render_to_video();
 
     static rt* get() { return sInstance; }
 

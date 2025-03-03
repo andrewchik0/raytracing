@@ -137,6 +137,51 @@ namespace raytracing
     set_viewport();
   }
 
+  void rt::render_to_video()
+  {
+    // Store data
+    uint32_t bounces = mRender.mBouncesCount;
+    size_t accumulatingFrameIndex = mRender.mAccumulatingFrameIndex;
+    size_t maxAccumulation = mRender.mMaxAccumulation;
+    int renderMode = mRender.mRenderMode;
+
+    mRender.mRenderMode = true;
+    mRender.mBouncesCount = mRenderOptions.bounces;
+    mRender.reset_accumulation();
+    mRender.mMaxAccumulation = mRenderOptions.samples;
+
+    set_viewport(mRenderOptions.width, mRenderOptions.height);
+
+    for (size_t i = 0; i < mRenderOptions.duration * mRenderOptions.framerate; i++)
+    {
+      sf::RenderTexture rt({mRenderOptions.width, mRenderOptions.height});
+      size_t sampleCounter = 0;
+      mCamera.move_right(0.1);
+
+      while (sampleCounter++ < mRenderOptions.samples)
+      {
+        mRender.clear();
+        mRender.draw(&rt);
+        mElapsedTime = mClock.getElapsedTime();
+        mTime += mElapsedTime.asSeconds();
+        mClock.restart();
+      }
+
+      mRender.reset_accumulation();
+
+      rt.display();
+      if (!rt.getTexture().copyToImage().saveToFile(mRenderOptions.video_filename_base + std::to_string(i) + ".png"))
+        std::cerr << "Failed to save image" << std::endl;
+    }
+
+    // Restore data
+    mRender.mBouncesCount = bounces;
+    mRender.mRenderMode = renderMode;
+    mRender.mMaxAccumulation = maxAccumulation;
+    mRender.mAccumulatingFrameIndex = accumulatingFrameIndex;
+    set_viewport();
+  }
+
 
   bool rt::handle_messages()
   {
@@ -170,8 +215,7 @@ namespace raytracing
 
   void rt::set_viewport()
   {
-    mRender.resize(mGui.mViewportSize.x, mGui.mViewportSize.y);
-    mCamera.resize(mGui.mViewportSize.x, mGui.mViewportSize.y);
+    set_viewport(mGui.mViewportSize.x, mGui.mViewportSize.y);
   }
   void rt::set_viewport(const uint32_t width, const uint32_t height)
   {

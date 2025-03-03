@@ -464,10 +464,21 @@ namespace raytracing
     ImGui::SameLine();
     ImGui::DragScalar("Resolution", ImGuiDataType_U32, &rt::get()->mRenderOptions.height);
     ImGui::PopItemWidth();
-    ImGui::InputText("Filename", &rt::get()->mRenderOptions.filename);
-    ImGui::SameLine();
-    if (ImGui::Button("Render to file"))
-      rt::get()->render_to_image();
+    ImGui::Checkbox("Render sequence", &rt::get()->mRenderOptions.sequence);
+    if (rt::get()->mRenderOptions.sequence)
+    {
+      ImGui::DragFloat("Video duration (s)", &rt::get()->mRenderOptions.duration, 1, 0, 0, "%.1f");
+      ImGui::DragScalar("Framerate", ImGuiDataType_U32, &rt::get()->mRenderOptions.framerate);
+      ImGui::InputText("Filename base", &rt::get()->mRenderOptions.video_filename_base);
+      if (ImGui::Button("Render"))
+        rt::get()->render_to_image();
+    }
+    else
+    {
+      ImGui::InputText("Filename", &rt::get()->mRenderOptions.filename);
+      if (ImGui::Button("Render"))
+        rt::get()->render_to_image();
+    }
   }
 
   void gui::push_font(float scale)
