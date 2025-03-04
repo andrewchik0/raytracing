@@ -76,7 +76,7 @@ namespace raytracing
       if (float angleCos = (glm::dot(checkLookAt, math::getNormalizedProjection(mDirection))); angleCos <= 0)
       {
         float threshold = 1e-3f;
-        uchar sign = mDirection.y > 0 ? 1 : -1;
+        char sign = mDirection.y > 0 ? 1 : -1;
 
         mDirection = math::getNormalizedProjection(mDirection);
         mDirection = rotateX * glm::vec4(mDirection.x * threshold, sign * (1 - threshold), mDirection.z * threshold, 1);

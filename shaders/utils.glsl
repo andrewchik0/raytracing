@@ -20,7 +20,7 @@ vec3 rand3(vec3 seed)
 const float PI = 3.141592653589;
 float atan2(float y, float x)
 {
-  bool s = (abs(x) > abs(y));
+  bool s = bool(abs(x) > abs(y));
   return mix(PI / 2.0 - atan(x, y), atan(y, x), s);
 }
 
@@ -29,7 +29,7 @@ vec3 gaussian_blur(sampler2D tex, vec2 windowSize, vec2 texCoords, float radius)
   float radiusSquared = radius * radius;
   float pixelSizeX = 1.0 / windowSize.x;
   float pixelSizeY = 1.0 / windowSize.y;
-  vec2 center = texCoords;
+  vec2 center = vec2(texCoords.x, 1.0 - texCoords.y);
   float baseWeight = 1 / (2.0 * PI * radiusSquared);
   vec3 resultColor = vec3(0.0);
 
