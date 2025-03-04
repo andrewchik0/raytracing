@@ -22,6 +22,7 @@ namespace raytracing
 
     input() = default;
     input(const input&) = delete;
+    ~input() = default;
 
     void handle(const std::optional<sf::Event>& event);
     void clear();

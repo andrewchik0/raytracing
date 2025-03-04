@@ -6,8 +6,9 @@
 #include <optional>
 
 #include <nfd.h>
-
 #include <imgui-SFML.h>
+
+#include "scene_serializer.h"
 
 namespace raytracing
 {
@@ -21,11 +22,8 @@ namespace raytracing
   void rt::init(const init_options& options)
   {
     sInstance = this;
-    if (!std::filesystem::exists("shaders/main.frag"))
-    {
-      std::cerr << "Filed to load shaders, folder does not exist!\n";
-      return;
-    }
+
+    rt_assert(std::filesystem::exists("shaders/main.frag"), "Failed to load shaders, folder does not exist!")
 
     NFD_Init();
 
@@ -44,7 +42,7 @@ namespace raytracing
     mRender.init();
     mGui.init();
 
-    mSceneSerializer.load(options.scene_filename);
+    scene_serializer::load(options.scene_filename);
   }
 
   void rt::run()
@@ -164,8 +162,7 @@ namespace raytracing
       mRender.reset_accumulation();
 
       rt.display();
-      if (!rt.getTexture().copyToImage().saveToFile(mRenderOptions.video_filename_base + std::to_string(i) + ".png"))
-        std::cerr << "Failed to save image" << std::endl;
+      rt_assert(rt.getTexture().copyToImage().saveToFile(mRenderOptions.video_filename_base + std::to_string(i) + ".png"), "Failed to save image")
     }
 
     // Restore data

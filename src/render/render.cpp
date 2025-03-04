@@ -1,7 +1,5 @@
 #include "render.h"
 
-#include <thread>
-
 #include "rt.h"
 
 namespace raytracing
@@ -10,8 +8,7 @@ namespace raytracing
   {
     glewInit();
 
-    if (load_shaders() != status::success)
-      return;
+    rt_assert(load_shaders() == status::success, "Failed to load shaders");
 
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
@@ -91,8 +88,9 @@ namespace raytracing
       mPostProcessedTexture.resize(width, height) &&
       mAccumulatedTexture.resize(width, height) &&
       mFinalTexture.resize(width, height);
-    if (!result)
-      return;
+
+    rt_assert(result, "Failed to resize framebuffers");
+
     reset_accumulation();
   }
 

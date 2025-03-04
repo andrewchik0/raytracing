@@ -4,7 +4,6 @@
 #include "gui.h"
 #include "input.h"
 #include "render/render.h"
-#include "scene_serializer.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -79,7 +78,7 @@ namespace raytracing
 
     uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
-    scene_serializer mSceneSerializer;
+    utils::thread_pool mThreadPool;
 
     std::string mSceneFilename = "";
     std::vector<std::string> mModelNames;

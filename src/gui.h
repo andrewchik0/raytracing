@@ -54,6 +54,7 @@ namespace raytracing
 
     gui() = default;
     gui(const gui&) = delete;
+    ~gui() = default;
 
     bool init();
     void update();

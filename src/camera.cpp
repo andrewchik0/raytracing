@@ -9,11 +9,6 @@
 namespace raytracing
 {
 
-  glm::vec3 getNormalizedProjection(glm::vec3 v)
-  {
-    return glm::normalize(glm::vec3(v.x, 0.0, v.z));
-  }
-
   void camera::resize(const uint32_t width, const uint32_t height)
   {
     mAspect = static_cast<float>(width) / static_cast<float>(height);
@@ -25,7 +20,7 @@ namespace raytracing
   void camera::move_back(float deltaSpeed) { move_forward(-deltaSpeed); }
   void camera::move_forward(float deltaSpeed)
   {
-    mPosition += glm::normalize(getNormalizedProjection(mDirection)) * deltaSpeed;
+    mPosition += glm::normalize(math::getNormalizedProjection(mDirection)) * deltaSpeed;
   }
 
   void camera::move_right(float deltaSpeed) { move_left(-deltaSpeed); }
@@ -78,12 +73,12 @@ namespace raytracing
 
       glm::vec3 checkLookAt = glm::normalize(rotateY * glm::vec4(mDirection, 1.0));
 
-      if (float angleCos = (glm::dot(checkLookAt, getNormalizedProjection(mDirection))); angleCos <= 0)
+      if (float angleCos = (glm::dot(checkLookAt, math::getNormalizedProjection(mDirection))); angleCos <= 0)
       {
         float threshold = 1e-3f;
         uchar sign = mDirection.y > 0 ? 1 : -1;
 
-        mDirection = getNormalizedProjection(mDirection);
+        mDirection = math::getNormalizedProjection(mDirection);
         mDirection = rotateX * glm::vec4(mDirection.x * threshold, sign * (1 - threshold), mDirection.z * threshold, 1);
       }
       else

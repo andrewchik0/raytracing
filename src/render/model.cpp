@@ -167,7 +167,6 @@ namespace raytracing
     std::string clearcoatTexture = get_texture_path(material, aiTextureType_CLEARCOAT);
     std::string transmissionTexture = get_texture_path(material, aiTextureType_TRANSMISSION);
 
-
     mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
     mat.emissivity = glm::vec3(emissive.r, emissive.g, emissive.b);
     mat.roughness = glm::sqrt(2.0f / (shininess + 2));

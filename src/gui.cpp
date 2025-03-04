@@ -5,13 +5,14 @@
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 #include <IconsFontAwesome6.h>
+#include <nfd.h>
 
-#include "nfd.h"
 #include "rt.h"
+#include "scene_serializer.h"
 
 namespace raytracing
 {
-  bool gui::check(bool value)
+  bool gui::check(const bool value)
   {
     if (value)
       rt::get()->mRender.reset_accumulation();
@@ -78,9 +79,9 @@ namespace raytracing
       if (ImGui::BeginMenu("File"))
       {
         if (ImGui::MenuItem(ICON_FA_FOLDER " Open..."))
-          rt::get()->mSceneSerializer.load();
+          scene_serializer::load();
         if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
-          rt::get()->mSceneSerializer.save(rt::get()->mSceneFilename);
+          scene_serializer::save(rt::get()->mSceneFilename);
         if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save as..."))
         {
           nfdchar_t *outPath = nullptr;
@@ -89,7 +90,7 @@ namespace raytracing
             &outPath, filterItem, 1, (std::filesystem::current_path() / "scenes").string().c_str(), "scene.yaml"
           );
           if (result == NFD_OKAY)
-            rt::get()->mSceneSerializer.save(outPath);
+            scene_serializer::save(outPath);
           free(outPath);
         }
         if (ImGui::MenuItem(ICON_FA_XMARK " Exit"))

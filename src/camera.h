@@ -7,6 +7,9 @@ namespace raytracing
   class camera
   {
   public:
+    camera() = default;
+    ~camera() = default;
+
     float mSpeed = 1.0, mMouseSensitivity = 1.0f;
     float mFovY = 90.0f;
 

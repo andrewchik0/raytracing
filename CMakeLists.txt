@@ -35,6 +35,14 @@ add_executable(ray-tracing
   third_party/stb/stb_image_wrapper.cpp
   src/render/texture.cpp
   src/render/texture.h
+  src/utils/math_helper.h
+  src/utils/thread_pool.cpp
+  src/utils/thread_pool.h
+  src/utils/platform.h
+  src/utils/rt_types.h
+  src/utils/utils.h
+  src/utils/assert.h
+  src/utils/assert.cpp
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)
