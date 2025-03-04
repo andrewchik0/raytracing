@@ -61,16 +61,17 @@ namespace raytracing
     YAML::Node scene = YAML::LoadFile(filename.string());
 
     {
-      rt::get()->mSkyFilename = scene["sky_filename"].as<std::string>();
-      rt::get()->mRender.mGamma = scene["gamma"].as<float>();
-      rt::get()->mRender.mExposure = scene["exposure"].as<float>();
-      rt::get()->mRender.mBlurSize = scene["blur_radius"].as<float>();
+      if (scene["sky_filename"]) rt::get()->mSkyFilename = scene["sky_filename"].as<std::string>();
+      if (scene["gamma"]) rt::get()->mRender.mGamma = scene["gamma"].as<float>();
+      if (scene["exposure"]) rt::get()->mRender.mExposure = scene["exposure"].as<float>();
+      if (scene["blur_radius"]) rt::get()->mRender.mBlurSize = scene["blur_radius"].as<float>();
 
       if (scene["camera"])
       {
-        rt::get()->mCamera.mFovY = scene["camera"]["fov"].as<float>();
-        rt::get()->mCamera.mPosition = scene["camera"]["position"].as<glm::vec3>();
-        rt::get()->mCamera.mDirection = scene["camera"]["direction"].as<glm::vec3>();
+        auto camera = scene["camera"].as<YAML::Node>();
+        if (camera["fov"]) rt::get()->mCamera.mFovY = camera["fov"].as<float>();
+        if (camera["position"]) rt::get()->mCamera.mPosition = camera["position"].as<glm::vec3>();
+        if (camera["direction"]) rt::get()->mCamera.mDirection = camera["direction"].as<glm::vec3>();
       }
 
       if (scene["objects"])
@@ -80,12 +81,15 @@ namespace raytracing
         for(YAML::const_iterator it = objects.begin(); it != objects.end(); ++it, ++i)
         {
           auto object = it->as<YAML::Node>();
+
+          if (!object["type"]) continue;
+
           if (strcmp(object["type"].as<std::string>().c_str(), "sphere") == 0)
           {
             SphereObject sphere {};
-            sphere.center = object["position"].as<glm::vec3>();
-            sphere.radius = object["radius"].as<float>();
-            sphere.materialIndex = object["materialIndex"].as<int>();
+            if (object["position"]) sphere.center = object["position"].as<glm::vec3>();
+            if (object["radius"]) sphere.radius = object["radius"].as<float>();
+            if (object["materialIndex"]) sphere.materialIndex = object["materialIndex"].as<int>();
             std::string name = "Sphere " + std::to_string(rt::get()->mRender.mSpheresCount + 1);
             if (object["name"]) name = object["name"].as<std::string>();
             rt::get()->add_sphere(name, sphere);
@@ -93,14 +97,14 @@ namespace raytracing
           if (strcmp(object["type"].as<std::string>().c_str(), "plane") == 0)
           {
             PlaneObject plane {};
-            plane.normal = object["normal"].as<glm::vec3>();
-            plane.distance = object["distance"].as<float>();
-            plane.materialIndex = object["materialIndex"].as<int>();
+            if (object["normal"]) plane.normal = object["normal"].as<glm::vec3>();
+            if (object["distance"]) plane.distance = object["distance"].as<float>();
+            if (object["materialIndex"]) plane.materialIndex = object["materialIndex"].as<int>();
             std::string name = "Plane " + std::to_string(rt::get()->mRender.mPlanesCount + 1);
             if (object["name"]) name = object["name"].as<std::string>();
             rt::get()->add_plane(name, plane);
           }
-          if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0)
+          if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0 && object["filename"])
           {
             rt::get()->add_model(object["filename"].as<std::string>());
           }
@@ -118,13 +122,13 @@ namespace raytracing
           auto materialNode = it->as<YAML::Node>();
 
           Material material {};
-          material.albedo = materialNode["albedo"].as<glm::vec3>();
-          material.emissivity = materialNode["emissivity"].as<glm::vec3>();
-          material.roughness = materialNode["roughness"].as<float>();
-          material.textureIndex = materialNode["texture_id"].as<int>();
-          material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
-          material.metallicTextureIndex = materialNode["metallic_texture_id"].as<int>();
-          material.textureCoordinatesMultiplier = materialNode["texture_coordinates_multiplier"].as<float>();
+          if (materialNode["albedo"]) material.albedo = materialNode["albedo"].as<glm::vec3>();
+          if (materialNode["emissivity"]) material.emissivity = materialNode["emissivity"].as<glm::vec3>();
+          if (materialNode["roughness"]) material.roughness = materialNode["roughness"].as<float>();
+          if (materialNode["texture_id"]) material.textureIndex = materialNode["texture_id"].as<int>();
+          if (materialNode["normal_texture_id"]) material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
+          if (materialNode["metallic_texture_id"]) material.metallicTextureIndex = materialNode["metallic_texture_id"].as<int>();
+          if (materialNode["texture_coordinates_multiplier"]) material.textureCoordinatesMultiplier = materialNode["texture_coordinates_multiplier"].as<float>();
           std::string name = "Material " + std::to_string(rt::get()->mRender.mMaterialsCount + 1);
           if (materialNode["name"]) name = materialNode["name"].as<std::string>();
           rt::get()->add_material(name, material);
