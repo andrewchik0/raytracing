@@ -13,8 +13,6 @@ using ivec3 = glm::ivec3;
 using ivec4 = glm::ivec4;
 #endif
 
-#define FAR_PLANE 1e12
-
 #define MAX_MATERIALS 196
 struct Material
 {

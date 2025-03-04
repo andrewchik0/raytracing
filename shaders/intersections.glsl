@@ -1,10 +1,5 @@
 #include "uniforms.h"
-
-struct Ray
-{
-  vec3 origin;
-  vec3 direction;
-};
+#include "types.glsl"
 
 float rayTriangleIntersect(Ray ray, vec3 vert0, vec3 vert1, vec3 vert2, out float u, out float v)
 {

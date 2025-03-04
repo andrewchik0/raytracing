@@ -44,8 +44,3 @@ vec3 gaussian_blur(sampler2D tex, vec2 windowSize, vec2 texCoords, float radius)
 
   return resultColor;
 }
-
-float fresnelSchlick(float cosTheta, float f0)
-{
-  return f0 + (1.0 - f0) * pow(1 - cosTheta, 5.0);
-}

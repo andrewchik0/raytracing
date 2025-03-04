@@ -1,18 +1,8 @@
 #include "uniforms.h"
+#include "types.glsl"
 
 // DO NOT TOUCH IN CLion it will crash GLSL plugin
 #define STACK_SIZE 32
-
-struct HitData
-{
-  vec3 position;
-  vec3 normal;
-  vec3 tangent;
-  vec3 bitangent;
-  vec2 textureCoordinates;
-  uint materialIndex;
-  float distance;
-};
 
 Vertex getVertex(int index)
 {

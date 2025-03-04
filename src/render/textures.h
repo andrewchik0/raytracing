@@ -41,7 +41,6 @@ namespace raytracing
       mTexturesCountMax = 256,
       mSkyWidth = 2048, mSkyHeight = 1024;
 
-    // Textures are stored in arrays because of conflicts with SFML
     uint32_t mTextureArray = 0;              // Usual material textures
     uint32_t mSky = 0;                       // Sky texture
     uint32_t mVerticesDataTexture = 0;       // Vertices data encoded into a texture

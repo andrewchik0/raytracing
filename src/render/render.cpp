@@ -8,7 +8,7 @@ namespace raytracing
   {
     glewInit();
 
-    rt_assert(load_shaders() == status::success, "Failed to load shaders");
+    load_shaders();
 
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
