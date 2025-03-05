@@ -14,10 +14,17 @@ namespace raytracing
     glDeleteProgram(mShaderHandle);
   }
 
+  status shader::load(const std::string& computePath)
+  {
+    info shaders[1];
+    shaders[0].path = computePath;
+    shaders[0].type = GL_COMPUTE_SHADER;
+    mIsCompute = true;
+    return load(shaders, 1);
+  }
+
   status shader::load(const std::string& vertexPath, const std::string& fragmentPath)
   {
-    mShaderHandle = glCreateProgram();
-
     constexpr int shaderStagesCount = 2;
 
     info shaders[shaderStagesCount];
@@ -49,7 +56,7 @@ namespace raytracing
     return load(shaders, shaderStagesCount);
   }
 
-  status shader::load(info* shaders, size_t infoCount)
+  status shader::load(info* shaders, const size_t infoCount)
   {
     if (glIsProgram(mShaderHandle))
     {
@@ -61,7 +68,7 @@ namespace raytracing
     mShaderHandle = glCreateProgram();
 
     int32_t success;
-    char infoLog[512];
+    std::vector<byte> infoLog(1024);
     for (uint32_t i = 0; i < infoCount; ++i)
     {
       std::set<std::string> includedFiles;
@@ -75,10 +82,10 @@ namespace raytracing
       glShaderSource(shaders[i].shader, 1, &buf, nullptr);
       glCompileShader(shaders[i].shader);
       glGetShaderiv(shaders[i].shader, GL_COMPILE_STATUS, &success);
-      if (!success)
+      if (success != GL_TRUE)
       {
-        glGetShaderInfoLog(shaders[i].shader, 512, nullptr, infoLog);
-        rt::get()->mRender.mShaderErrors += "ERROR: Failed to compile shader: " + shaders[i].path + '\n' + infoLog + '\n';
+        glGetShaderInfoLog(shaders[i].shader, infoLog.size(), nullptr, infoLog.data());
+        rt::get()->mRender.mShaderErrors += "ERROR: Failed to compile shader: " + shaders[i].path + '\n' + infoLog.data() + '\n';
       }
 
       glAttachShader(mShaderHandle, shaders[i].shader);
@@ -86,10 +93,10 @@ namespace raytracing
 
     glLinkProgram(mShaderHandle);
     glGetProgramiv(mShaderHandle, GL_LINK_STATUS, &success);
-    if (!success)
+    if (success != GL_TRUE)
     {
-      glGetProgramInfoLog(mShaderHandle, 512, nullptr, infoLog);
-      rt::get()->mRender.mShaderErrors += "ERROR: Failed to link shaders\n" + std::string(infoLog) + '\n';
+      glGetProgramInfoLog(mShaderHandle, infoLog.size(), nullptr, infoLog.data());
+      rt::get()->mRender.mShaderErrors += "ERROR: Failed to link shaders\n" + std::string(infoLog.data()) + '\n';
     }
 
     for (uint32_t i = 0; i < infoCount; ++i)
@@ -249,7 +256,7 @@ namespace raytracing
       glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
   }
 
-  void shader::set_uniform(const std::string& name, const render_texture& value)
+  void shader::set_uniform(const std::string& name, const texture& value)
   {
     use();
 
@@ -280,6 +287,19 @@ namespace raytracing
       glBindTexture(GL_TEXTURE_2D, mTextures[i].handle);
       set_uniform(mTextures[i].name, i);
     }
+  }
+
+  void shader::dispatch_compute(const render_texture& buffer)
+  {
+    rt_assert(mIsCompute, "Trying to dispatch compute on non-compute shader!");
+
+    GLuint numGroupsX = (buffer.width() + sWorkGroupSizeX - 1) / sWorkGroupSizeX;
+    GLuint numGroupsY = (buffer.height() + sWorkGroupSizeY - 1) / sWorkGroupSizeY;
+
+    glDispatchCompute(numGroupsX, numGroupsY, 1);
+
+    // Ensure all writes to the image are complete
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
   }
 
 } // namespace raytracing

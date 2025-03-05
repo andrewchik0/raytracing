@@ -16,10 +16,10 @@ namespace raytracing
     void from_file(const std::filesystem::path& path);
     void write_to_file(const std::filesystem::path& path);
 
-    uint32_t width() const;
-    uint32_t height() const;
+    [[nodiscard]] uint32_t width() const;
+    [[nodiscard]] uint32_t height() const;
 
-    uint32_t get_handle() const;
+    [[nodiscard]] uint32_t get_handle() const;
 
   protected:
 

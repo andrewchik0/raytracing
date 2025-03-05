@@ -181,11 +181,11 @@ namespace raytracing
       {
         modelFutures.push_back(mThreadPool.enqueue([&]
         {
-          model m;
-          m.load_from_file(modelName);
-
-          mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-          mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+          if (model m; m.load_from_file(modelName) == status::success)
+          {
+            mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
+            mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+          }
         }));
       }
 

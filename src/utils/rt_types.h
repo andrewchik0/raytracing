@@ -3,6 +3,8 @@
 namespace raytracing
 {
   using uchar = unsigned char;
+  using byte = char;
+  using ubyte = unsigned char;
 
   enum class status
   {

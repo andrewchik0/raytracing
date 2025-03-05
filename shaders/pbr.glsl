@@ -7,6 +7,9 @@ float fresnelSchlick(float cosTheta, float f0)
   return f0 + (1.0 - f0) * pow(1 - cosTheta, 5.0);
 }
 
+/*
+ * Returns `true` if ray should reflect, otherwise - `false`
+ */
 bool pbr(inout HitData hit, uint sampleCounter, inout vec3 sampleColor, inout Ray ray)
 {
   float bias = 1e-5;

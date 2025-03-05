@@ -19,12 +19,12 @@ namespace raytracing
 
     void vsync(bool value);
 
-    uint32_t width() const;
-    uint32_t height() const;
+    [[nodiscard]] uint32_t width() const;
+    [[nodiscard]] uint32_t height() const;
 
     bool is_open() const;
 
-    GLFWwindow* get() const;
+    [[nodiscard]] GLFWwindow* get() const;
 
     void set_grabbing(bool value);
 

@@ -1,4 +1,4 @@
-# Ray Tracing Project
+# Ray tracing rendering engine
 
 ### Getting Started
 

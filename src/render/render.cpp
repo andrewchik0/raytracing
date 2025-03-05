@@ -118,6 +118,7 @@ namespace raytracing
     mShaderErrors.clear();
 
     status result[] = {
+      mShader.load("./shaders/main.comp"),
       mShader.load("./shaders/quad.vert", "./shaders/main.frag"),
       mPostShader.load("./shaders/quad.vert", "./shaders/post.frag"),
       mBloomShader.load("./shaders/quad.vert", "./shaders/bloom.frag"),

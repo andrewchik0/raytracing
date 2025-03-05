@@ -5,6 +5,7 @@
 namespace raytracing
 {
   class render_texture;
+  class texture;
 
   class shader
   {
@@ -15,8 +16,9 @@ namespace raytracing
 
     ~shader();
 
-    status load(const std::string& vertexPath, const std::string& fragmentPath);
-    status load(const std::string& vertexPath, const std::string& geometryPath, const std::string& fragmentPath);
+    [[nodiscard]] status load(const std::string& computePath);
+    [[nodiscard]] status load(const std::string& vertexPath, const std::string& fragmentPath);
+    [[nodiscard]] status load(const std::string& vertexPath, const std::string& geometryPath, const std::string& fragmentPath);
 
     void set_uniform(const std::string& name, const size_t value) { set_uniform(name, int(value)); }
     void set_uniform(const std::string& name, const uint32_t value) { set_uniform(name, int(value)); }
@@ -30,17 +32,24 @@ namespace raytracing
     void set_uniform(const std::string& name, glm::ivec4 value);
     void set_uniform(const std::string& name, const glm::mat3& value);
     void set_uniform(const std::string& name, const glm::mat4& value);
-    void set_uniform(const std::string& name, const render_texture& value);
+    void set_uniform(const std::string& name, const texture& value);
 
-    size_t get_free_texture_index();
+    [[nodiscard]] size_t get_free_texture_index();
 
     void bind_textures();
 
+    void dispatch_compute(const render_texture& buffer);
+
     void use() const;
 
-    uint32_t get_handle();
+    [[nodiscard]] uint32_t get_handle();
 
   private:
+
+    static constexpr GLuint sWorkGroupSizeX = 16;
+    static constexpr GLuint sWorkGroupSizeY = 16;
+
+    bool mIsCompute = false;
 
     struct info
     {

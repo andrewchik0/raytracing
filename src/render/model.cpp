@@ -13,8 +13,10 @@
 
 namespace raytracing
 {
-  void model::load_from_file(std::filesystem::path file)
+  status model::load_from_file(std::filesystem::path file)
   {
+    if (!std::filesystem::exists(file))
+      return status::file_not_found;
     Assimp::Importer importer;
 
     mBasePath = file.parent_path();
@@ -32,10 +34,11 @@ namespace raytracing
 
     if (!scene || !scene->mRootNode)
     {
-      return;
+      return status::error;
     }
 
     process_node(scene->mRootNode, scene, aiMatrix4x4());
+    return status::success;
   }
 
   void model::process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform)

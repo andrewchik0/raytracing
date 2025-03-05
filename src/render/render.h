@@ -62,6 +62,7 @@ namespace raytracing
       mPostShader,
       mBloomShader,
       mAccumulationShader,
+      mComputeShader,
       mDummyShader;
     render_texture
       mLastFrameTexture,
