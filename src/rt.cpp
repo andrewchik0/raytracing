@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <iostream>
-#include <thread>
 
 #include <nfd.h>
 
@@ -174,24 +173,24 @@ namespace raytracing
   {
     mWindow.vsync(true);
     mModelsLoading = true;
-    std::thread([&]
+    mThreadPool.send_task([&]
     {
-      std::vector<std::thread> modelThreads;
+      std::vector<std::future<void>> modelFutures;
 
       for (auto& modelName : mModelNames)
       {
-        modelThreads.emplace_back([&]
+        modelFutures.push_back(mThreadPool.enqueue([&]
         {
           model m;
           m.load_from_file(modelName);
 
           mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
           mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
-        });
+        }));
       }
 
-      for (auto& thread : modelThreads)
-        thread.join();
+      for (auto& model : modelFutures)
+        model.wait();
 
       mTexturesLoading = true;
       mModelsLoading = false;
@@ -204,7 +203,7 @@ namespace raytracing
       mRender.mBoundingVolumeBuilder.build();
 
       mBVHLoading = false;
-    }).detach();
+    });
   }
 
   void rt::add_sphere(const std::string& name, const SphereObject& object)

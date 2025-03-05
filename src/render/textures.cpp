@@ -22,25 +22,28 @@ namespace raytracing
   void textures::load_to_memory()
   {
     mTexturesData.resize(glm::min(mTexturesCountMax, (uint32_t)mTextureFilenames.size()));
-    std::vector<std::thread> textureLoadingThreads;
+    std::vector<std::future<void>> textureLoadingJobs;
 
     for (size_t i = 0; i < mTexturesData.size(); ++i)
     {
-      textureLoadingThreads.emplace_back([&, i]
+      size_t index = i;
+      textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([index]
         {
           int w, h, channels;
-          if (uchar* data = stbi_load(mTextureFilenames[i].c_str(), &w, &h, &channels, 4))
+          if (uchar* data = stbi_load(rt::get()->mRender.mTextures.mTextureFilenames[index].c_str(), &w, &h, &channels, 4))
           {
-            mTexturesData[i] = stbir_resize_uint8_linear(
+            auto ptr = stbir_resize_uint8_linear(
               data, w, h, 0, nullptr,
-              mTextureWidth, mTextureHeight, 0, STBIR_RGBA);
+              rt::get()->mRender.mTextures.mTextureWidth, rt::get()->mRender.mTextures.mTextureHeight, 0, STBIR_RGBA);
+            rt_assert(ptr, "Failed to resize a texture");
+            rt::get()->mRender.mTextures.mTexturesData[index] = ptr;
             stbi_image_free(data);
           }
         }
-      );
+      ));
     }
 
-    textureLoadingThreads.emplace_back([&]
+    textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([&]
     {
       int w, h, channels;
       if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 3))
@@ -51,12 +54,13 @@ namespace raytracing
         mSkyTextureData = stbir_resize_float_linear(
           data, w, h, 0, nullptr,
           mSkyWidth, mSkyHeight, 0, STBIR_RGB);
+        rt_assert(mSkyTextureData, "Failed to resize a texture");
         stbi_image_free(data);
       }
-    });
+    }));
 
-    for (auto& thread : textureLoadingThreads)
-      thread.join();
+    for (auto& thread : textureLoadingJobs)
+      thread.wait();
   }
 
   void textures::allocate_triangles_buffer()

@@ -19,6 +19,7 @@ namespace raytracing::utils
     ~thread_pool();
 
     void terminate();
+    void restart();
     void resize(uint32_t threadCount);
 
     template <typename F, typename R = std::invoke_result_t<F>>
@@ -27,7 +28,7 @@ namespace raytracing::utils
       std::shared_ptr<std::promise<R>> promise = std::make_shared<std::promise<R>>();
       {
         std::unique_lock<std::mutex> lock(mQueueMutex);
-        mJobs.push([promise, &job]{
+        mJobs.push([promise, job]{
           if constexpr(std::is_void_v<R>)
           {
             job();

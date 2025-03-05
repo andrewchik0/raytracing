@@ -4,6 +4,7 @@ namespace raytracing::utils
 {
   void thread_pool::start()
   {
+    mShouldTerminate = false;
     for (size_t i = 0; i < mThreadCount; i++)
       mThreads.emplace_back(std::thread(&thread_pool::thread_loop, this));
   }
@@ -64,6 +65,11 @@ namespace raytracing::utils
         thread.join();
     }
     mThreads.clear();
+  }
+
+  void thread_pool::restart()
+  {
+    resize(mThreadCount);
   }
 
   void thread_pool::resize(uint32_t threadCount)

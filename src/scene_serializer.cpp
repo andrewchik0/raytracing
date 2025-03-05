@@ -46,6 +46,10 @@ namespace raytracing
 
   void scene_serializer::load(const std::filesystem::path& filename)
   {
+    rt::get()->mThreadPool.restart();
+    rt::get()->mModelsLoading = false;
+    rt::get()->mTexturesLoading = false;
+    rt::get()->mBVHLoading = false;
     rt::get()->mRender.reset_accumulation();
     rt::get()->mRender.clear();
     rt::get()->mModelNames.clear();
