@@ -86,6 +86,13 @@ namespace raytracing
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
+  void render_texture::draw_quad()
+  {
+    glBindVertexArray(sQuadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+  }
+
   void render_texture::destroy()
   {
     texture::destroy();

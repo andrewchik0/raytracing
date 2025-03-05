@@ -34,9 +34,10 @@ namespace raytracing
     mPostProcessedTexture.clear();
   }
 
-  void render::draw(render_texture* target)
+  void render::draw(render_texture* target /* = nullptr */)
   {
-    if (mAccumulatingFrameIndex > mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex)) return;
+    if (mAccumulatingFrameIndex > mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex))
+      return;
     mAccumulatingFrameIndex++;
 
     // Main pass

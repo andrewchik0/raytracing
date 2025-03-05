@@ -48,13 +48,16 @@ namespace raytracing
         mWindow.clear();
         mRender.clear();
 
+        if (input::key(GLFW_KEY_R))
+          mRender.load_shaders();
+
         mGui.update();
         mTimeHandler.tick();
         mCamera.update(mTimeHandler.mDeltaTime);
 
         set_viewport();
 
-        mRender.draw(nullptr);
+        mRender.draw();
         mGui.draw();
         mWindow.draw();
         mInput.clear();

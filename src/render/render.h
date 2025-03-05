@@ -49,7 +49,7 @@ namespace raytracing
     void init();
     void post_init();
     void clear();
-    void draw(render_texture* target);
+    void draw(render_texture* target = nullptr);
     void resize(uint32_t width, uint32_t height);
 
     void push_scene();

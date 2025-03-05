@@ -18,6 +18,8 @@ namespace raytracing
     void clear();
     void draw(shader& shader);
 
+    static void draw_quad();
+
   private:
 
     void destroy();
