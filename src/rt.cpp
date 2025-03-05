@@ -45,19 +45,24 @@ namespace raytracing
           mLoaded = true;
         }
 
+        mTimeHandler.tick();
         mWindow.clear();
         mRender.clear();
+
+        mark_zone("Clear");
 
         if (input::key(GLFW_KEY_R))
           mRender.load_shaders();
 
-        mGui.update();
-        mTimeHandler.tick();
         mCamera.update(mTimeHandler.mDeltaTime);
 
         set_viewport();
 
+        mark_zone("Update");
+
         mRender.draw();
+
+        mGui.update();
         mGui.draw();
         mWindow.draw();
         mInput.clear();

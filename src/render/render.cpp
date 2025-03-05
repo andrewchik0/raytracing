@@ -46,19 +46,19 @@ namespace raytracing
     mTextures.bind();
     mLastFrameTexture.draw(mShader);
 
+    mark_zone("Main pass");
+
     // Bloom pass
     mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
     mBloomTexture.draw(mBloomShader);
+
+    mark_zone("Bloom pass");
 
     // Post-processing pass
     mPostShader.set_uniform("renderedTexture", mLastFrameTexture);
     mPostShader.set_uniform("bloomTexture", mBloomTexture);
     mPostProcessedTexture.draw(mPostShader);
 
-    glBindTexture(GL_TEXTURE_2D, mPostProcessedTexture.get_handle());
-    std::vector<unsigned char> pixels(mViewportWidth * mViewportHeight * 4);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Accumulation pass
     mAccumulationShader.set_uniform("lastFrameTexture", mPostProcessedTexture);
@@ -69,6 +69,8 @@ namespace raytracing
     // Store final buffer in accumulation buffer
     mDummyShader.set_uniform("frameTexture", mFinalTexture);
     mAccumulatedTexture.draw(mDummyShader);
+
+    mark_zone("Post processing pass");
 
     if (target)
     {

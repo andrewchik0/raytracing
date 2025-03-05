@@ -10,6 +10,9 @@
 namespace raytracing
 {
 
+#define mark_zone(x) \
+  rt::get()->mTimeHandler.mark_zone((x))
+
   struct render_options
   {
     uint32_t width = 1920, height = 1080;

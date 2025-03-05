@@ -174,41 +174,54 @@ namespace raytracing
 
   void gui::general_tab()
   {
-    ImGui::Text("FPS: %.1f", rt::get()->mTimeHandler.mFps);
-
+    if (ImGui::TreeNode(ICON_FA_CHART_BAR " Stats"))
     {
-      static float values[256] = {};
-      static int values_offset = 0;
-      static double refresh_time = 0.0;
-      if (refresh_time == 0.0)
-        refresh_time = ImGui::GetTime();
-      while (refresh_time < ImGui::GetTime())
+      ImGui::Text("FPS: %.1f", rt::get()->mTimeHandler.mFps);
+
+      ImGui::Separator();
+      for (auto it = rt::get()->mTimeHandler.mZones.begin() + 1; it != rt::get()->mTimeHandler.mZones.end(); ++it)
       {
-        static float phase = 0.0f;
-        values[values_offset] = rt::get()->mTimeHandler.mDeltaTime * 1000.0f;
-        values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
-        phase += 0.10f * values_offset;
-        refresh_time += 1.0f / 60.0f;
+        ImGui::Text((it->name + ": %.1f%%").c_str(), float(it->consumedTime) / float(rt::get()->mTimeHandler.mAllZonesTime) * 100.0f);
       }
-      ImGui::Text("Frame time: %.3f ms", rt::get()->mTimeHandler.mDeltaTime * 1000.0f);
-      float max = 0.0f;
-      for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-        max = max > values[n] ? max : values[n];
-      ImGui::PlotLines("###FrameTime", values, IM_ARRAYSIZE(values), values_offset, nullptr, 0, max * 1.2f, ImVec2(mGuiWidth - 15, 40.0f));
+      ImGui::Separator();
+
+      {
+        static float values[256] = {};
+        static int values_offset = 0;
+        static double refresh_time = 0.0;
+        if (refresh_time == 0.0)
+          refresh_time = ImGui::GetTime();
+        while (refresh_time < ImGui::GetTime())
+        {
+          static float phase = 0.0f;
+          values[values_offset] = rt::get()->mTimeHandler.mDeltaTime * 1000.0f;
+          values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+          phase += 0.10f * values_offset;
+          refresh_time += 1.0f / 60.0f;
+        }
+        ImGui::Text("Frame time: %.3f ms", rt::get()->mTimeHandler.mDeltaTime * 1000.0f);
+        float max = 0.0f;
+        for (int n = 0; n < IM_ARRAYSIZE(values); n++)
+          max = max > values[n] ? max : values[n];
+        ImGui::PlotLines("###FrameTime", values, IM_ARRAYSIZE(values), values_offset, nullptr, 0, max * 1.2f, ImVec2(mGuiWidth - 15, 40.0f));
+      }
+      ImGui::TreePop();
     }
 
-    ImGui::Separator();
-    check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
-    check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
-    check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
-    if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
-      rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
-    int minAccumulation = 1, minBounces = 2;
-    check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
-    check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
-    ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
-    ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
-    ImGui::Separator();
+    if (ImGui::TreeNode(ICON_FA_GEAR " Options"))
+    {
+      check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
+      check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
+      check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
+      if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
+        rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
+      int minAccumulation = 1, minBounces = 2;
+      check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
+      check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
+      ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
+      ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
+      ImGui::TreePop();
+    }
     if (check(ImGui::Button("Reload shaders")))
     {
       rt::get()->mRender.load_shaders();
