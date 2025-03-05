@@ -2,31 +2,33 @@
 
 #include "pch.h"
 
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
-#include <SFML/Window/Window.hpp>
-
 namespace raytracing
 {
 
   class input
   {
   public:
-    int32_t
+    double
       mMouseX = 0, mMouseY = 0,
       mMouseXOld = 0, mMouseYOld = 0,
       mMouseDeltaX = 0, mMouseDeltaY = 0;
-    bool mMousePressed[sf::Mouse::ButtonCount] { false };
 
-    bool mKeyPressed[sf::Keyboard::KeyCount] { false };
+    bool mKeyPressed[GLFW_KEY_LAST] { false };
 
     input() = default;
     input(const input&) = delete;
     ~input() = default;
 
-    void handle(const std::optional<sf::Event>& event);
     void clear();
 
-    static bool key(sf::Keyboard::Key key);
+    static bool key(int32_t key);
+
+  private:
+
+    void handle_mouse_click(int32_t button, int32_t action);
+    void handle_key_click(int32_t key, int32_t action);
+    void handle_mouse_move(double xpos, double ypos);
+
+    friend class window;
   };
 }

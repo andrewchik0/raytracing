@@ -5,6 +5,7 @@ namespace raytracing
   uint32_t render_texture::sQuadVAO = 0;
   uint32_t render_texture::sQuadVBO = 0;
 
+  render_texture::render_texture(uint32_t width, uint32_t height) { resize(width, height); }
   render_texture::~render_texture() { render_texture::destroy(); }
 
   bool render_texture::resize(const uint32_t width, const uint32_t height)

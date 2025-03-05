@@ -3,10 +3,8 @@
 #include <filesystem>
 #include <iostream>
 #include <thread>
-#include <optional>
 
 #include <nfd.h>
-#include <imgui-SFML.h>
 
 #include "scene_serializer.h"
 
@@ -23,22 +21,11 @@ namespace raytracing
   {
     sInstance = this;
 
-    rt_assert(std::filesystem::exists("shaders/main.frag"), "Failed to load shaders, folder does not exist!")
+    rt_assert(std::filesystem::exists("shaders/"), "Failed to load shaders, folder does not exist!")
 
     NFD_Init();
 
-    if (options.width == 0 || options.height == 0)
-    {
-      mWindowWidth = sf::VideoMode().getDesktopMode().size.x - 20;
-      mWindowHeight = sf::VideoMode().getDesktopMode().size.y - 160;
-    }
-    else
-    {
-      mWindowWidth = options.width;
-      mWindowHeight = options.height;
-    }
-    mWindow = sf::RenderWindow(sf::VideoMode({ mWindowWidth, mWindowHeight }), options.title);
-
+    mWindow.init(options);
     mRender.init();
     mGui.init();
 
@@ -47,40 +34,39 @@ namespace raytracing
 
   void rt::run()
   {
-    while (mWindow.isOpen())
+    while (mWindow.is_open())
     {
       if (!mTexturesLoading && !mModelsLoading && !mBVHLoading)
       {
         if (!mLoaded)
         {
           mRender.post_init();
-          mWindow.setVerticalSyncEnabled(mVSyncEnabled);
+          mWindow.vsync(mVSyncEnabled);
           mLoaded = true;
         }
 
         mWindow.clear();
         mRender.clear();
-        mInput.clear();
 
         mGui.update();
-        if (!handle_messages())
-          break;
+        mTimeHandler.tick();
+        mCamera.update(mTimeHandler.mDeltaTime);
 
-        mCamera.update(mElapsedTime.asSeconds());
         set_viewport();
+
         mRender.draw(nullptr);
-
-        ImGui::SFML::Render(mWindow);
-
-        mWindow.display();
+        mGui.draw();
+        mWindow.draw();
+        mInput.clear();
       }
       else
       {
         mWindow.clear();
-        handle_messages();
+        mTimeHandler.tick();
         mGui.update();
-        ImGui::SFML::Render(mWindow);
-        mWindow.display();
+        mGui.draw();
+        mWindow.draw();
+        mInput.clear();
       }
     }
   }
@@ -92,7 +78,7 @@ namespace raytracing
 
   void rt::render_to_image()
   {
-    sf::RenderTexture rt({ mRenderOptions.width, mRenderOptions.height });
+    render_texture rt(mRenderOptions.width, mRenderOptions.height);
 
     // Store data
     uint32_t bounces = mRender.mBouncesCount;
@@ -111,15 +97,11 @@ namespace raytracing
     while (sampleCounter++ < mRenderOptions.samples)
     {
       mRender.clear();
-      // mRender.draw(&rt);
-      mElapsedTime = mClock.getElapsedTime();
-      mTime += mElapsedTime.asSeconds();
-      mClock.restart();
+      mRender.draw(&rt);
+      mTimeHandler.tick();
     }
 
-    rt.display();
-    if (!rt.getTexture().copyToImage().saveToFile(mRenderOptions.filename))
-      std::cerr << "Failed to save image" << std::endl;
+    rt.write_to_file(mRenderOptions.filename);
 
     // Restore data
     mRender.mBouncesCount = bounces;
@@ -146,23 +128,20 @@ namespace raytracing
 
     for (size_t i = 0; i < mRenderOptions.duration * mRenderOptions.framerate; i++)
     {
-      sf::RenderTexture rt({mRenderOptions.width, mRenderOptions.height});
+      render_texture rt(mRenderOptions.width, mRenderOptions.height);
       size_t sampleCounter = 0;
       mCamera.move_right(0.1);
 
       while (sampleCounter++ < mRenderOptions.samples)
       {
         mRender.clear();
-        // mRender.draw(&rt);
-        mElapsedTime = mClock.getElapsedTime();
-        mTime += mElapsedTime.asSeconds();
-        mClock.restart();
+        mRender.draw(&rt);
+        mTimeHandler.tick();
       }
 
       mRender.reset_accumulation();
 
-      rt.display();
-      rt_assert(rt.getTexture().copyToImage().saveToFile(mRenderOptions.video_filename_base + std::to_string(i) + ".png"), "Failed to save image")
+      rt.write_to_file(mRenderOptions.video_filename_base + std::to_string(i) + ".png");
     }
 
     // Restore data
@@ -171,37 +150,6 @@ namespace raytracing
     mRender.mMaxAccumulation = maxAccumulation;
     mRender.mAccumulatingFrameIndex = accumulatingFrameIndex;
     set_viewport();
-  }
-
-
-  bool rt::handle_messages()
-  {
-    while (const std::optional event = mWindow.pollEvent())
-    {
-      ImGui::SFML::ProcessEvent(mWindow, *event);
-      mInput.handle(event);
-
-      if (event->is<sf::Event::KeyPressed>())
-      {
-        if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R)
-        {
-          mRender.load_shaders();
-          mRender.resize(mWindowWidth, mWindowHeight);
-        }
-      }
-
-      if (event->is<sf::Event::Closed>())
-      {
-        mWindow.close();
-        return false;
-      }
-      if (event->is<sf::Event::Resized>())
-      {
-        mWindowWidth = mWindow.getSize().x;
-        mWindowHeight = mWindow.getSize().y;
-      }
-    }
-    return true;
   }
 
   void rt::set_viewport()
@@ -216,7 +164,7 @@ namespace raytracing
 
   void rt::load_async()
   {
-    mWindow.setVerticalSyncEnabled(true);
+    mWindow.vsync(true);
     mModelsLoading = true;
     std::thread([&]
     {

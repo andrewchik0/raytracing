@@ -43,6 +43,10 @@ add_executable(ray-tracing
   src/utils/utils.h
   src/utils/assert.h
   src/utils/assert.cpp
+  src/utils/time_handler.cpp
+  src/utils/time_handler.h
+  src/window.cpp
+  src/window.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)
@@ -58,8 +62,8 @@ target_include_directories(ray-tracing PUBLIC
 )
 
 target_link_libraries(ray-tracing PUBLIC
-  SFML::Graphics
-  ImGui-SFML::ImGui-SFML
+  imgui
+  glfw
   OpenGL::GL
   libglew_static
   yaml-cpp::yaml-cpp

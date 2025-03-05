@@ -1,57 +1,65 @@
 #include "input.h"
 
-#include <imgui.h>
+#include <iostream>
 
 #include "rt.h"
 
 namespace raytracing
 {
-  bool input::key(sf::Keyboard::Key key)
+  bool input::key(const int32_t key)
   {
-    return rt::get()->mInput.mKeyPressed[static_cast<int>(key)];
+    return rt::get()->mInput.mKeyPressed[key];
   }
 
-  void input::handle(const std::optional<sf::Event>& event)
+  void input::handle_key_click(const int32_t key, const int32_t action)
   {
-    if (event->is<sf::Event::MouseButtonReleased>())
-    {
-      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonReleased>()->button)] = false;
-    }
-    if (
-      event->is<sf::Event::MouseButtonPressed>() &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.x > rt::get()->mGui.mViewportPosition.x &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.y > rt::get()->mGui.mViewportPosition.y &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.x < rt::get()->mGui.mViewportPosition.x + rt::get()->mGui.mViewportSize.x &&
-      event->getIf<sf::Event::MouseButtonPressed>()->position.y < rt::get()->mGui.mViewportPosition.y + rt::get()->mGui.mViewportSize.y
-      )
-    {
-      if (!rt::get()->mGui.mIsViewPortInFocus)
-      {
-        mMouseXOld = event->getIf<sf::Event::MouseButtonPressed>()->position.x;
-        mMouseYOld = event->getIf<sf::Event::MouseButtonPressed>()->position.y;
-      }
-      mMousePressed[static_cast<int>(event->getIf<sf::Event::MouseButtonPressed>()->button)] = true;
-    }
     if (!rt::get()->mGui.mIsViewPortInFocus)
       return;
 
-    if (event->is<sf::Event::KeyPressed>())
+    if (action == GLFW_PRESS)
     {
-      mKeyPressed[static_cast<int>(event->getIf<sf::Event::KeyPressed>()->code)] = true;
+      mKeyPressed[key] = true;
     }
-    if (event->is<sf::Event::KeyReleased>())
+    else if (action == GLFW_RELEASE)
     {
-      mKeyPressed[static_cast<int>(event->getIf<sf::Event::KeyReleased>()->code)] = false;
+      mKeyPressed[key] = false;
     }
-    if (event->is<sf::Event::MouseMoved>())
+  }
+
+  void input::handle_mouse_click(const int32_t button, const int32_t action)
+  {
+    if (action == GLFW_RELEASE)
     {
-      mMouseX = event->getIf<sf::Event::MouseMoved>()->position.x;
-      mMouseY = event->getIf<sf::Event::MouseMoved>()->position.y;
-      mMouseDeltaX = mMouseX - mMouseXOld;
-      mMouseDeltaY = mMouseY - mMouseYOld;
-      mMouseXOld = mMouseX;
-      mMouseYOld = mMouseY;
+      mKeyPressed[button] = false;
     }
+    glfwGetCursorPos(rt::get()->mWindow.get(), &mMouseX, &mMouseY);
+    if (
+      action == GLFW_PRESS &&
+      mMouseX > rt::get()->mGui.mViewportPosition.x &&
+      mMouseY > rt::get()->mGui.mViewportPosition.y &&
+      mMouseX < rt::get()->mGui.mViewportPosition.x + rt::get()->mGui.mViewportSize.x &&
+      mMouseY < rt::get()->mGui.mViewportPosition.y + rt::get()->mGui.mViewportSize.y)
+    {
+      if (!rt::get()->mGui.mIsViewPortInFocus)
+      {
+        glfwGetCursorPos(rt::get()->mWindow.get(), &mMouseXOld, &mMouseYOld);
+      }
+      mKeyPressed[button] = true;
+    }
+  }
+
+
+  void input::handle_mouse_move(const double xpos, const double ypos)
+  {
+    if (!rt::get()->mGui.mIsViewPortInFocus)
+      return;
+
+    mMouseX = xpos;
+    mMouseY = ypos;
+    mMouseDeltaX = mMouseX - mMouseXOld;
+    mMouseDeltaY = mMouseY - mMouseYOld;
+    mMouseXOld = mMouseX;
+    mMouseYOld = mMouseY;
   }
 
   void input::clear()

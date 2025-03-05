@@ -10,7 +10,10 @@
 #include <filesystem>
 
 #include <glm/glm.hpp>
-
-#include <GL/glew.h>
+#include <Gl/glew.h>
+#include <GLFW/glfw3.h>
 
 #include "utils/utils.h"
+
+#undef min
+#undef max

@@ -5,17 +5,10 @@
 #include "input.h"
 #include "render/render.h"
 
-#include <SFML/Graphics.hpp>
+#include "window.h"
 
 namespace raytracing
 {
-
-  struct init_options
-  {
-    std::string title = "Ray Tracing";
-    std::filesystem::path scene_filename;
-    uint32_t width = 0, height = 0;
-  };
 
   struct render_options
   {
@@ -35,13 +28,14 @@ namespace raytracing
   class rt
   {
   public:
-    sf::RenderWindow mWindow;
 
     input mInput;
     camera mCamera;
     render mRender;
     gui mGui;
+    window mWindow;
     render_options mRenderOptions;
+    utils::time_handler mTimeHandler;
 
     bool mVSyncEnabled = false;
 
@@ -68,15 +62,9 @@ namespace raytracing
     static rt* get() { return sInstance; }
 
   private:
-    sf::Clock mClock;
-    sf::Time mElapsedTime;
-
-    float mTime = 0.0f;
 
     bool mTexturesLoading = false, mModelsLoading = false, mBVHLoading = false;
     bool mLoaded = false;
-
-    uint32_t mWindowWidth = 0, mWindowHeight = 0;
 
     utils::thread_pool mThreadPool;
 
@@ -84,8 +72,6 @@ namespace raytracing
     std::vector<std::string> mModelNames;
 
     std::string mSkyFilename;
-
-    bool handle_messages();
 
     void set_viewport();
     void set_viewport(uint32_t width, uint32_t height);

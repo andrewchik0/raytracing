@@ -2,8 +2,6 @@
 
 #include "pch.h"
 
-#include <SFML/Graphics/Texture.hpp>
-
 #include "shaders/uniforms.h"
 
 namespace raytracing

@@ -2,7 +2,6 @@
 
 #ifdef _WIN32
   #define RT_PLATFORM_WINDOWS
-  #include <Windows.h>
 #elif defined(__APPLE__)
   #include <TargetConditionals.h>
   #if TARGET_IPHONE_SIMULATOR == 1

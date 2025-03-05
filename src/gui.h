@@ -54,10 +54,11 @@ namespace raytracing
 
     gui() = default;
     gui(const gui&) = delete;
-    ~gui() = default;
+    ~gui();
 
     bool init();
     void update();
+    void draw();
   private:
 
     ImFont* mFont = nullptr, *mFAFont = nullptr;

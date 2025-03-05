@@ -1,8 +1,8 @@
 #include "camera.h"
 
 #include <cstdint>
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "rt.h"
 
@@ -40,28 +40,27 @@ namespace raytracing
     float speed = 2.0f * deltaTime * mSpeed;
 
     if (
-      input::key(sf::Keyboard::Key::Space) |
-      input::key(sf::Keyboard::Key::LShift) |
-      input::key(sf::Keyboard::Key::W) |
-      input::key(sf::Keyboard::Key::A) |
-      input::key(sf::Keyboard::Key::S) |
-      input::key(sf::Keyboard::Key::D) |
-      input::key(sf::Keyboard::Key::R))
+      input::key(GLFW_KEY_SPACE) |
+      input::key(GLFW_KEY_LEFT_SHIFT) |
+      input::key(GLFW_KEY_W) |
+      input::key(GLFW_KEY_A) |
+      input::key(GLFW_KEY_S) |
+      input::key(GLFW_KEY_D) |
+      input::key(GLFW_KEY_R))
     {
       rt::get()->mRender.reset_accumulation();
     }
 
-    move_up(input::key(sf::Keyboard::Key::Space) * speed);
-    move_down(input::key(sf::Keyboard::Key::LShift) * speed);
-    move_forward(input::key(sf::Keyboard::Key::W) * speed);
-    move_left(input::key(sf::Keyboard::Key::A) * speed);
-    move_back(input::key(sf::Keyboard::Key::S) * speed);
-    move_right(input::key(sf::Keyboard::Key::D) * speed);
+    move_up(input::key(GLFW_KEY_SPACE) * speed);
+    move_down(input::key(GLFW_KEY_LEFT_SHIFT) * speed);
+    move_forward(input::key(GLFW_KEY_W) * speed);
+    move_left(input::key(GLFW_KEY_A) * speed);
+    move_back(input::key(GLFW_KEY_S) * speed);
+    move_right(input::key(GLFW_KEY_D) * speed);
 
-    if (rt::get()->mInput.mMousePressed[static_cast<int>(sf::Mouse::Button::Left)])
+    if (input::key(GLFW_MOUSE_BUTTON_LEFT))
     {
-      const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::SizeAll).value();
-      rt::get()->mWindow.setMouseCursor(cursor);
+      rt::get()->mWindow.set_grabbing(true);
       float yaw = rt::get()->mInput.mMouseDeltaX / 200.0 * mMouseSensitivity;
       float pitch = rt::get()->mInput.mMouseDeltaY / 200.0 * mMouseSensitivity;
 
@@ -88,8 +87,7 @@ namespace raytracing
     }
     else
     {
-      const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Arrow).value();
-      rt::get()->mWindow.setMouseCursor(cursor);
+      rt::get()->mWindow.set_grabbing(false);
     }
 
     mHalfHeight = tan(glm::radians(mFovY) / 2.0f);

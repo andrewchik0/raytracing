@@ -136,7 +136,7 @@ namespace raytracing
     data.cameraPosition = glm::vec4(rt::get()->mCamera.mPosition, 1.0f);
     data.cameraUp = glm::vec4(rt::get()->mCamera.mUp, 1.0f);
     data.cameraRight = glm::vec4(rt::get()->mCamera.mRight, 1.0f);
-    data.time = rt::get()->mTime;
+    data.time = rt::get()->mTimeHandler.mTimeSinceStart;
     data.samples = mSamplesCount;
     data.bounces = mBouncesCount;
     data.halfHeight = rt::get()->mCamera.mHalfHeight;

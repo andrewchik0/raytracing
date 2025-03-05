@@ -10,6 +10,7 @@ namespace raytracing
 
     render_texture() = default;
     render_texture(const render_texture&) = delete;
+    render_texture(uint32_t width, uint32_t height);
 
     ~render_texture();
 

@@ -1,6 +1,7 @@
 #include "gui.h"
 
-#include <imgui-SFML.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -19,12 +20,25 @@ namespace raytracing
     return value;
   }
 
+  gui::~gui()
+  {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+  }
+
   bool gui::init()
   {
     mLoadingTexture.from_file("assets/loading.png");
 
-    bool result = ImGui::SFML::Init(rt::get()->mWindow);
+    ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+
+    ImGui_ImplGlfw_InitForOpenGL(rt::get()->mWindow.get(), true);
+    ImGui_ImplOpenGL3_Init("#version 420");
 
     mFont = io.Fonts->AddFontFromFileTTF("assets/Roboto.ttf", 17.0f);
 
@@ -34,22 +48,16 @@ namespace raytracing
     config.PixelSnapH = true;
     mFAFont = io.Fonts->AddFontFromFileTTF("assets/fa-regular-400.ttf", 17.0f, &config, iconRanges);
 
-    if (!ImGui::SFML::UpdateFontTexture())
-      return false;
-
     setup_style();
 
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    return result;
+    return true;
   }
 
   void gui::update()
   {
-    rt::get()->mElapsedTime = rt::get()->mClock.getElapsedTime();
-    rt::get()->mTime += rt::get()->mElapsedTime.asSeconds();
-
-    ImGui::SFML::Update(rt::get()->mWindow, rt::get()->mClock.restart());
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 
     ImGui::PushFont(mFont);
 
@@ -63,11 +71,9 @@ namespace raytracing
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::Begin("Main", &open,
-      ImGuiWindowFlags_MenuBar |
-      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-      ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground |
-      ImGuiConfigFlags_NoMouse
-    );
+                 ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                   ImGuiWindowFlags_NoBackground | ImGuiConfigFlags_NoMouse);
     ImGui::PopStyleVar(2);
 
     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
@@ -84,11 +90,10 @@ namespace raytracing
           scene_serializer::save(rt::get()->mSceneFilename);
         if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save as..."))
         {
-          nfdchar_t *outPath = nullptr;
-          nfdfilteritem_t filterItem[2] = {{ "YAML Files", "yaml" }};
+          nfdchar_t* outPath = nullptr;
+          nfdfilteritem_t filterItem[2] = {{"YAML Files", "yaml"}};
           nfdresult_t result = NFD_SaveDialog(
-            &outPath, filterItem, 1, (std::filesystem::current_path() / "scenes").string().c_str(), "scene.yaml"
-          );
+            &outPath, filterItem, 1, (std::filesystem::current_path() / "scenes").string().c_str(), "scene.yaml");
           if (result == NFD_OKAY)
             scene_serializer::save(outPath);
           free(outPath);
@@ -125,7 +130,9 @@ namespace raytracing
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2({0.0f, 0.0f}));
 
-    ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiConfigFlags_NoMouse | ImGuiWindowFlags_NoBackground);
+    ImGui::Begin("Viewport", nullptr,
+                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiConfigFlags_NoMouse |
+                   ImGuiWindowFlags_NoBackground);
     mIsViewPortInFocus = ImGui::IsWindowFocused();
     mViewportSize = {ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y};
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
@@ -159,20 +166,16 @@ namespace raytracing
     ImGui::PopFont();
   }
 
+  void gui::draw()
+  {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  }
+
   void gui::general_tab()
   {
-    static float secondsCounter = 0.0;
-    static int framesCounter = 0.0;
-    static float fps = 60;
-    secondsCounter += rt::get()->mElapsedTime.asSeconds();
-    framesCounter++;
-    ImGui::Text("FPS: %.1f", fps);
-    if (secondsCounter > 0.25)
-    {
-      fps = framesCounter / secondsCounter;
-      secondsCounter = 0.0;
-      framesCounter = 0;
-    }
+    ImGui::Text("FPS: %.1f", rt::get()->mTimeHandler.mFps);
+
     {
       static float values[256] = {};
       static int values_offset = 0;
@@ -182,12 +185,12 @@ namespace raytracing
       while (refresh_time < ImGui::GetTime())
       {
         static float phase = 0.0f;
-        values[values_offset] = rt::get()->mElapsedTime.asSeconds() * 1000.0f;
+        values[values_offset] = rt::get()->mTimeHandler.mDeltaTime * 1000.0f;
         values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
         phase += 0.10f * values_offset;
         refresh_time += 1.0f / 60.0f;
       }
-      ImGui::Text("Frame time: %.3f ms", rt::get()->mElapsedTime.asSeconds() * 1000.0f);
+      ImGui::Text("Frame time: %.3f ms", rt::get()->mTimeHandler.mDeltaTime * 1000.0f);
       float max = 0.0f;
       for (int n = 0; n < IM_ARRAYSIZE(values); n++)
         max = max > values[n] ? max : values[n];
@@ -199,7 +202,7 @@ namespace raytracing
     check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
     check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
     if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
-      rt::get()->mWindow.setVerticalSyncEnabled(rt::get()->mVSyncEnabled);
+      rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
     int minAccumulation = 1, minBounces = 2;
     check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
     check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
@@ -209,7 +212,7 @@ namespace raytracing
     if (check(ImGui::Button("Reload shaders")))
     {
       rt::get()->mRender.load_shaders();
-      rt::get()->mRender.resize(rt::get()->mWindowWidth, rt::get()->mWindowHeight);
+      rt::get()->mRender.resize(rt::get()->mWindow.width(), rt::get()->mWindow.height());
     }
     if (rt::get()->mRender.mShaderErrors.size() > 0)
       ImGui::Text(rt::get()->mRender.mShaderErrors.c_str());

@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include <SFML/System/Err.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "rt.h"

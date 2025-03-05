@@ -56,6 +56,7 @@ namespace raytracing
     rt::get()->mSceneFilename.resize(256, 0);
     rt::get()->mRender.mSpheresCount = 0;
     rt::get()->mRender.mPlanesCount = 0;
+    rt::get()->mRender.mMaterialsCount = 0;
     rt::get()->mRender.mTextures.mTextureFilenames.clear();
 
     YAML::Node scene = YAML::LoadFile(filename.string());
@@ -113,8 +114,6 @@ namespace raytracing
 
       if (scene["materials"])
       {
-        rt::get()->mRender.mMaterialsCount = 0;
-
         auto materials = scene["materials"].as<YAML::Node>();
         size_t i = 0;
         for(YAML::const_iterator it = materials.begin(); it != materials.end(); ++it, ++i)
