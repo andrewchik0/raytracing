@@ -87,7 +87,7 @@ vec3 castRay(Ray inputRay)
       }
       else
       {
-        if (!pbr(hit, sampleCounter, sampleColor, ray))
+        if (!pbr(hit, sampleCounter, i, sampleColor, ray))
           break;
       }
     }
