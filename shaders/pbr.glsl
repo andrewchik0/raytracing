@@ -19,7 +19,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
   }
 
   vec2 texCoords = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
-  loadUV(texCoords);
+  loadUV(texCoords, hit.materialIndex);
   vec2 dudx = getDDX();
   vec2 dudy = getDDY();
   float lambda = max(length(dudx), length(dudy));
@@ -63,26 +63,28 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     return false;
   }
 
-  if (alpha > 0.99)
-  {
-    sampleColor = sampleColor * albedo + e;
-    ray.origin = hit.position + normal * bias;
+  float fresnel = fresnelSchlick(abs(dot(-ray.direction, normal)), 0.2);
+  float random0to1 =
+    random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y) +
+    random(ray.direction.z + gl_LocalInvocationID.y + gl_GlobalInvocationID.y) +
+    random(ray.direction.y + gl_LocalInvocationID.x + gl_GlobalInvocationID.x);
+  random0to1 /= 3;
 
-    vec3 coatNormal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * 0.02 * (roughness + 0.912));
-    float F = fresnelSchlick(dot(ray.direction, normal), roughness + 0.978);
-    if (false)
-    {
-      ray.direction = reflect(ray.direction, coatNormal);
-    }
-    else
-    {
-      normal = normalize(mix(normal, normalize(randomOnSphere((ray.direction + ray.origin) * (sampleCounter + 1.0))), roughness));
-      ray.direction = reflect(ray.direction, normal);
-    }
+  if (alpha < 0.99 && random0to1 > fresnel)
+  {
+    ray.origin = hit.position + ray.direction * bias;
   }
   else
   {
-    ray.origin = hit.position + ray.direction * bias;
+    if (alpha < 0.99)
+    {
+      albedo = vec3(1);
+      roughness = 0;
+    }
+    sampleColor = sampleColor * albedo + e;
+    ray.origin = hit.position + normal * bias;
+    normal = normalize(mix(normal, normalize(randomOnSphere((ray.direction + ray.origin) * (sampleCounter + 1.0))), roughness));
+    ray.direction = reflect(ray.direction, normal);
   }
   return true;
 }

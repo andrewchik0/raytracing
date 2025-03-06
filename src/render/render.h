@@ -29,6 +29,7 @@ namespace raytracing
     bool mRenderMode = false;
     bool mInterpolateNormals = true;
     bool mShowTextures = false;
+    bool mPostProcessing = true;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
     uint32_t mMaxAccumulation = 32;

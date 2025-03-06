@@ -31,6 +31,7 @@
   int renderMode;                   \
   int interpolateNormals;           \
   int showTextures;                 \
+  int postProcessing;               \
 }
 
 #ifdef __cplusplus

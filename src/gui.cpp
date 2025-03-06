@@ -214,6 +214,7 @@ namespace raytracing
       check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
       check(ImGui::Checkbox("Show textures", &rt::get()->mRender.mShowTextures));
       check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
+      check(ImGui::Checkbox("Post processing", &rt::get()->mRender.mPostProcessing));
       if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
         rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
       int minAccumulation = 1, minBounces = 2;

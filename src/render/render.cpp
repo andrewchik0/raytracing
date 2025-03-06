@@ -153,6 +153,7 @@ namespace raytracing
     data.renderMode = mRenderMode;
     data.interpolateNormals = mInterpolateNormals;
     data.showTextures = mShowTextures;
+    data.postProcessing = mPostProcessing;
     mGlobalDataBuffer.set(&data);
   }
 }

@@ -12,6 +12,12 @@ uniform sampler2D bloomTexture;
 
 void main()
 {
+  if (postProcessing != 1)
+  {
+    outColor(vec4(texture(renderedTexture, texCoord).xyz, 1.0));
+    return;
+  }
+
   vec4 resultColor;
   if (useFXAA == 1)
   {
