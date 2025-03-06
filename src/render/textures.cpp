@@ -29,6 +29,8 @@ namespace raytracing
       size_t index = i;
       textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([index]
         {
+          if (rt::get()->mRender.mTextures.mTextureFilenames[index].ends_with("__loaded"))
+            return;
           int w, h, channels;
           if (uchar* data = stbi_load(rt::get()->mRender.mTextures.mTextureFilenames[index].c_str(), &w, &h, &channels, 4))
           {
@@ -215,10 +217,26 @@ namespace raytracing
   size_t textures::add_texture(const std::string& name)
   {
     for (size_t i = 0; i < mTextureFilenames.size(); i++)
-      if (mTextureFilenames[i] == name) return i;
+      if (mTextureFilenames[i] == name)
+        return i;
 
     if (mTextureFilenames.size() < mTexturesCountMax)
       mTextureFilenames.push_back(name);
+    return mTextureFilenames.size() - 1;
+  }
+
+  size_t textures::add_texture(const std::string& name, ubyte* data)
+  {
+    for (size_t i = 0; i < mTextureFilenames.size(); i++)
+      if (mTextureFilenames[i] == name + "__loaded")
+        return i;
+
+    if (mTextureFilenames.size() < mTexturesCountMax)
+    {
+      mTextureFilenames.push_back(name + "__loaded");
+      mTexturesData.resize(mTextureFilenames.size());
+      mTexturesData[mTextureFilenames.size() - 1] = data;
+    }
     return mTextureFilenames.size() - 1;
   }
 

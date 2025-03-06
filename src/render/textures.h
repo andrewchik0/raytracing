@@ -28,6 +28,7 @@ namespace raytracing
     void load_to_gpu();
 
     size_t add_texture(const std::string& name);
+    size_t add_texture(const std::string& name, ubyte* data);
     void load_from_filesystem();
 
     void allocate_triangles_buffer();

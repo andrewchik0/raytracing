@@ -34,7 +34,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   float roughness =
     float(materials[hit.materialIndex].metallicTextureIndex != -1) *
-    (1.0 - textureLod(texArray, vec3(texCoords, materials[hit.materialIndex].metallicTextureIndex), lod).r) +
+    (textureLod(texArray, vec3(texCoords, materials[hit.materialIndex].metallicTextureIndex), lod).g) +
 
     pow(float(materials[hit.materialIndex].specularTextureIndex != -1) *
     (
@@ -54,32 +54,29 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   if (e.x + e.y + e.z != 0)
   {
-    sampleColor = e;
-    return false;
+    sampleColor *= e;
   }
 
   if (renderMode != 1)
   {
     sampleColor = albedo * max(dot(normalize((vec3(1.0))), normal), 0.1);
-//    sampleColor = vec3(lod);
     return false;
   }
 
-  if (alpha > 0.8)
+  if (alpha > 0.99)
   {
     sampleColor = sampleColor * albedo + e;
     ray.origin = hit.position + normal * bias;
 
     vec3 coatNormal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * 0.02 * (roughness + 0.912));
     float F = fresnelSchlick(dot(ray.direction, normal), roughness + 0.978);
-
-    if (random(ray.origin.x + ray.origin.y + ray.origin.z) < F)
+    if (false)
     {
       ray.direction = reflect(ray.direction, coatNormal);
     }
     else
     {
-      normal = normalize(normal + rand3((ray.direction + ray.origin) * (sampleCounter + 1.0)) * roughness);
+      normal = normalize(mix(normal, normalize(randomOnSphere((ray.direction + ray.origin) * (sampleCounter + 1.0))), roughness));
       ray.direction = reflect(ray.direction, normal);
     }
   }

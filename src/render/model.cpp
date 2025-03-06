@@ -55,7 +55,7 @@ namespace raytracing
     mVertices.reserve(mVertices.size() + mesh->mNumVertices);
     mTriangles.reserve(mTriangles.size() + mesh->mNumFaces);
 
-    glm::mat4 meshTransform = glm::transpose(glm::make_mat4(&transform.a1));
+    glm::mat4 meshTransform = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)) * glm::transpose(glm::make_mat4(&transform.a1));
 
     for (size_t i = 0; i < mesh->mNumVertices; ++i)
     {

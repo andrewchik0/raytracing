@@ -18,6 +18,21 @@ vec3 rand3(vec3 seed)
 }
 
 const float PI = 3.141592653589;
+
+vec3 randomOnSphere(vec3 seed)
+{
+  vec3 rand = vec3(random(vec2(time, seed.x)), random(vec2(time, seed.y)), random(vec2(time, seed.z)));
+  float theta = rand.x * 2.0 * 3.14159265;
+  float v = rand.y;
+  float phi = acos(2.0 * v - 1.0);
+  float r = pow(rand.z, 1.0 / 3.0);
+  float x = r * sin(phi) * cos(theta);
+  float y = r * sin(phi) * sin(theta);
+  float z = r * cos(phi);
+  return vec3(x, y, z);
+}
+
+
 float atan2(float y, float x)
 {
   bool s = bool(abs(x) > abs(y));
