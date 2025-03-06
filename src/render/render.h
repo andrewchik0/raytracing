@@ -28,6 +28,7 @@ namespace raytracing
     bool mUseFXAA = true;
     bool mRenderMode = false;
     bool mInterpolateNormals = true;
+    bool mShowTextures = false;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
     uint32_t mMaxAccumulation = 32;
@@ -49,7 +50,7 @@ namespace raytracing
     void init();
     void post_init();
     void clear();
-    void draw(render_texture* target = nullptr);
+    void draw(const render_texture* target = nullptr);
     void resize(uint32_t width, uint32_t height);
 
     void push_scene();
@@ -62,7 +63,6 @@ namespace raytracing
       mPostShader,
       mBloomShader,
       mAccumulationShader,
-      mComputeShader,
       mDummyShader;
     render_texture
       mLastFrameTexture,

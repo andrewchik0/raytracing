@@ -181,9 +181,11 @@ namespace raytracing
 
   void shader::use() const { glUseProgram(mShaderHandle); }
 
-  uint32_t shader::get_handle()
+  uint32_t shader::get_handle() const { return mShaderHandle; }
+
+  bool shader::is_compute() const
   {
-    return mShaderHandle;
+    return mIsCompute;
   }
 
   void shader::set_uniform(const std::string& name, int value)
@@ -263,13 +265,13 @@ namespace raytracing
     bool bound = false;
     for (auto& texture : mTextures)
     {
-      if (texture.handle == value.get_handle())
+      if (texture.handle == value.get_texture_handle())
         bound = true;
     }
 
     if (!bound)
     {
-      mTextures.push_back({value.get_handle(), name});
+      mTextures.push_back({value.get_texture_handle(), name});
     }
   }
 
@@ -293,12 +295,13 @@ namespace raytracing
   {
     rt_assert(mIsCompute, "Trying to dispatch compute on non-compute shader!");
 
-    GLuint numGroupsX = (buffer.width() + sWorkGroupSizeX - 1) / sWorkGroupSizeX;
-    GLuint numGroupsY = (buffer.height() + sWorkGroupSizeY - 1) / sWorkGroupSizeY;
+    bind_textures();
+    glBindImageTexture(0, buffer.get_texture_handle(), 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
+    uint32_t numGroupsX = (buffer.width() + sWorkGroupSizeX - 1) / sWorkGroupSizeX;
+    uint32_t numGroupsY = (buffer.height() + sWorkGroupSizeY - 1) / sWorkGroupSizeY;
     glDispatchCompute(numGroupsX, numGroupsY, 1);
 
-    // Ensure all writes to the image are complete
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
   }
 

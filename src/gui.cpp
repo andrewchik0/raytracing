@@ -212,6 +212,7 @@ namespace raytracing
     {
       check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
       check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
+      check(ImGui::Checkbox("Show textures", &rt::get()->mRender.mShowTextures));
       check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
       if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
         rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);

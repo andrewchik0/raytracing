@@ -11,7 +11,7 @@ namespace raytracing
   uint32_t texture::width() const { return mWidth; }
   uint32_t texture::height() const { return mHeight; }
 
-  uint32_t texture::get_handle() const { return mTextureHandle; }
+  uint32_t texture::get_texture_handle() const { return mTextureHandle; }
 
   void texture::destroy()
   {
@@ -54,6 +54,8 @@ namespace raytracing
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    stbi_flip_vertically_on_write(true);
     stbi_write_png(path.string().c_str(), mWidth, mHeight, 4, pixels.data(), 0);
+    stbi_flip_vertically_on_write(false);
   }
 } // namespace raytracing

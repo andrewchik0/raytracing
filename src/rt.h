@@ -19,7 +19,7 @@ namespace raytracing
     uint32_t samples = 128;
     uint32_t bounces = 16;
 
-    std::string filename = "screenshot";
+    std::string filename = "screenshot.png";
 
     bool sequence = true;
 

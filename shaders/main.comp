@@ -1,18 +1,23 @@
-#version 460 core
+#include "version.glsl"
+#include "compute.glsl"
 
-layout(rgba32f, binding = 0) uniform writeonly image2D outputImage;
+uniform sampler2D sky;
+uniform sampler2DArray texArray;
+uniform isampler2DArray trianglesTexture;
+uniform sampler2DArray verticesTexture;
+uniform sampler2DArray boundingVolumesTexture;
 
-layout(local_size_x = 16, local_size_y = 16) in;
+#include "uniforms.h"
+
+layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
+layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
+
+#include "ray_tracing.glsl"
 
 void main()
 {
-  ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
-
-  if (pixelCoord.x >= imageSize(outputImage).x || pixelCoord.y >= imageSize(outputImage).y)
-    return;
-
-  ivec2 texSize = imageSize(outputImage);
-  vec2 normalizedCoord = vec2(pixelCoord) / vec2(texSize);
-  vec4 color = vec4(normalizedCoord, 0.0, 1.0);
-  imageStore(outputImage, pixelCoord, color);
+  Ray ray;
+  ray.origin = cameraPosition.xyz;
+  ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord, halfWidth, halfHeight);
+  outColor(vec4(castRay(ray), 1.0));
 }

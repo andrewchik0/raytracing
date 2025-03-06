@@ -24,6 +24,7 @@ namespace raytracing
     void set_uniform(const std::string& name, const uint32_t value) { set_uniform(name, int(value)); }
     void set_uniform(const std::string& name, int value);
     void set_uniform(const std::string& name, float value);
+    void set_uniform(const std::string& name, const double value) { set_uniform(name, float(value)); }
     void set_uniform(const std::string& name, glm::vec2 value);
     void set_uniform(const std::string& name, glm::vec3 value);
     void set_uniform(const std::string& name, glm::vec4 value);
@@ -42,7 +43,8 @@ namespace raytracing
 
     void use() const;
 
-    [[nodiscard]] uint32_t get_handle();
+    [[nodiscard]] uint32_t get_handle() const;
+    [[nodiscard]] bool is_compute() const;
 
   private:
 

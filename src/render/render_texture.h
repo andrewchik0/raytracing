@@ -7,7 +7,6 @@ namespace raytracing
   class render_texture : public texture
   {
   public:
-
     render_texture() = default;
     render_texture(const render_texture&) = delete;
     render_texture(uint32_t width, uint32_t height);
@@ -18,14 +17,15 @@ namespace raytracing
     void clear();
     void draw(shader& shader);
 
+    [[nodiscard]] uint32_t get_native_handle() const;
+
     static void draw_quad();
 
   private:
-
     void destroy();
 
     uint32_t mFrameBufferHandle = 0;
 
     static uint32_t sQuadVAO, sQuadVBO;
   };
-}
+} // namespace raytracing

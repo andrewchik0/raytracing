@@ -19,7 +19,7 @@ namespace raytracing
     [[nodiscard]] uint32_t width() const;
     [[nodiscard]] uint32_t height() const;
 
-    [[nodiscard]] uint32_t get_handle() const;
+    [[nodiscard]] uint32_t get_texture_handle() const;
 
   protected:
 

@@ -10,7 +10,7 @@ namespace ImGui
 {
   inline void Image(const raytracing::texture& texture)
   {
-    Image(texture.get_handle(), {float(texture.width()), float(texture.height())});
+    Image(texture.get_texture_handle(), {float(texture.width()), float(texture.height())});
   }
 
   inline void Image(const raytracing::texture& texture, const ImVec2 center, const float angle)
@@ -37,7 +37,7 @@ namespace ImGui
       ImVec2(0.0f, 1.0f)  // Bottom-left
     };
 
-    drawList->AddImageQuad(texture.get_handle(), pos[0], pos[1], pos[2], pos[3], uv[0], uv[1], uv[2], uv[3], IM_COL32_WHITE);
+    drawList->AddImageQuad(texture.get_texture_handle(), pos[0], pos[1], pos[2], pos[3], uv[0], uv[1], uv[2], uv[3], IM_COL32_WHITE);
   }
 }
 

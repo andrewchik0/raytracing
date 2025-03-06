@@ -30,6 +30,7 @@
   int useFXAA;                      \
   int renderMode;                   \
   int interpolateNormals;           \
+  int showTextures;                 \
 }
 
 #ifdef __cplusplus

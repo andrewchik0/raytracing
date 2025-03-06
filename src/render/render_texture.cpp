@@ -47,7 +47,7 @@ namespace raytracing
 
     glGenTextures(1, &mTextureHandle);
     glBindTexture(GL_TEXTURE_2D, mTextureHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -70,10 +70,16 @@ namespace raytracing
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glBindTexture(GL_TEXTURE_2D, mTextureHandle);
+    glClearTexImage(mTextureHandle, 0, GL_RGBA, GL_FLOAT, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 
   void render_texture::draw(shader& shader)
   {
+    rt_assert(!shader.is_compute(), "Trying to draw a quad with compute shader!");
+
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferHandle);
     glBindVertexArray(sQuadVAO);
     shader.bind_textures();
@@ -100,5 +106,10 @@ namespace raytracing
       glDeleteFramebuffers(1, &mFrameBufferHandle);
     mWidth = 0, mHeight = 0;
     mFrameBufferHandle = 0;
+  }
+
+  uint32_t render_texture::get_native_handle() const
+  {
+    return mFrameBufferHandle;
   }
 } // namespace raytracing

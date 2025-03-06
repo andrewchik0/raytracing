@@ -12,8 +12,14 @@ float fresnelSchlick(float cosTheta, float f0)
  */
 bool pbr(inout HitData hit, uint sampleCounter, inout vec3 sampleColor, inout Ray ray)
 {
-  float bias = 1e-5;
+  if (renderMode != 1 && showTextures != 1)
+  {
+    sampleColor = vec3(max(dot(normalize((vec3(1.0))) - 0.4, hit.normal), 0.02));
+    return false;
+  }
+
   vec2 texCoords = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
+  float bias = 1e-5;
 
   vec3 albedo =
     float(materials[hit.materialIndex].textureIndex != -1) *
@@ -32,9 +38,8 @@ bool pbr(inout HitData hit, uint sampleCounter, inout vec3 sampleColor, inout Ra
     ), 3) +
     float(materials[hit.materialIndex].metallicTextureIndex == -1) * float(materials[hit.materialIndex].specularTextureIndex == -1) * materials[hit.materialIndex].roughness;
 
-  vec3 normal;
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
-  normal =
+  vec3 normal =
     float((materials[hit.materialIndex].normalTextureIndex != -1)) *
     TBN * (texture(texArray, vec3(texCoords, materials[hit.materialIndex].normalTextureIndex)).rgb * 2.0 - 1) +
     float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;

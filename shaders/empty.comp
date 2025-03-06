@@ -1,0 +1,9 @@
+#include "version.glsl"
+#include "compute.glsl"
+
+uniform sampler2D frameTexture;
+
+void main()
+{
+  outColor(texture(frameTexture, texCoord));
+}
