@@ -1,6 +1,7 @@
 layout(rgba32f, binding = 0) uniform writeonly image2D outputImage;
 
-layout(local_size_x = 16, local_size_y = 16) in;
+#include "work_group_size.h"
+layout(local_size_x = WORK_GROUP_SIZE_X, local_size_y = WORK_GROUP_SIZE_Y) in;
 
 ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
 ivec2 texSize = imageSize(outputImage) - 1;

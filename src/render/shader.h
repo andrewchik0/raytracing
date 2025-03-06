@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "shaders/work_group_size.h"
+
 namespace raytracing
 {
   class render_texture;
@@ -48,8 +50,8 @@ namespace raytracing
 
   private:
 
-    static constexpr GLuint sWorkGroupSizeX = 16;
-    static constexpr GLuint sWorkGroupSizeY = 16;
+    static constexpr uint32_t sWorkGroupSizeX = WORK_GROUP_SIZE_X;
+    static constexpr uint32_t sWorkGroupSizeY = WORK_GROUP_SIZE_Y;
 
     bool mIsCompute = false;
 
