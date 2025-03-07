@@ -42,6 +42,7 @@
 #define DEBUG_TEXTURE_LAYER_ALPHA 4
 #define DEBUG_TEXTURE_LAYER_EMISSIVE 5
 #define DEBUG_TEXTURE_LAYER_UV 6
+#define DEBUG_TEXTURE_LAYER_SPECULAR 7
 
 #ifdef __cplusplus
 struct SceneBufferStruct;

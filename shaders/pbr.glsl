@@ -13,6 +13,7 @@ struct SampledMaterial
   float lod;
   vec3 albedo;
   float roughness;
+  float specular;
   float metallic;
   vec3 normal;
   float alpha;
@@ -33,17 +34,17 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
     textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).rgb +
     float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].albedo;
 
-  mat.roughness =
+  mat.metallic =
     float(materials[hit.materialIndex].metallicTextureIndex != -1) *
-    (textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).g) +
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).g;
 
-    pow(float(materials[hit.materialIndex].specularTextureIndex != -1) *
-      (
-      bool(materials[hit.materialIndex].roughness) ?
-      1.0 - textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r :
-      textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r
-      ), 3) +
-    float(materials[hit.materialIndex].metallicTextureIndex == -1) * float(materials[hit.materialIndex].specularTextureIndex == -1) * materials[hit.materialIndex].roughness;
+  mat.specular =
+    float(materials[hit.materialIndex].specularTextureIndex != -1) *
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r;
+
+  mat.roughness =
+    float(materials[hit.materialIndex].roughnessTextureIndex != -1) *
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).r;
 
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
   mat.normal =
@@ -87,6 +88,9 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
       return false;
     case DEBUG_TEXTURE_LAYER_METALLIC:
       sampleColor = vec3(mat.metallic);
+      return false;
+    case DEBUG_TEXTURE_LAYER_SPECULAR:
+      sampleColor = vec3(mat.specular);
       return false;
     case DEBUG_TEXTURE_LAYER_ALPHA:
       sampleColor = vec3(mat.alpha);

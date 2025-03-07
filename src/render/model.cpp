@@ -8,12 +8,11 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <assimp/pbrmaterial.h>
 
 
 namespace raytracing
 {
-  status model::load_from_file(std::filesystem::path file)
+  status model::load_from_file(std::filesystem::path file, glm::mat4 modelMatrix)
   {
     if (!std::filesystem::exists(file))
       return status::file_not_found;
@@ -37,6 +36,7 @@ namespace raytracing
       return status::error;
     }
 
+    mModelMatrix = modelMatrix;
     process_node(scene->mRootNode, scene, aiMatrix4x4());
     return status::success;
   }
@@ -55,7 +55,7 @@ namespace raytracing
     mVertices.reserve(mVertices.size() + mesh->mNumVertices);
     mTriangles.reserve(mTriangles.size() + mesh->mNumFaces);
 
-    glm::mat4 meshTransform = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)) * glm::transpose(glm::make_mat4(&transform.a1));
+    glm::mat4 meshTransform = mModelMatrix * glm::transpose(glm::make_mat4(&transform.a1));
 
     for (size_t i = 0; i < mesh->mNumVertices; ++i)
     {

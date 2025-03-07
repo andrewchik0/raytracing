@@ -233,6 +233,7 @@ namespace raytracing
       check(ImGui::RadioButton("Normal", e, DEBUG_TEXTURE_LAYER_NORMAL));
       check(ImGui::RadioButton("Metallic", e, DEBUG_TEXTURE_LAYER_METALLIC));
       check(ImGui::RadioButton("Roughness", e, DEBUG_TEXTURE_LAYER_ROUGHNESS));
+      check(ImGui::RadioButton("Specular", e, DEBUG_TEXTURE_LAYER_SPECULAR));
       check(ImGui::RadioButton("Alpha", e, DEBUG_TEXTURE_LAYER_ALPHA));
       check(ImGui::RadioButton("Emissive", e, DEBUG_TEXTURE_LAYER_EMISSIVE));
       check(ImGui::RadioButton("UV", e, DEBUG_TEXTURE_LAYER_UV));
@@ -249,7 +250,7 @@ namespace raytracing
 
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
-    if (rt::get()->mBVHLoading && rt::get()->mModelNames.size())
+    if (rt::get()->mBVHLoading && rt::get()->mModelData.size())
       ImGui::Text("Building bounding volume hierarchies... %.1f%%",
         float(rt::get()->mRender.mBoundingVolumeBuilder.mBVHNodes.size()) /
         float(rt::get()->mRender.mTriangles.size() * 2) *
@@ -362,12 +363,12 @@ namespace raytracing
         ImGui::TreePop();
       }
     }
-    for (size_t i = 0; i < rt::get()->mModelNames.size(); ++i)
+    for (size_t i = 0; i < rt::get()->mModelData.size(); ++i)
     {
-      label = rt::get()->mModelNames[i] + "###Model" + std::to_string(i);
+      label = rt::get()->mModelData[i].name + "###Model" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
-        ImGui::Text(rt::get()->mModelNames[i].c_str());
+        ImGui::Text(rt::get()->mModelData[i].name.c_str());
         ImGui::TreePop();
       }
     }

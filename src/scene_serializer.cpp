@@ -33,6 +33,61 @@ namespace YAML
       return true;
     }
   };
+
+  template<>
+  struct convert<glm::mat4>
+  {
+    static Node encode(const glm::mat4& m)
+    {
+      Node node;
+      node.push_back(m[0][0]);
+      node.push_back(m[0][1]);
+      node.push_back(m[0][2]);
+      node.push_back(m[0][3]);
+      node.push_back(m[1][0]);
+      node.push_back(m[1][1]);
+      node.push_back(m[1][2]);
+      node.push_back(m[1][3]);
+      node.push_back(m[2][0]);
+      node.push_back(m[2][1]);
+      node.push_back(m[2][2]);
+      node.push_back(m[2][3]);
+      node.push_back(m[3][0]);
+      node.push_back(m[3][1]);
+      node.push_back(m[3][2]);
+      node.push_back(m[3][3]);
+      return node;
+    }
+
+    static bool decode(const Node& node, glm::mat4& m)
+    {
+      if(!node.IsSequence() || node.size() != 16)
+      {
+        return false;
+      }
+
+      m[0][0] = node[0].as<float>();
+      m[0][1] = node[1].as<float>();
+      m[0][2] = node[2].as<float>();
+      m[0][3] = node[3].as<float>();
+
+      m[1][0] = node[4].as<float>();
+      m[1][1] = node[5].as<float>();
+      m[1][2] = node[6].as<float>();
+      m[1][3] = node[7].as<float>();
+
+      m[2][0] = node[8].as<float>();
+      m[2][1] = node[9].as<float>();
+      m[2][2] = node[10].as<float>();
+      m[2][3] = node[11].as<float>();
+
+      m[3][0] = node[12].as<float>();
+      m[3][1] = node[13].as<float>();
+      m[3][2] = node[14].as<float>();
+      m[3][3] = node[15].as<float>();
+      return true;
+    }
+  };
 }
 
 namespace raytracing
@@ -44,6 +99,30 @@ namespace raytracing
     return out;
   }
 
+  YAML::Emitter& operator<<(YAML::Emitter& out, const glm::mat4& m)
+  {
+    out << YAML::Flow;
+    out << YAML::BeginSeq
+      << m[0][0]
+      << m[0][1]
+      << m[0][2]
+      << m[0][3]
+      << m[1][0]
+      << m[1][1]
+      << m[1][2]
+      << m[1][3]
+      << m[2][0]
+      << m[2][1]
+      << m[2][2]
+      << m[2][3]
+      << m[3][0]
+      << m[3][1]
+      << m[3][2]
+      << m[3][3]
+      << YAML::EndSeq;
+    return out;
+  }
+
   void scene_serializer::load(const std::filesystem::path& filename)
   {
     rt::get()->mThreadPool.restart();
@@ -52,7 +131,7 @@ namespace raytracing
     rt::get()->mBVHLoading = false;
     rt::get()->mRender.reset_accumulation();
     rt::get()->mRender.clear();
-    rt::get()->mModelNames.clear();
+    rt::get()->mModelData.clear();
     rt::get()->mSceneFilename = filename.string();
     rt::get()->mRender.mBoundingVolumes.clear();
     rt::get()->mRender.mTriangles.clear();
@@ -111,7 +190,9 @@ namespace raytracing
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0 && object["filename"])
           {
-            rt::get()->add_model(object["filename"].as<std::string>());
+            glm::mat4 modelMatrix = glm::mat4(1.0f);
+            if (object["matrix"]) modelMatrix = object["matrix"].as<glm::mat4>();
+            rt::get()->add_model(object["filename"].as<std::string>(), modelMatrix);
           }
         }
       }
@@ -214,11 +295,12 @@ namespace raytracing
         out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mRender.mPlanes[i].materialIndex;
         out << YAML::EndMap;
       }
-      for (auto it = rt::get()->mModelNames.begin(); it != rt::get()->mModelNames.end(); ++it)
+      for (auto it = rt::get()->mModelData.begin(); it != rt::get()->mModelData.end(); ++it)
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "model";
-        out << YAML::Key << "filename" << YAML::Value << it->c_str();
+        out << YAML::Key << "filename" << YAML::Value << it->name.c_str();
+        out << YAML::Key << "matrix" << YAML::Value << it->model;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

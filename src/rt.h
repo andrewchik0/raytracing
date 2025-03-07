@@ -50,7 +50,7 @@ namespace raytracing
     void init(const init_options& options);
     void run();
 
-    void add_model(const std::string& filename);
+    void add_model(const std::string& filename, const glm::mat4& model = glm::mat4(1.0f));
 
     void add_sphere(const std::string& name, const SphereObject& object);
     void add_plane(const std::string& name, const PlaneObject& object);
@@ -72,7 +72,12 @@ namespace raytracing
     utils::thread_pool mThreadPool;
 
     std::string mSceneFilename = "";
-    std::vector<std::string> mModelNames;
+    struct model_data
+    {
+      std::string name;
+      glm::mat4 model;
+    };
+    std::vector<model_data> mModelData;
 
     std::string mSkyFilename;
 

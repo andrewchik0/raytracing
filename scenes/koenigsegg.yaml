@@ -9,3 +9,4 @@ camera:
 objects:
   - type: model
     filename: assets/koenigsegg/scene.gltf
+    matrix: [10, 0, 0, 0,   0, 10, 0, 0,   0, 0, 10, 0,   0, 0, 0, 1]

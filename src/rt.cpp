@@ -78,11 +78,6 @@ namespace raytracing
     }
   }
 
-  void rt::add_model(const std::string& filename)
-  {
-    mModelNames.push_back(filename);
-  }
-
   void rt::render_to_image()
   {
     render_texture rt(mRenderOptions.width, mRenderOptions.height);
@@ -177,11 +172,11 @@ namespace raytracing
     {
       std::vector<std::future<void>> modelFutures;
 
-      for (auto& modelName : mModelNames)
+      for (auto& data : mModelData)
       {
         modelFutures.push_back(mThreadPool.enqueue([&]
         {
-          if (model m; m.load_from_file(modelName) == status::success)
+          if (model m; m.load_from_file(data.name, data.model) == status::success)
           {
             mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
             mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
@@ -244,5 +239,9 @@ namespace raytracing
     for (size_t i = index; i < mRender.mMaterialsCount; ++i)
       mRender.mMaterials[i] = mRender.mMaterials[i + 1];
     mRender.mMaterialsCount--;
+  }
+  void rt::add_model(const std::string& filename, const glm::mat4& model)
+  {
+    mModelData.push_back({filename, model });
   }
 } // namespace raytracing
