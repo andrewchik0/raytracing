@@ -48,6 +48,12 @@ struct Material
   = -1
 #endif
   ;
+  vec3 _;
+  int roughnessTextureIndex
+#ifdef __cplusplus
+  = -1
+#endif
+  ;
 };
 
 #include "objects.h"

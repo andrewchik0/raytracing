@@ -13,20 +13,22 @@ namespace raytracing
     node->start = start;
     node->count = end - start;
 
+    auto& render = rt::get()->mRender;
+
     for (size_t i = start; i < end; ++i)
     {
-      glm::ivec3 tri = rt::get()->mRender.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = rt::get()->mRender.mVertices[tri.x].position;
-      glm::vec3 v1 = rt::get()->mRender.mVertices[tri.y].position;
-      glm::vec3 v2 = rt::get()->mRender.mVertices[tri.z].position;
+      glm::ivec3 tri = render.mTriangles[triangleIndices[i]];
+      glm::vec3 v0 = render.mVertices[tri.x].position;
+      glm::vec3 v1 = render.mVertices[tri.y].position;
+      glm::vec3 v2 = render.mVertices[tri.z].position;
 
       node->bounds.expand(v0);
       node->bounds.expand(v1);
       node->bounds.expand(v2);
     }
 
-    node->bounds.min -= 1e-5;
-    node->bounds.max += 1e-5;
+    node->bounds.min -= 1e-5f;
+    node->bounds.max += 1e-5f;
 
     if (node->count <= mObjectPerNode)
     {
@@ -34,23 +36,25 @@ namespace raytracing
     }
 
     glm::vec3 size = node->bounds.max - node->bounds.min;
-    int32_t axis = size.x > size.y ? (size.x > size.z ? 0 : 2) : (size.y > size.z ? 1 : 2);
+    int32_t axis = (size.x > size.y) ? ((size.x > size.z) ? 0 : 2) : ((size.y > size.z) ? 1 : 2);
 
-    std::sort(
-      triangleIndices.begin() + start, triangleIndices.begin() + end,
-      [&](int32_t a, int32_t b)
-      {
-        glm::vec3 ca = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].x].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].y].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[a].z].position) / 3.0f;
-        glm::vec3 cb = (rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].x].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].y].position +
-                        rt::get()->mRender.mVertices[rt::get()->mRender.mTriangles[b].z].position) / 3.0f;
-        return ca[axis] < cb[axis];
-      }
-    );
+    std::unordered_map<int32_t, float> centroidMap;
+    for (int32_t i = start; i < end; ++i)
+    {
+      glm::ivec3 tri = render.mTriangles[triangleIndices[i]];
+      glm::vec3 v0 = render.mVertices[tri.x].position;
+      glm::vec3 v1 = render.mVertices[tri.y].position;
+      glm::vec3 v2 = render.mVertices[tri.z].position;
+      centroidMap[triangleIndices[i]] = (v0[axis] + v1[axis] + v2[axis]) / 3.0f;
+    }
 
     int32_t mid = (start + end) / 2;
+    std::nth_element(
+      triangleIndices.begin() + start, triangleIndices.begin() + mid, triangleIndices.begin() + end,
+      [&](int32_t a, int32_t b) {
+        return centroidMap[a] < centroidMap[b];
+      }
+    );
 
     int32_t leftIndex = mBVHNodes.size();
     mBVHNodes.emplace_back();

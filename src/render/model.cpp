@@ -178,6 +178,8 @@ namespace raytracing
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());
     if (metallicTexture.size() > 0)
       mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string());
+    if (roughnessTexture.size() > 0)
+      mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / roughnessTexture).string());
     if (specularTexture.size() > 0)
       mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
 
