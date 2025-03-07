@@ -47,18 +47,8 @@ namespace raytracing
 
     textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([&]
     {
-      int w, h, channels;
-      if (float* data = stbi_loadf(rt::get()->mSkyFilename.c_str(), &w, &h, &channels, 3))
-      {
-        for (size_t i = 0; i < w * h * channels; ++i)
-          if (data[i] > 1000.0)
-            data[i] = 1000.0;
-        mSkyTextureData = stbir_resize_float_linear(
-          data, w, h, 0, nullptr,
-          mSkyWidth, mSkyHeight, 0, STBIR_RGB);
-        rt_assert(mSkyTextureData, "Failed to resize a texture");
-        stbi_image_free(data);
-      }
+      int channels;
+      mSkyTextureData = stbi_loadf(rt::get()->mSkyFilename.c_str(), &mSkyWidth, &mSkyHeight, &channels, 3);
     }));
 
     for (auto& thread : textureLoadingJobs)

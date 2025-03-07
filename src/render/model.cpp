@@ -182,6 +182,8 @@ namespace raytracing
       mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / roughnessTexture).string());
     if (specularTexture.size() > 0)
       mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
+    if (emissiveTexture.size() > 0)
+      mat.emissiveTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / emissiveTexture).string());
 
     if (normalTexture.size() > 0)
       mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalTexture).string());

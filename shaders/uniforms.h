@@ -48,7 +48,12 @@ struct Material
   = -1
 #endif
   ;
-  vec3 _;
+  vec2 _;
+  int emissiveTextureIndex
+#ifdef __cplusplus
+  = -1
+#endif
+  ;
   int roughnessTextureIndex
 #ifdef __cplusplus
   = -1

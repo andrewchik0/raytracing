@@ -20,6 +20,24 @@ struct SampledMaterial
   vec3 emissivity;
 };
 
+vec3 reflectance(Ray ray, inout SampledMaterial material)
+{
+  float r = max(material.roughness, 0.01);
+  float m = material.metallic;
+
+  if (m > 0.99)
+  {
+    return reflect(ray.direction, material.normal);
+  }
+  else
+  {
+    vec3 diffuse = randomHemisphereDirection(material.normal, material.normal + ray.direction + gl_GlobalInvocationID);
+    vec3 specular = reflect(ray.direction, material.normal);
+
+    return mix(specular, diffuse, r);
+  }
+}
+
 SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
 {
   mat.uv = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
@@ -36,25 +54,32 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
 
   mat.metallic =
     float(materials[hit.materialIndex].metallicTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).g;
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).b;
 
   mat.specular =
     float(materials[hit.materialIndex].specularTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r;
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r +
+    float(materials[hit.materialIndex].specularTextureIndex == -1) * 0.5;
 
   mat.roughness =
     float(materials[hit.materialIndex].roughnessTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).r;
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).g +
+    float(materials[hit.materialIndex].roughnessTextureIndex == -1) * 0.5;
 
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
   mat.normal =
     float((materials[hit.materialIndex].normalTextureIndex != -1)) *
     TBN * (textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].normalTextureIndex), mat.lod).rgb * 2.0 - 1) +
     float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
-  mat.alpha = textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a;
-  mat.emissivity = materials[hit.materialIndex].emissivity;
-  mat.metallic = 0;
 
+  mat.emissivity =
+    float(materials[hit.materialIndex].emissiveTextureIndex != -1) *
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].emissiveTextureIndex), mat.lod).rgb *
+    materials[hit.materialIndex].emissivity +
+    float(materials[hit.materialIndex].emissiveTextureIndex == -1) *
+    materials[hit.materialIndex].emissivity;
+
+  mat.alpha = textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a;
   return mat;
 }
 
@@ -104,8 +129,6 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
-  sampleColor += mat.emissivity;
-
   float fresnel = fresnelSchlick(abs(dot(-ray.direction, mat.normal)), 0.2);
   float random0to1 =
     random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y) +
@@ -126,8 +149,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
     sampleColor = sampleColor * mat.albedo + mat.emissivity;
     ray.origin = hit.position + mat.normal * bias;
-    mat.normal = normalize(mix(mat.normal, normalize(randomOnSphere((ray.direction + ray.origin) * (sampleCounter + 1.0))), mat.roughness));
-    ray.direction = reflect(ray.direction, mat.normal);
+    ray.direction = reflectance(ray, mat);
   }
   return true;
 }

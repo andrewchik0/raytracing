@@ -32,6 +32,26 @@ vec3 randomOnSphere(vec3 seed)
   return vec3(x, y, z);
 }
 
+vec3 randomHemisphereDirection(vec3 normal, vec3 rand)
+{
+  float rand1 = random(rand.xy + time);
+  float rand2 = random(rand.yz + time);
+  float theta = acos(rand1);
+  float phi = 2.0 * 3.14159265359 * rand2;
+
+  float x = cos(phi) * sin(theta);
+  float y = sin(phi) * sin(theta);
+  float z = cos(theta);
+
+  vec3 randomDir = vec3(x, y, z);
+
+  vec3 up = abs(normal.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+  vec3 tangent = normalize(cross(up, normal));
+  vec3 bitangent = cross(normal, tangent);
+
+  return normalize(tangent * randomDir.x + bitangent * randomDir.y + normal * randomDir.z);
+}
+
 
 float atan2(float y, float x)
 {

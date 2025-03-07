@@ -227,6 +227,12 @@ namespace raytracing
 
     if (ImGui::TreeNode(ICON_FA_BUG " Debug"))
     {
+      if (check(ImGui::Button("Reload shaders")))
+      {
+        rt::get()->mRender.load_shaders();
+        rt::get()->mRender.resize(rt::get()->mWindow.width(), rt::get()->mWindow.height());
+      }
+      ImGui::Separator();
       int32_t* e = &rt::get()->mRender.mDebugTextureLayer;
       ImGui::Text("Texture layer");
       check(ImGui::RadioButton("Albedo", e, DEBUG_TEXTURE_LAYER_DEFAULT));
@@ -240,11 +246,6 @@ namespace raytracing
       ImGui::TreePop();
     }
 
-    if (check(ImGui::Button("Reload shaders")))
-    {
-      rt::get()->mRender.load_shaders();
-      rt::get()->mRender.resize(rt::get()->mWindow.width(), rt::get()->mWindow.height());
-    }
     if (rt::get()->mRender.mShaderErrors.size() > 0)
       ImGui::Text(rt::get()->mRender.mShaderErrors.c_str());
 

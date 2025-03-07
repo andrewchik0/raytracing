@@ -37,8 +37,9 @@ namespace raytracing
 
     uint32_t
       mTextureWidth = 2048, mTextureHeight = 2048,
-      mTexturesCountMax = 256,
-      mSkyWidth = 2048, mSkyHeight = 1024;
+      mTexturesCountMax = 256;
+
+    int32_t mSkyWidth, mSkyHeight;
 
     uint32_t mTextureArray = 0;              // Usual material textures
     uint32_t mSky = 0;                       // Sky texture
