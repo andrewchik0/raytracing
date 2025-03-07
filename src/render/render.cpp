@@ -154,6 +154,7 @@ namespace raytracing
     data.interpolateNormals = mInterpolateNormals;
     data.showTextures = mShowTextures;
     data.postProcessing = mPostProcessing;
+    data.debugTextureLayer = mDebugTextureLayer;
     mGlobalDataBuffer.set(&data);
   }
 }

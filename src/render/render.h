@@ -72,6 +72,8 @@ namespace raytracing
       mAccumulatedTexture,
       mFinalTexture;
 
+    int32_t mDebugTextureLayer = 0;
+
     int32_t mAccumulatingFrameIndex = 0;
 
     std::vector<Vertex> mVertices;

@@ -52,6 +52,7 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
     float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
   mat.alpha = textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a;
   mat.emissivity = materials[hit.materialIndex].emissivity;
+  mat.metallic = 0;
 
   return mat;
 }
@@ -73,8 +74,30 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   if (renderMode != 1)
   {
-    sampleColor = mat.albedo * max(dot(normalize((vec3(1.0))), mat.normal), 0.1);
-    return false;
+    switch (debugTextureLayer)
+    {
+    case DEBUG_TEXTURE_LAYER_DEFAULT:
+      sampleColor = mat.albedo;
+      return false;
+    case DEBUG_TEXTURE_LAYER_NORMAL:
+      sampleColor = mat.normal;
+      return false;
+    case DEBUG_TEXTURE_LAYER_ROUGHNESS:
+      sampleColor = vec3(mat.roughness);
+      return false;
+    case DEBUG_TEXTURE_LAYER_METALLIC:
+      sampleColor = vec3(mat.metallic);
+      return false;
+    case DEBUG_TEXTURE_LAYER_ALPHA:
+      sampleColor = vec3(mat.alpha);
+      return false;
+    case DEBUG_TEXTURE_LAYER_EMISSIVE:
+      sampleColor = mat.emissivity;
+      return false;
+    case DEBUG_TEXTURE_LAYER_UV:
+      sampleColor = vec3(mat.uv, 0.0);
+      return false;
+    }
   }
 
   sampleColor += mat.emissivity;

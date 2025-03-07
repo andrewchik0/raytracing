@@ -224,6 +224,21 @@ namespace raytracing
       ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
       ImGui::TreePop();
     }
+
+    if (ImGui::TreeNode(ICON_FA_BUG " Debug"))
+    {
+      int32_t* e = &rt::get()->mRender.mDebugTextureLayer;
+      ImGui::Text("Texture layer");
+      check(ImGui::RadioButton("Albedo", e, DEBUG_TEXTURE_LAYER_DEFAULT));
+      check(ImGui::RadioButton("Normal", e, DEBUG_TEXTURE_LAYER_NORMAL));
+      check(ImGui::RadioButton("Metallic", e, DEBUG_TEXTURE_LAYER_METALLIC));
+      check(ImGui::RadioButton("Roughness", e, DEBUG_TEXTURE_LAYER_ROUGHNESS));
+      check(ImGui::RadioButton("Alpha", e, DEBUG_TEXTURE_LAYER_ALPHA));
+      check(ImGui::RadioButton("Emissive", e, DEBUG_TEXTURE_LAYER_EMISSIVE));
+      check(ImGui::RadioButton("UV", e, DEBUG_TEXTURE_LAYER_UV));
+      ImGui::TreePop();
+    }
+
     if (check(ImGui::Button("Reload shaders")))
     {
       rt::get()->mRender.load_shaders();
