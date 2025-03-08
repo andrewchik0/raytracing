@@ -14,14 +14,14 @@ FetchContent_GetProperties(ImGui SOURCE_DIR IMGUI_DIR)
 FetchContent_Declare(
   GLEW
   GIT_REPOSITORY https://github.com/Perlmint/glew-cmake
-  GIT_TAG glew-cmake-2.2.0
+  GIT_TAG master
 )
 FetchContent_MakeAvailable(GLEW)
 
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG 0.8.0
+  GIT_TAG master
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
