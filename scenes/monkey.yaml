@@ -1,7 +1,7 @@
 exposure: 5.96000004
 gamma: 0.860000014
 blur_radius: 0
-sky_filename: assets/sky.hdr
+sky_filename: assets/skies/sky.hdr
 camera:
   position: [1.75998688, 0.858130753, 2.13128805]
   direction: [-0.649915993, -0.377010763, -0.659903109]
@@ -13,7 +13,7 @@ objects:
     distance: 1.30999994
     materialIndex: 0
   - type: model
-    filename: assets/monkey.obj
+    filename: assets/models/monkey.obj
 materials:
   - name: Plane material
     albedo: [0.800000012, 0.800000012, 0.800000012]
@@ -32,6 +32,6 @@ materials:
     metallic_texture_id: -1
     normal_texture_id: -1
 textures:
-  - assets/grass/albedo.png
-  - assets/grass/normal.png
-  - assets/grass/metallic.png
+  - assets/materials/grass/albedo.png
+  - assets/materials/grass/normal.png
+  - assets/materials/grass/metallic.png

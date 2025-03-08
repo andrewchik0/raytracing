@@ -14,7 +14,3 @@
 5. Run `ray-tracing` target
 
 ![Rendered image](./screenshot.png)
-
-### Troubleshooting
-
-- If CMake fails to load the project due to a version compatibility error, use `CMake 3.28.3`

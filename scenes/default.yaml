@@ -1,7 +1,7 @@
 exposure: 3.11999989
 gamma: 1.03999996
 blur_radius: 0
-sky_filename: assets/sky.hdr
+sky_filename: assets/skies/sky.hdr
 camera:
   position: [4.65383005, 1.44152522, -5.77163172]
   direction: [3.40025872e-06, -0.0466598831, 0.998712122]
@@ -87,21 +87,21 @@ materials:
     metallic_texture_id: 17
     normal_texture_id: 16
 textures:
-  - assets/grass/albedo.png
-  - assets/grass/normal.png
-  - assets/grass/metallic.png
-  - assets/stone/albedo.png
-  - assets/stone/normal.png
-  - assets/stone/metallic.psd
-  - assets/granite/albedo.png
-  - assets/granite/normal.png
-  - assets/granite/metallic.psd
-  - assets/ice/albedo.png
-  - assets/ice/normal.png
-  - assets/ice/metallic.psd
-  - assets/gold/albedo.png
-  - assets/gold/normal.png
-  - assets/gold/metallic.png
-  - assets/tile/albedo.png
-  - assets/tile/normal.png
-  - assets/tile/metallic.psd
+  - assets/materials/grass/albedo.png
+  - assets/materials/grass/normal.png
+  - assets/materials/grass/metallic.png
+  - assets/materials/stone/albedo.png
+  - assets/materials/stone/normal.png
+  - assets/materials/stone/metallic.psd
+  - assets/materials/granite/albedo.png
+  - assets/materials/granite/normal.png
+  - assets/materials/granite/metallic.psd
+  - assets/materials/ice/albedo.png
+  - assets/materials/ice/normal.png
+  - assets/materials/ice/metallic.psd
+  - assets/materials/gold/albedo.png
+  - assets/materials/gold/normal.png
+  - assets/materials/gold/metallic.png
+  - assets/materials/tile/albedo.png
+  - assets/materials/tile/normal.png
+  - assets/materials/tile/metallic.psd

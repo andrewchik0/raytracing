@@ -29,7 +29,7 @@ namespace raytracing
 
   bool gui::init()
   {
-    mLoadingTexture.from_file("assets/loading.png");
+    mLoadingTexture.from_file("assets/images/loading.png");
 
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -40,13 +40,13 @@ namespace raytracing
     ImGui_ImplGlfw_InitForOpenGL(rt::get()->mWindow.get(), true);
     ImGui_ImplOpenGL3_Init("#version 420");
 
-    mFont = io.Fonts->AddFontFromFileTTF("assets/Roboto.ttf", 17.0f);
+    mFont = io.Fonts->AddFontFromFileTTF("assets/fonts/Roboto.ttf", 17.0f);
 
     static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig config;
     config.MergeMode = true;  // Merge with default font
     config.PixelSnapH = true;
-    mFAFont = io.Fonts->AddFontFromFileTTF("assets/fa-regular-400.ttf", 17.0f, &config, iconRanges);
+    mFAFont = io.Fonts->AddFontFromFileTTF("assets/fonts/fa-regular-400.ttf", 17.0f, &config, iconRanges);
 
     setup_style();
 
