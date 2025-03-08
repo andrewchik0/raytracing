@@ -16,8 +16,22 @@ layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 
 void main()
 {
-  Ray ray;
-  ray.origin = cameraPosition.xyz;
-  ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord, halfWidth, halfHeight);
-  outColor(vec4(castRay(ray), 1.0));
+  if (useSSAA != 1)
+  {
+    Ray ray;
+    ray.origin = cameraPosition.xyz;
+    ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord, halfWidth, halfHeight);
+    outColor(vec4(castRay(ray), 1.0));
+  }
+  else
+  {
+    Ray ray;
+    vec2 pixelSize = 1.0 / windowSize.xy;
+    vec2 cellSize = pixelSize / SSAAGridSize;
+    float x = -cellSize.x * SSAAGridSize / 2.0 + cellSize.x * 0.5 + cellSize.x * (accumulationIndex % SSAAGridSize);
+    float y = -cellSize.y * SSAAGridSize / 2.0 + cellSize.y * 0.5 + cellSize.y * floor((accumulationIndex / SSAAGridSize) % SSAAGridSize);
+    ray.origin = cameraPosition.xyz;
+    ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord + vec2(x, y), halfWidth, halfHeight);
+    outColor(vec4(castRay(ray), 1.0));
+  }
 }

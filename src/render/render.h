@@ -26,6 +26,8 @@ namespace raytracing
     textures mTextures;
 
     bool mUseFXAA = true;
+    bool mUseSSAA = true;
+    int32_t mSSAAGridSize = 2;
     bool mRenderMode = false;
     bool mInterpolateNormals = true;
     bool mShowTextures = false;
@@ -89,6 +91,8 @@ namespace raytracing
     bounding_volume_builder mBoundingVolumeBuilder;
 
     void set_uniforms();
+
+    bool should_accumulate();
 
     status load_shaders();
 

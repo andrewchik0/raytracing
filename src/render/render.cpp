@@ -26,9 +26,15 @@ namespace raytracing
     clear();
   }
 
+  bool render::should_accumulate()
+  {
+    return mAccumulatingFrameIndex < mMaxAccumulation && (mUseSSAA || mRenderMode || !mAccumulatingFrameIndex);
+  }
+
   void render::clear()
   {
-    if (mAccumulatingFrameIndex >= mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex)) return;
+    if (!should_accumulate())
+      return;
     mLastFrameTexture.clear();
     mFinalTexture.clear();
     mBloomTexture.clear();
@@ -37,7 +43,7 @@ namespace raytracing
 
   void render::draw(const render_texture* target /* = nullptr */)
   {
-    if (mAccumulatingFrameIndex >= mMaxAccumulation || (!mRenderMode && mAccumulatingFrameIndex))
+    if (!should_accumulate())
       return;
     mAccumulatingFrameIndex++;
 
@@ -135,10 +141,10 @@ namespace raytracing
   void render::set_uniforms()
   {
     GlobalData data;
-    data.cameraDirection = glm::vec4(rt::get()->mCamera.mDirection, 1.0f);
-    data.cameraPosition = glm::vec4(rt::get()->mCamera.mPosition, 1.0f);
-    data.cameraUp = glm::vec4(rt::get()->mCamera.mUp, 1.0f);
-    data.cameraRight = glm::vec4(rt::get()->mCamera.mRight, 1.0f);
+    data.cameraDirection = rt::get()->mCamera.mDirection;
+    data.cameraPosition = rt::get()->mCamera.mPosition;
+    data.cameraUp = rt::get()->mCamera.mUp;
+    data.cameraRight = rt::get()->mCamera.mRight;
     data.time = rt::get()->mTimeHandler.mTimeSinceStart;
     data.samples = mSamplesCount;
     data.bounces = mBouncesCount;
@@ -148,13 +154,16 @@ namespace raytracing
     data.gamma = mGamma;
     data.exposure = mExposure;
     data.blurSize = mBlurSize;
-    data.windowSize = { mViewportWidth, mViewportHeight, 0, 0 };
+    data.windowSize = {mViewportWidth, mViewportHeight, 0, 0};
     data.maxTextureSize = mTextures.sMaxTextureDataSize;
     data.renderMode = mRenderMode;
     data.interpolateNormals = mInterpolateNormals;
     data.showTextures = mShowTextures;
     data.postProcessing = mPostProcessing;
     data.debugTextureLayer = mDebugTextureLayer;
+    data.useSSAA = mUseSSAA;
+    data.SSAAGridSize = mSSAAGridSize;
+    data.accumulationIndex = mAccumulatingFrameIndex;
     mGlobalDataBuffer.set(&data);
   }
-}
+} // namespace raytracing

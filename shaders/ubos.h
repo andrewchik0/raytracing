@@ -13,15 +13,15 @@
 #define GLOBAL_DATA_BINDING 2
 #define GlobalDataStruct GlobalData \
 {                                   \
-  vec4 cameraPosition;              \
-  vec4 cameraDirection;             \
-  vec4 cameraRight;                 \
-  vec4 cameraUp;                    \
-  vec4 windowSize;                  \
+  vec3 cameraPosition;              \
   float halfHeight;                 \
+  vec3 cameraDirection;             \
   float halfWidth;                  \
+  vec3 cameraRight;                 \
   float time;                       \
+  vec3 cameraUp;                    \
   float gamma;                      \
+  vec4 windowSize;                  \
   float exposure;                   \
   float blurSize;                   \
   int samples;                      \
@@ -33,6 +33,9 @@
   int showTextures;                 \
   int postProcessing;               \
   int debugTextureLayer;            \
+  int useSSAA;                      \
+  int SSAAGridSize;                 \
+  int accumulationIndex;            \
 }
 
 #define DEBUG_TEXTURE_LAYER_DEFAULT 0

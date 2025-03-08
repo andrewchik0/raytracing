@@ -213,10 +213,16 @@ namespace raytracing
       check(ImGui::Checkbox("Render mode", &rt::get()->mRender.mRenderMode));
       check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
       check(ImGui::Checkbox("Show textures", &rt::get()->mRender.mShowTextures));
-      check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
       check(ImGui::Checkbox("Post processing", &rt::get()->mRender.mPostProcessing));
       if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
         rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
+      check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
+      check(ImGui::Checkbox("SSAA", &rt::get()->mRender.mUseSSAA));
+      ImGui::BeginDisabled(!rt::get()->mRender.mUseSSAA);
+      check(ImGui::RadioButton("x2", &rt::get()->mRender.mSSAAGridSize, 2)); ImGui::SameLine();
+      check(ImGui::RadioButton("x4", &rt::get()->mRender.mSSAAGridSize, 4)); ImGui::SameLine();
+      check(ImGui::RadioButton("x8", &rt::get()->mRender.mSSAAGridSize, 8));
+      ImGui::EndDisabled();
       int minAccumulation = 1, minBounces = 2;
       check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
       check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
