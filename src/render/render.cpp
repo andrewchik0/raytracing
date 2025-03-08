@@ -35,10 +35,10 @@ namespace raytracing
   {
     if (!should_accumulate())
       return;
-    mLastFrameTexture.clear();
-    mFinalTexture.clear();
-    mBloomTexture.clear();
-    mPostProcessedTexture.clear();
+    if (mBlurSize != 0)
+    {
+      mBloomTexture.clear();
+    }
   }
 
   void render::draw(const render_texture* target /* = nullptr */)
@@ -56,10 +56,13 @@ namespace raytracing
     mark_zone("Main pass");
 
     // Bloom pass
-    mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
-    mBloomShader.dispatch_compute(mBloomTexture);
+    if (mBlurSize != 0)
+    {
+      mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
+      mBloomShader.dispatch_compute(mBloomTexture);
+      mark_zone("Bloom pass");
+    }
 
-    mark_zone("Bloom pass");
 
     // Post-processing pass
     mPostShader.set_uniform("renderedTexture", mLastFrameTexture);

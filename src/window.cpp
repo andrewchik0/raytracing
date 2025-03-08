@@ -58,7 +58,8 @@ namespace raytracing
   void window::clear()
   {
     glfwPollEvents();
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (rt::get()->is_loading())
+      glClear(GL_COLOR_BUFFER_BIT);
   }
 
   void window::draw() { glfwSwapBuffers(mWindowHandle); }

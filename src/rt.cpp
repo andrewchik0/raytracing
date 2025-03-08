@@ -31,11 +31,16 @@ namespace raytracing
     scene_serializer::load(options.scene_filename);
   }
 
+  bool rt::is_loading() const
+  {
+    return mTexturesLoading || mModelsLoading || mBVHLoading;
+  }
+
   void rt::run()
   {
     while (mWindow.is_open())
     {
-      if (!mTexturesLoading && !mModelsLoading && !mBVHLoading)
+      if (!is_loading())
       {
         if (!mLoaded)
         {
@@ -46,9 +51,9 @@ namespace raytracing
 
         mTimeHandler.tick();
         mWindow.clear();
+        mark_zone("Poll events");
         mRender.clear();
-
-        mark_zone("Clear");
+        mark_zone("Render clear");
 
         if (input::key(GLFW_KEY_R))
           mRender.load_shaders();

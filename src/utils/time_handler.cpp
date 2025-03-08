@@ -1,6 +1,4 @@
-#include <iostream>
 #include <chrono>
-#include <iomanip>
 
 #include "time_handler.h"
 
@@ -53,7 +51,7 @@ namespace raytracing::utils {
     }
 
     mAllZonesTime = 0;
-    mZones.clear();
+    mZones.resize(0);
     mZones.push_back(time_zone{"start", 0});
   }
 

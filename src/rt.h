@@ -62,6 +62,8 @@ namespace raytracing
     void render_to_image();
     void render_to_video();
 
+    bool is_loading() const;
+
     static rt* get() { return sInstance; }
 
   private:
@@ -70,6 +72,8 @@ namespace raytracing
     bool mLoaded = false;
 
     utils::thread_pool mThreadPool;
+    std::thread mRenderingThread;
+    std::mutex mRenderingMutex;
 
     std::string mSceneFilename = "";
     struct model_data

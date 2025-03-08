@@ -38,7 +38,7 @@ void main()
     resultColor = vec4(texture(renderedTexture, texCoord).xyz, 1.0);
   }
 
-  if (renderMode == 1)
+  if (renderMode == 1 && blurSize != 0)
   {
     resultColor.rgb += max(gaussian_blur(bloomTexture, windowSize.xy, texCoord, blurSize), vec3(0.0));
   }
