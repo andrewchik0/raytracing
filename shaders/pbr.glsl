@@ -129,6 +129,12 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
+  if (mat.emissivity.x + mat.emissivity.y + mat.emissivity.z > 0)
+  {
+    sampleColor = mat.emissivity;
+    return false;
+  }
+
   float fresnel = fresnelSchlick(abs(dot(-ray.direction, mat.normal)), mat.alpha < 0.99 ? 0.2 : 0.4);
   float random0to1 =
     random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y) +
