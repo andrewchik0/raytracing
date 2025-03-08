@@ -1,5 +1,5 @@
-exposure: 7.44999981
-gamma: 1.15999997
+exposure: 1.8
+gamma: 1
 blur_radius: 0
 sky_filename: assets/skies/outdoor.hdr
 camera:

@@ -27,7 +27,7 @@ namespace raytracing
 
     bool mUseFXAA = true;
     bool mUseSSAA = true;
-    int32_t mSSAAGridSize = 2;
+    int32_t mSSAAGridSize = 4;
     bool mRenderMode = false;
     bool mInterpolateNormals = true;
     bool mShowTextures = false;

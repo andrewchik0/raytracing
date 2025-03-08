@@ -10,6 +10,16 @@ layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
 uniform sampler2D renderedTexture;
 uniform sampler2D bloomTexture;
 
+vec3 ACESFilm(vec3 x)
+{
+  float a = 2.51f;
+  float b = 0.03f;
+  float c = 2.43f;
+  float d = 0.59f;
+  float e = 0.14f;
+  return clamp((x*(a*x+b))/(x*(c*x+d)+e), 0.0, 1.0);
+}
+
 void main()
 {
   if (postProcessing != 1)
@@ -35,6 +45,7 @@ void main()
 
   vec3 mapped = vec3(1.0) - exp(-resultColor.rgb * exposure);
   mapped = pow(mapped, vec3(1.0 / gamma));
+  mapped = ACESFilm(mapped);
   resultColor = vec4(mapped, 1.0);
   outColor(resultColor);
 }

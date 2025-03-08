@@ -129,7 +129,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
-  float fresnel = fresnelSchlick(abs(dot(-ray.direction, mat.normal)), 0.2);
+  float fresnel = fresnelSchlick(abs(dot(-ray.direction, mat.normal)), mat.alpha < 0.99 ? 0.2 : 0.4);
   float random0to1 =
     random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y) +
     random(ray.direction.z + gl_LocalInvocationID.y + gl_GlobalInvocationID.y) +
@@ -139,14 +139,20 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
   if (mat.alpha < 0.99 && random0to1 > fresnel)
   {
     ray.origin = hit.position + ray.direction * bias;
+    return true;
+  }
+
+  if (random0to1 > fresnel || mat.roughness > 0.45)
+  {
+    mat.roughness = 1.0;
+    sampleColor = sampleColor * mat.albedo + mat.emissivity;
+    ray.origin = hit.position + mat.normal * bias;
+    ray.direction = reflectance(ray, mat);
   }
   else
   {
-    if (mat.alpha < 0.99)
-    {
-      mat.albedo = vec3(1);
-      mat.roughness = 0;
-    }
+    mat.albedo = vec3(1);
+    mat.roughness = 0;
     sampleColor = sampleColor * mat.albedo + mat.emissivity;
     ray.origin = hit.position + mat.normal * bias;
     ray.direction = reflectance(ray, mat);
