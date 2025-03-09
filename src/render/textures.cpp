@@ -48,7 +48,7 @@ namespace raytracing
     textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([&]
     {
       int channels;
-      mSkyTextureData = stbi_loadf(rt::get()->mSkyFilename.c_str(), &mSkyWidth, &mSkyHeight, &channels, 3);
+      mSkyTextureData = stbi_loadf(rt::get()->mScene.mSkyFilename.c_str(), &mSkyWidth, &mSkyHeight, &channels, 3);
     }));
 
     for (auto& thread : textureLoadingJobs)

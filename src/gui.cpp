@@ -9,7 +9,7 @@
 #include <nfd.h>
 
 #include "rt.h"
-#include "scene_serializer.h"
+#include "scene/serializer.h"
 
 namespace raytracing
 {
@@ -85,9 +85,9 @@ namespace raytracing
       if (ImGui::BeginMenu("File"))
       {
         if (ImGui::MenuItem(ICON_FA_FOLDER " Open..."))
-          scene_serializer::load();
+          serializer::load();
         if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
-          scene_serializer::save(rt::get()->mSceneFilename);
+          serializer::save(rt::get()->mScene.mSceneFilename);
         if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save as..."))
         {
           nfdchar_t* outPath = nullptr;
@@ -95,7 +95,7 @@ namespace raytracing
           nfdresult_t result = NFD_SaveDialog(
             &outPath, filterItem, 1, (std::filesystem::current_path() / "scenes").string().c_str(), "scene.yaml");
           if (result == NFD_OKAY)
-            scene_serializer::save(outPath);
+            serializer::save(outPath);
           free(outPath);
         }
         if (ImGui::MenuItem(ICON_FA_XMARK " Exit"))
@@ -226,8 +226,8 @@ namespace raytracing
       int minAccumulation = 1, minBounces = 2;
       check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
       check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
-      ImGui::DragFloat("Camera speed", &rt::get()->mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
-      ImGui::DragFloat("Mouse sensitivity", &rt::get()->mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
+      ImGui::DragFloat("Camera speed", &rt::get()->mScene.mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
+      ImGui::DragFloat("Mouse sensitivity", &rt::get()->mScene.mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
       ImGui::TreePop();
     }
 
@@ -257,10 +257,10 @@ namespace raytracing
 
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
-    if (rt::get()->mBVHLoading && rt::get()->mModelData.size())
+    if (rt::get()->mBVHLoading && rt::get()->mScene.mModels.size())
       ImGui::Text("Building bounding volume hierarchies... %.1f%%",
-        float(rt::get()->mRender.mBoundingVolumeBuilder.mBVHNodes.size()) /
-        float(rt::get()->mRender.mTriangles.size() * 2) *
+        float(rt::get()->mScene.mBoundingVolumeBuilder.mBVHNodes.size()) /
+        float(rt::get()->mScene.mTriangles.size() * 2) *
         100.0f
       );
     if (rt::get()->mTexturesLoading)
@@ -283,13 +283,13 @@ namespace raytracing
     if (ImGui::TreeNode(ICON_FA_CAMERA " Camera options"))
     {
       pop_font();
-      check(ImGui::DragFloat3("Camera position", &rt::get()->mCamera.mPosition.x, 0.01, 0, 0, "%.2f"));
-      check(ImGui::DragFloat3("Camera direction", &rt::get()->mCamera.mDirection.x, 0.01, -1.0, 1.0, "%.2f"));
-      rt::get()->mCamera.mDirection = normalize(rt::get()->mCamera.mDirection);
+      check(ImGui::DragFloat3("Camera position", &rt::get()->mScene.mCamera.mPosition.x, 0.01, 0, 0, "%.2f"));
+      check(ImGui::DragFloat3("Camera direction", &rt::get()->mScene.mCamera.mDirection.x, 0.01, -1.0, 1.0, "%.2f"));
+      rt::get()->mScene.mCamera.mDirection = normalize(rt::get()->mScene.mCamera.mDirection);
       check(ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f"));
       check(ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f"));
       check(ImGui::DragFloat("Blur size", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f"));
-      check(ImGui::DragFloat("FOV", &rt::get()->mCamera.mFovY, 0.1, 30.0, 150.0, "%.1f"));
+      check(ImGui::DragFloat("FOV", &rt::get()->mScene.mCamera.mFovY, 0.1, 30.0, 150.0, "%.1f"));
       ImGui::TreePop();
     }
     else
@@ -331,51 +331,51 @@ namespace raytracing
   void gui::objects_section()
   {
     std::string label;
-    for (size_t i = 0; i < rt::get()->mRender.mSpheresCount; ++i)
+    for (size_t i = 0; i < rt::get()->mScene.mSpheresCount; ++i)
     {
-      label = rt::get()->mRender.mSpheresAdditional[i].name +"###Sphere" + std::to_string(i);
+      label = rt::get()->mScene.mSpheresAdditional[i].name +"###Sphere" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
         label = "Name###SphereName" + std::to_string(i);
-        ImGui::InputText(label.c_str(), &rt::get()->mRender.mSpheresAdditional[i].name);
+        ImGui::InputText(label.c_str(), &rt::get()->mScene.mSpheresAdditional[i].name);
         label = "Position###SpherePosition" + std::to_string(i);
-        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f"));
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f"));
         label = "Radius###SphereRadius" + std::to_string(i);
-        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f"));
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f"));
         label = "Material ID##SphereMaterialID" + std::to_string(i);
-        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mSpheres[i].materialIndex));
+        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mScene.mSpheres[i].materialIndex));
         label = "Delete###SphereDelete" + std::to_string(i);
         if (check(ImGui::Button(label.c_str())))
-          rt::get()->delete_sphere(i);
+          rt::get()->mScene.delete_sphere(i);
         ImGui::TreePop();
       }
     }
-    for (size_t i = 0; i < rt::get()->mRender.mPlanesCount; ++i)
+    for (size_t i = 0; i < rt::get()->mScene.mPlanesCount; ++i)
     {
-      label = rt::get()->mRender.mPlanesAdditional[i].name + "###Plane" + std::to_string(i);
+      label = rt::get()->mScene.mPlanesAdditional[i].name + "###Plane" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
         label = "Name###PlaneName" + std::to_string(i);
-        ImGui::InputText(label.c_str(), &rt::get()->mRender.mPlanesAdditional[i].name);
+        ImGui::InputText(label.c_str(), &rt::get()->mScene.mPlanesAdditional[i].name);
         label = "Normal###PlaneNormal" + std::to_string(i);
-        if (check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f")))
-          rt::get()->mRender.mPlanes[i].normal=  normalize(rt::get()->mRender.mPlanes[i].normal);
+        if (check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f")))
+          rt::get()->mScene.mPlanes[i].normal=  normalize(rt::get()->mScene.mPlanes[i].normal);
         label = "Distance###PlaneDistance" + std::to_string(i);
-        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mPlanes[i].distance, 0.01f, 0, 0, "%.2f"));
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mPlanes[i].distance, 0.01f, 0, 0, "%.2f"));
         label = "Material ID##PlaneMaterialID" + std::to_string(i);
-        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mRender.mPlanes[i].materialIndex));
+        check(ImGui::InputScalar(label.c_str(), ImGuiDataType_U32, &rt::get()->mScene.mPlanes[i].materialIndex));
         label = "Delete###PlaneDelete" + std::to_string(i);
         if (check(ImGui::Button(label.c_str())))
-          rt::get()->delete_plane(i);
+          rt::get()->mScene.delete_plane(i);
         ImGui::TreePop();
       }
     }
-    for (size_t i = 0; i < rt::get()->mModelData.size(); ++i)
+    for (size_t i = 0; i < rt::get()->mScene.mModels.size(); ++i)
     {
-      label = rt::get()->mModelData[i].name + "###Model" + std::to_string(i);
+      label = rt::get()->mScene.mModels[i].mFilename + "###Model" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
-        ImGui::Text(rt::get()->mModelData[i].name.c_str());
+        ImGui::Text(rt::get()->mScene.mModels[i].mFilename.c_str());
         ImGui::TreePop();
       }
     }
@@ -440,10 +440,10 @@ namespace raytracing
       mAddItemOpened = false;
 
       if (strncmp(currentItem, "Sphere", 5) == 0)
-        rt::get()->add_sphere("Sphere", sphere);
+        rt::get()->mScene.add_sphere("Sphere", sphere);
 
       if (strncmp(currentItem, "Plane", 5) == 0)
-        rt::get()->add_plane("Plane", plane);
+        rt::get()->mScene.add_plane("Plane", plane);
 
       currentItem = nullptr;
       check(true);
@@ -455,38 +455,38 @@ namespace raytracing
   {
     std::string label;
 
-    for (size_t i = 0; i < rt::get()->mRender.mMaterialsCount; ++i)
+    for (size_t i = 0; i < rt::get()->mScene.mMaterialsCount; ++i)
     {
-      label = rt::get()->mRender.mMaterialsAdditional[i].name + " ID: " + std::to_string(i) + "###Material" + std::to_string(i);
+      label = rt::get()->mScene.mMaterialsAdditional[i].name + " ID: " + std::to_string(i) + "###Material" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
         label = "Name###MaterialName" + std::to_string(i);
-        ImGui::InputText(label.c_str(), &rt::get()->mRender.mMaterialsAdditional[i].name);
+        ImGui::InputText(label.c_str(), &rt::get()->mScene.mMaterialsAdditional[i].name);
         label = "Albedo###Albedo" + std::to_string(i);
-        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f"));
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Roughness###Roughness" + std::to_string(i);
-        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f"));
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Emissivity###Emissivity" + std::to_string(i);
-        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mRender.mMaterials[i].emissivity.x, 0.01f, 0.0f, 100.0f, "%.2f"));
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mMaterials[i].emissivity.x, 0.01f, 0.0f, 100.0f, "%.2f"));
         label = "Texture ID###TextureID" + std::to_string(i);
-        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].textureIndex));
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].textureIndex));
         label = "Normal Texture ID###NormalTextureID" + std::to_string(i);
-        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].normalTextureIndex));
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].normalTextureIndex));
         label = "Metallic Texture ID###MetallicTextureID" + std::to_string(i);
-        check(ImGui::InputInt(label.c_str(), &rt::get()->mRender.mMaterials[i].metallicTextureIndex));
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].metallicTextureIndex));
         label = "Texture Coordinates Multiplier###TextureCoordinatesMultiplier" + std::to_string(i);
-        check(ImGui::DragFloat(label.c_str(), &rt::get()->mRender.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f,
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f,
                          100.0f, "%.2f"));
         label = "Delete###MaterialDelete" + std::to_string(i);
         if (ImGui::Button(label.c_str()))
-          rt::get()->delete_material(i);
+          rt::get()->mScene.delete_material(i);
         ImGui::TreePop();
       }
     }
 
     static Material material;
     if (ImGui::Button("+ Add Material"))
-      rt::get()->add_material("Material", material);
+      rt::get()->mScene.add_material("Material", material);
   }
 
   void gui::textures_section()

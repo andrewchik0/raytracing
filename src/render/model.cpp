@@ -20,16 +20,11 @@ namespace raytracing
 
     mBasePath = file.parent_path();
 
-    const aiScene* scene = importer.ReadFile(file.string(),
-      aiProcess_CalcTangentSpace |
-      aiProcess_JoinIdenticalVertices |
-      aiProcess_Triangulate |
-      aiProcess_GenSmoothNormals |
-      aiProcess_ValidateDataStructure |
-      aiProcess_RemoveRedundantMaterials |
-      aiProcess_GenUVCoords |
-      aiProcess_GenBoundingBoxes
-    );
+    const aiScene* scene =
+      importer.ReadFile(file.string(),
+                        aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |
+                          aiProcess_GenSmoothNormals | aiProcess_ValidateDataStructure |
+                          aiProcess_RemoveRedundantMaterials | aiProcess_GenUVCoords | aiProcess_GenBoundingBoxes);
 
     if (!scene || !scene->mRootNode)
     {
@@ -39,6 +34,11 @@ namespace raytracing
     mModelMatrix = modelMatrix;
     process_node(scene->mRootNode, scene, aiMatrix4x4());
     return status::success;
+  }
+
+  status model::load()
+  {
+    return load_from_file(mFilename, mModelMatrix);
   }
 
   void model::process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform)
@@ -192,8 +192,8 @@ namespace raytracing
     else if (heightTexture.size() > 0)
       mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / heightTexture).string());
 
-    rt::get()->add_material(get_material_name(material), mat);
-    return rt::get()->mRender.mMaterialsCount - 1;
+    rt::get()->mScene.add_material(get_material_name(material), mat);
+    return rt::get()->mScene.mMaterialsCount - 1;
   }
 
   std::string model::get_texture_path(const aiMaterial* mat, aiTextureType type)
@@ -216,6 +216,6 @@ namespace raytracing
     {
       return std::string(name.C_Str());
     }
-    return "Unnamed Material " + std::to_string(rt::get()->mRender.mMaterialsCount);
+    return "Unnamed Material " + std::to_string(rt::get()->mScene.mMaterialsCount);
   }
 } // namespace raytracing

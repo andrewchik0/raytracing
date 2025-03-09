@@ -29,10 +29,10 @@ struct Vertex
   vec4 bitangent;  // 4th component used for texture coordinates V
 };
 
-#define BOUND_VOLUME_SIZE 3
 #define BOUND_VOLUME_MIN_LEFT 0
 #define BOUND_VOLUME_MAX_RIGHT 1
 #define BOUND_VOLUME_TRIANGLE 2
+#define BOUND_VOLUME_SIZE 3
 struct BoundingVolume
 {
   vec3 min;

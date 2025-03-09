@@ -18,10 +18,11 @@ namespace raytracing
   {
   public:
     model() = default;
-    model(const model&) = delete;
 
     [[nodiscard]] status load_from_file(std::filesystem::path file, glm::mat4 modelMatrix = glm::mat4(1.0f));
+    [[nodiscard]] status load();
 
+    std::string mFilename;
     glm::vec3 mMin, mMax;
     std::vector<glm::ivec4> mTriangles;
     std::vector<Vertex> mVertices;

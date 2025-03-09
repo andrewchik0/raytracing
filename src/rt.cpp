@@ -5,7 +5,7 @@
 
 #include <nfd.h>
 
-#include "scene_serializer.h"
+#include "scene/serializer.h"
 
 namespace raytracing
 {
@@ -28,7 +28,7 @@ namespace raytracing
     mRender.init();
     mGui.init();
 
-    scene_serializer::load(options.scene_filename);
+    serializer::load(options.scene_filename);
   }
 
   bool rt::is_loading() const
@@ -58,7 +58,7 @@ namespace raytracing
         if (input::key(GLFW_KEY_R))
           mRender.load_shaders();
 
-        mCamera.update(mTimeHandler.mDeltaTime);
+        mScene.update(mTimeHandler.mDeltaTime);
 
         set_viewport();
 
@@ -137,7 +137,7 @@ namespace raytracing
     {
       render_texture rt(mRenderOptions.width, mRenderOptions.height);
       size_t sampleCounter = 0;
-      mCamera.move_right(0.1);
+      mScene.mCamera.move_right(0.1);
 
       while (sampleCounter++ < mRenderOptions.samples)
       {
@@ -166,7 +166,7 @@ namespace raytracing
   void rt::set_viewport(const uint32_t width, const uint32_t height)
   {
     mRender.resize(width, height);
-    mCamera.resize(width, height);
+    mScene.mCamera.resize(width, height);
   }
 
   void rt::load_async()
@@ -175,23 +175,7 @@ namespace raytracing
     mModelsLoading = true;
     mThreadPool.send_task([&]
     {
-      std::vector<std::future<void>> modelFutures;
-
-      for (auto& data : mModelData)
-      {
-        modelFutures.push_back(mThreadPool.enqueue([&]
-        {
-          if (model m; m.load_from_file(data.name, data.model) == status::success)
-          {
-            mRender.mTriangles.insert(mRender.mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-            mRender.mVertices.insert(mRender.mVertices.end(), m.mVertices.begin(), m.mVertices.end());
-          }
-        }));
-      }
-
-      for (auto& model : modelFutures)
-        model.wait();
-
+      mScene.load_models();
       mTexturesLoading = true;
       mModelsLoading = false;
 
@@ -200,53 +184,9 @@ namespace raytracing
       mBVHLoading = true;
       mTexturesLoading = false;
 
-      mRender.mBoundingVolumeBuilder.build();
+      mScene.mBoundingVolumeBuilder.build();
 
       mBVHLoading = false;
     });
-  }
-
-  void rt::add_sphere(const std::string& name, const SphereObject& object)
-  {
-    if (mRender.mSpheresCount >= MAX_SPHERES)
-      return;
-    mRender.mSpheresAdditional[mRender.mSpheresCount].name = name;
-    mRender.mSpheres[mRender.mSpheresCount++] = object;
-  }
-  void rt::add_plane(const std::string& name, const PlaneObject& object)
-  {
-    if (mRender.mPlanesCount >= MAX_PLANES)
-      return;
-    mRender.mPlanesAdditional[mRender.mPlanesCount].name = name;
-    mRender.mPlanes[mRender.mPlanesCount++] = object;
-  }
-  void rt::add_material(const std::string& name, const Material& material)
-  {
-    if (mRender.mMaterialsCount >= MAX_MATERIALS)
-      return;
-    mRender.mMaterialsAdditional[mRender.mMaterialsCount].name = name;
-    mRender.mMaterials[mRender.mMaterialsCount++] = material;
-  }
-  void rt::delete_sphere(size_t index)
-  {
-    for (size_t i = index; i < mRender.mSpheresCount; ++i)
-      mRender.mSpheres[i] = mRender.mSpheres[i + 1];
-    mRender.mSpheresCount--;
-  }
-  void rt::delete_plane(size_t index)
-  {
-    for (size_t i = index; i < mRender.mPlanesCount; ++i)
-      mRender.mPlanes[i] = mRender.mPlanes[i + 1];
-    mRender.mPlanesCount--;
-  }
-  void rt::delete_material(size_t index)
-  {
-    for (size_t i = index; i < mRender.mMaterialsCount; ++i)
-      mRender.mMaterials[i] = mRender.mMaterials[i + 1];
-    mRender.mMaterialsCount--;
-  }
-  void rt::add_model(const std::string& filename, const glm::mat4& model)
-  {
-    mModelData.push_back({filename, model });
   }
 } // namespace raytracing

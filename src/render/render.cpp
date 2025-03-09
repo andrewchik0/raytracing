@@ -20,7 +20,7 @@ namespace raytracing
 
   void render::post_init()
   {
-    mTextures.load_triangles_to_gpu(mBoundingVolumes, mVertices);
+    mTextures.load_triangles_to_gpu(rt::get()->mScene.mBoundingVolumes, rt::get()->mScene.mVertices);
     mTextures.load_to_gpu();
     mAccumulatingFrameIndex = 0;
     clear();
@@ -109,11 +109,11 @@ namespace raytracing
   void render::push_scene()
   {
     SceneBuffer buffer = {};
-    memcpy(buffer.planes, mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
-    memcpy(buffer.spheres, mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
-    memcpy(buffer.materials, mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
-    buffer.planesCount = mPlanesCount;
-    buffer.spheresCount = mSpheresCount;
+    memcpy(buffer.planes, rt::get()->mScene.mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
+    memcpy(buffer.spheres, rt::get()->mScene.mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    memcpy(buffer.materials, rt::get()->mScene.mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
+    buffer.planesCount = rt::get()->mScene.mPlanesCount;
+    buffer.spheresCount = rt::get()->mScene.mSpheresCount;
     mSceneBuffer.set(&buffer);
   }
 
@@ -144,15 +144,15 @@ namespace raytracing
   void render::set_uniforms()
   {
     GlobalData data;
-    data.cameraDirection = rt::get()->mCamera.mDirection;
-    data.cameraPosition = rt::get()->mCamera.mPosition;
-    data.cameraUp = rt::get()->mCamera.mUp;
-    data.cameraRight = rt::get()->mCamera.mRight;
+    data.cameraDirection = rt::get()->mScene.mCamera.mDirection;
+    data.cameraPosition = rt::get()->mScene.mCamera.mPosition;
+    data.cameraUp = rt::get()->mScene.mCamera.mUp;
+    data.cameraRight = rt::get()->mScene.mCamera.mRight;
     data.time = rt::get()->mTimeHandler.mTimeSinceStart;
     data.samples = mSamplesCount;
     data.bounces = mBouncesCount;
-    data.halfHeight = rt::get()->mCamera.mHalfHeight;
-    data.halfWidth = rt::get()->mCamera.mHalfWidth;
+    data.halfHeight = rt::get()->mScene.mCamera.mHalfHeight;
+    data.halfWidth = rt::get()->mScene.mCamera.mHalfWidth;
     data.useFXAA = mUseFXAA;
     data.gamma = mGamma;
     data.exposure = mExposure;

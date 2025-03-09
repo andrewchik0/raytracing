@@ -1,20 +1,15 @@
 #pragma once
 
-#include "uniform_buffer.h"
-#include "bounding_volume_builder.h"
+#include "../scene/bounding_volume_builder.h"
 #include "model.h"
 #include "shader.h"
 #include "textures.h"
+#include "uniform_buffer.h"
 
 #include "render_texture.h"
 
 namespace raytracing
 {
-  struct object_additional
-  {
-    std::string name;
-  };
-
   class render
   {
   public:
@@ -39,14 +34,6 @@ namespace raytracing
     float mGamma = 1.0;
     float mExposure = 2.5;
     float mBlurSize = 5.0;
-
-    std::array<SphereObject, MAX_SPHERES> mSpheres;
-    std::array<PlaneObject, MAX_PLANES> mPlanes;
-    std::array<Material, MAX_MATERIALS> mMaterials;
-    size_t
-      mSpheresCount = 0,
-      mPlanesCount = 0,
-      mMaterialsCount = 0;
 
     std::string mShaderErrors;
 
@@ -78,17 +65,7 @@ namespace raytracing
 
     int32_t mAccumulatingFrameIndex = 0;
 
-    std::vector<Vertex> mVertices;
-    std::vector<ivec4> mTriangles;
-    std::vector<BoundingVolume> mBoundingVolumes;
-
-    // Additional data stored separately in order to easily pass object data to the shader
-    std::array<object_additional, MAX_SPHERES> mSpheresAdditional;
-    std::array<object_additional, MAX_PLANES> mPlanesAdditional;
-    std::array<object_additional, MAX_MATERIALS> mMaterialsAdditional;
-
     uniform_buffer mSceneBuffer, mGlobalDataBuffer;
-    bounding_volume_builder mBoundingVolumeBuilder;
 
     void set_uniforms();
 
@@ -98,7 +75,7 @@ namespace raytracing
 
     friend class rt;
     friend class gui;
-    friend class scene_serializer;
+    friend class serializer;
     friend class textures;
     friend class bounding_volume_builder;
   };

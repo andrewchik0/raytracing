@@ -52,7 +52,7 @@ namespace raytracing
 
     void load_to_memory();
 
-    friend class scene_serializer;
+    friend class serializer;
     friend class gui;
   };
 }

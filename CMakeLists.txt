@@ -12,12 +12,12 @@ add_executable(ray-tracing
   src/rt.h
   src/input.cpp
   src/input.h
-  src/camera.cpp
-  src/camera.h
+  src/scene/camera.cpp
+  src/scene/camera.h
   src/gui.cpp
   src/gui.h
-  src/scene_serializer.cpp
-  src/scene_serializer.h
+  src/scene/serializer.cpp
+  src/scene/serializer.h
   src/render/render.cpp
   src/render/render.h
   src/render/uniform_buffer.cpp
@@ -26,8 +26,8 @@ add_executable(ray-tracing
   src/render/textures.h
   src/render/model.cpp
   src/render/model.h
-  src/render/bounding_volume_builder.cpp
-  src/render/bounding_volume_builder.h
+  src/scene/bounding_volume_builder.cpp
+  src/scene/bounding_volume_builder.h
   src/render/shader.cpp
   src/render/shader.h
   src/render/render_texture.cpp
@@ -47,6 +47,8 @@ add_executable(ray-tracing
   src/utils/time_handler.h
   src/window.cpp
   src/window.h
+  src/scene/scene.cpp
+  src/scene/scene.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)

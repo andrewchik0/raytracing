@@ -3,7 +3,7 @@
 #include <numeric>
 
 #include "shaders/uniforms.h"
-#include "rt.h"
+#include "../rt.h"
 
 namespace raytracing
 {
@@ -13,14 +13,14 @@ namespace raytracing
     node->start = start;
     node->count = end - start;
 
-    auto& render = rt::get()->mRender;
+    auto& scene = rt::get()->mScene;
 
     for (size_t i = start; i < end; ++i)
     {
-      glm::ivec3 tri = render.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = render.mVertices[tri.x].position;
-      glm::vec3 v1 = render.mVertices[tri.y].position;
-      glm::vec3 v2 = render.mVertices[tri.z].position;
+      glm::ivec3 tri = scene.mTriangles[triangleIndices[i]];
+      glm::vec3 v0 = scene.mVertices[tri.x].position;
+      glm::vec3 v1 = scene.mVertices[tri.y].position;
+      glm::vec3 v2 = scene.mVertices[tri.z].position;
 
       node->bounds.expand(v0);
       node->bounds.expand(v1);
@@ -41,10 +41,10 @@ namespace raytracing
     std::unordered_map<int32_t, float> centroidMap;
     for (int32_t i = start; i < end; ++i)
     {
-      glm::ivec3 tri = render.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = render.mVertices[tri.x].position;
-      glm::vec3 v1 = render.mVertices[tri.y].position;
-      glm::vec3 v2 = render.mVertices[tri.z].position;
+      glm::ivec3 tri = scene.mTriangles[triangleIndices[i]];
+      glm::vec3 v0 = scene.mVertices[tri.x].position;
+      glm::vec3 v1 = scene.mVertices[tri.y].position;
+      glm::vec3 v2 = scene.mVertices[tri.z].position;
       centroidMap[triangleIndices[i]] = (v0[axis] + v1[axis] + v2[axis]) / 3.0f;
     }
 
@@ -73,7 +73,7 @@ namespace raytracing
 
   void bounding_volume_builder::store_bvh()
   {
-    for (auto it = rt::get()->mRender.mBoundingVolumes.begin(); it != rt::get()->mRender.mBoundingVolumes.end(); ++it)
+    for (auto it = rt::get()->mScene.mBoundingVolumes.begin(); it != rt::get()->mScene.mBoundingVolumes.end(); ++it)
     {
       *it = BoundingVolume {};
     }
@@ -82,22 +82,22 @@ namespace raytracing
 
     for (auto it = mBVHNodes.begin(); it < mBVHNodes.end(); ++it)
     {
-      if (rt::get()->mRender.mTriangles.size() > it->start && it->left == -1 && it->right == -1)
+      if (rt::get()->mScene.mTriangles.size() > it->start && it->left == -1 && it->right == -1)
       {
-        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].x, maxTriangle);
-        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].y, maxTriangle);
-        maxTriangle = glm::max(rt::get()->mRender.mTriangles[it->start].z, maxTriangle);
+        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].x, maxTriangle);
+        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].y, maxTriangle);
+        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].z, maxTriangle);
       }
-      rt::get()->mRender.mBoundingVolumes.push_back(BoundingVolume
+      rt::get()->mScene.mBoundingVolumes.push_back(BoundingVolume
       {
         it->bounds.min,
         float(it->left),
         it->bounds.max,
         float(it->right),
-        rt::get()->mRender.mTriangles.size() > it->start &&
+        rt::get()->mScene.mTriangles.size() > it->start &&
         it->left == -1 &&
         it->right == -1 ?
-          rt::get()->mRender.mTriangles[it->start] :
+          rt::get()->mScene.mTriangles[it->start] :
           glm::ivec4(0)
       });
     }
@@ -105,20 +105,20 @@ namespace raytracing
 
   void bounding_volume_builder::build()
   {
-    std::vector<uint32_t> triangleIndices(rt::get()->mRender.mTriangles.size());
+    std::vector<uint32_t> triangleIndices(rt::get()->mScene.mTriangles.size());
     std::iota(triangleIndices.begin(), triangleIndices.end(), 0);
 
     mBVHNodes.clear();
     mBVHNodes.emplace_back();
 
-    build_node(0, triangleIndices, 0, rt::get()->mRender.mTriangles.size());
+    build_node(0, triangleIndices, 0, rt::get()->mScene.mTriangles.size());
 
-    std::vector<glm::ivec4> triangleCopies(rt::get()->mRender.mTriangles.size());
+    std::vector<glm::ivec4> triangleCopies(rt::get()->mScene.mTriangles.size());
     for (size_t i = 0; i < triangleIndices.size(); ++i)
     {
-      triangleCopies[i] = rt::get()->mRender.mTriangles[triangleIndices[i]];
+      triangleCopies[i] = rt::get()->mScene.mTriangles[triangleIndices[i]];
     }
-    std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mRender.mTriangles.begin());
+    std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mScene.mTriangles.begin());
 
     store_bvh();
     mBVHNodes.clear();
