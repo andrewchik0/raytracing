@@ -46,5 +46,6 @@ camera:
 - Texture Layer Viewing - inspect different material maps individually<br>
 <img src="assets/readme/texture.jpg" width="600">
 
-### High-Quality Image Output
-- Render to PNG using the `Render` tab for high-quality final image output
+### High-Quality Image/Video Output
+- Render an image using the `Render` tab for high-quality image output
+- For video rendering check out [scripts](scripts/) folder and a [guide](scripts/readme.md)

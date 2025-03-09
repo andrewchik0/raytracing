@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set parameters
-input="../tmp/video%%d.png"  # Input frame pattern (frame_0.png, frame_1.png, ...)
-output="render.mp4"          # Output video file
+input="../tmp/video%%d.png"  # Input frame pattern (video0.png, video1.png, ...)
+output="../render.mp4"       # Output video file
 fps=30                       # Frames per second
 crf=18                       # Quality (lower is better, 0-51, 18 is visually lossless)
 
