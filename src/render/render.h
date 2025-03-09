@@ -7,6 +7,7 @@
 #include "uniform_buffer.h"
 
 #include "render_texture.h"
+#include "storage_buffer.h"
 
 namespace raytracing
 {
@@ -66,6 +67,7 @@ namespace raytracing
     int32_t mAccumulatingFrameIndex = 0;
 
     uniform_buffer mSceneBuffer, mGlobalDataBuffer;
+    storage_buffer mBVHBuffer, mVerticesBuffer;
 
     void set_uniforms();
 

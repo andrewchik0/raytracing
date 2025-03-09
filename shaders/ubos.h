@@ -5,7 +5,6 @@
   SphereObject spheres[MAX_SPHERES];            \
   PlaneObject planes[MAX_PLANES];               \
   Material materials[MAX_MATERIALS];            \
-  uint volumesCount;                            \
   uint spheresCount;                            \
   uint planesCount;                             \
 }
@@ -37,6 +36,9 @@
   int SSAAGridSize;                 \
   int accumulationIndex;            \
 }
+
+#define BVH_BINDING 3
+#define VERTICES_BINDING 4
 
 #define DEBUG_TEXTURE_LAYER_DEFAULT 0
 #define DEBUG_TEXTURE_LAYER_NORMAL 1

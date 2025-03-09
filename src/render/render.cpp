@@ -14,13 +14,12 @@ namespace raytracing
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.get_handle());
-
-    mTextures.allocate_triangles_buffer();
+    mBVHBuffer.create(BVH_BINDING);
+    mVerticesBuffer.create(VERTICES_BINDING);
   }
 
   void render::post_init()
   {
-    mTextures.load_triangles_to_gpu(rt::get()->mScene.mBoundingVolumes, rt::get()->mScene.mVertices);
     mTextures.load_to_gpu();
     mAccumulatingFrameIndex = 0;
     clear();
@@ -52,7 +51,6 @@ namespace raytracing
     push_scene();
     mTextures.bind();
     mShader.dispatch_compute(mLastFrameTexture);
-
     mark_zone("Main pass");
 
     // Bloom pass
@@ -115,6 +113,8 @@ namespace raytracing
     buffer.planesCount = rt::get()->mScene.mPlanesCount;
     buffer.spheresCount = rt::get()->mScene.mSpheresCount;
     mSceneBuffer.set(&buffer);
+    mVerticesBuffer.set(rt::get()->mScene.mVertices.data(), rt::get()->mScene.mVertices.size() * sizeof(Vertex));
+    mBVHBuffer.set(rt::get()->mScene.mBoundingVolumes.data(), rt::get()->mScene.mBoundingVolumes.size() * sizeof(BoundingVolume));
   }
 
   void render::reset_accumulation()
@@ -158,7 +158,6 @@ namespace raytracing
     data.exposure = mExposure;
     data.blurSize = mBlurSize;
     data.windowSize = {mViewportWidth, mViewportHeight, 0, 0};
-    data.maxTextureSize = mTextures.sMaxTextureDataSize;
     data.renderMode = mRenderMode;
     data.interpolateNormals = mInterpolateNormals;
     data.showTextures = mShowTextures;

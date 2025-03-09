@@ -1,47 +1,18 @@
 #include "uniforms.h"
 #include "types.glsl"
 
+layout(std430, binding = BVH_BINDING) buffer BVHBuffer
+{
+  BoundingVolume bvhNodes[];
+};
+
+layout(std430, binding = VERTICES_BINDING) buffer VertexBuffer
+{
+  Vertex vertices[];
+};
+
 // DO NOT TOUCH IN CLion it will crash GLSL plugin
 #define STACK_SIZE 32
-
-Vertex getVertex(int index)
-{
-  int absoluteIndex = index * VERTEX_SIZE;
-  Vertex v;
-
-  int positionIndex = absoluteIndex + VERTEX_POSITION;
-  int normalIndex = absoluteIndex + VERTEX_NORMAL;
-  int tangentIndex = absoluteIndex + VERTEX_TANGENT;
-  int bitangentIndex = absoluteIndex + VERTEX_BITANGENT;
-
-  v.position = texelFetch(verticesTexture, ivec3(positionIndex % maxTextureSize, positionIndex / maxTextureSize, 0), 0);
-  v.normal = texelFetch(verticesTexture, ivec3(normalIndex % maxTextureSize, normalIndex / maxTextureSize, 0), 0);
-  v.tangent = texelFetch(verticesTexture, ivec3(tangentIndex % maxTextureSize, tangentIndex / maxTextureSize, 0), 0);
-  v.bitangent = texelFetch(verticesTexture, ivec3(bitangentIndex % maxTextureSize, bitangentIndex / maxTextureSize, 0), 0);
-
-  return v;
-}
-
-BoundingVolume getBoundingVolume(int index)
-{
-  int absoluteIndex = index * BOUND_VOLUME_SIZE;
-  BoundingVolume v;
-
-  int minLeftIndex = absoluteIndex + BOUND_VOLUME_MIN_LEFT;
-  int maxRightIndex = absoluteIndex + BOUND_VOLUME_MAX_RIGHT;
-  int triangleIndex = absoluteIndex + BOUND_VOLUME_TRIANGLE;
-
-  vec4 minLeft = texelFetch(boundingVolumesTexture, ivec3(minLeftIndex % maxTextureSize, minLeftIndex / maxTextureSize, 0), 0);
-  vec4 maxRight = texelFetch(boundingVolumesTexture, ivec3(maxRightIndex % maxTextureSize, maxRightIndex / maxTextureSize, 0), 0);
-  v.triangle = texelFetch(boundingVolumesTexture, ivec3(triangleIndex % maxTextureSize, triangleIndex / maxTextureSize, 0), 0);
-
-  v.min = minLeft.xyz;
-  v.nodeLeft = minLeft.w;
-  v.max = maxRight.xyz;
-  v.nodeRight = maxRight.w;
-
-  return v;
-}
 
 HitData intersectBVH(Ray ray)
 {
@@ -59,7 +30,7 @@ HitData intersectBVH(Ray ray)
   {
     int nodeIndex = int(stack[--stackPtr]);
 
-    BoundingVolume volume = getBoundingVolume(nodeIndex);
+    BoundingVolume volume = bvhNodes[nodeIndex];
 
     if (rayAABBIntersect(ray.origin, invDir, volume.min, volume.max) == FAR_PLANE)
       continue;
@@ -68,9 +39,9 @@ HitData intersectBVH(Ray ray)
     {
       ivec4 triangle = ivec4(volume.triangle);
 
-      Vertex v0 = getVertex(triangle.x);
-      Vertex v1 = getVertex(triangle.y);
-      Vertex v2 = getVertex(triangle.z);
+      Vertex v0 = vertices[triangle.x];
+      Vertex v1 = vertices[triangle.y];
+      Vertex v2 = vertices[triangle.z];
 
       float u, v;
       float t = rayTriangleIntersect(ray, v0.position.xyz, v1.position.xyz, v2.position.xyz, u, v);
@@ -98,9 +69,9 @@ HitData intersectBVH(Ray ray)
     float v = foundUV.y;
     float w = 1.0 - u - v;
 
-    Vertex v0 = getVertex(foundTriangle.x);
-    Vertex v1 = getVertex(foundTriangle.y);
-    Vertex v2 = getVertex(foundTriangle.z);
+    Vertex v0 = vertices[foundTriangle.x];
+    Vertex v1 = vertices[foundTriangle.y];
+    Vertex v2 = vertices[foundTriangle.z];
 
     if (interpolateNormals == 1)
     {
