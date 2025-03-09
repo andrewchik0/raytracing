@@ -21,7 +21,7 @@
 ### Real-Time Preview & Editing
 - Viewport preview
 - Real-time scene editing – modify objects and materials<br>
-  <img src="assets/readme/viewport.jpg" width="400">
+  <img src="assets/readme/viewport.jpg" width="600">
 
 ### Camera options
 - Exposure & Gamma
@@ -44,7 +44,7 @@ camera:
 - Anti-aliasing algorithms - FXAA or SSAA
 - Normal interpolation – toggle smooth shading
 - Texture Layer Viewing - inspect different material maps individually<br>
-<img src="assets/readme/texture.jpg" width="400">
+<img src="assets/readme/texture.jpg" width="600">
 
 ### High-Quality Image Output
 - Render to PNG using the `Render` tab for high-quality final image output
