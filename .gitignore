@@ -13,6 +13,8 @@ CMakeUserPresets.json
 .vs/
 .vscode/
 tmp
+scripts/ffmpeg
+scripts/ffmpeg.exe
 .idea/
 cmake-build-debug/
 cmake-build-release/
