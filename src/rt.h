@@ -1,9 +1,9 @@
 #pragma once
 
+#include "final_render.h"
 #include "gui.h"
 #include "input.h"
 #include "render/render.h"
-#include "scene/camera.h"
 
 #include "scene/scene.h"
 #include "window.h"
@@ -14,21 +14,6 @@ namespace raytracing
 #define mark_zone(x) \
   rt::get()->mTimeHandler.mark_zone((x))
 
-  struct render_options
-  {
-    uint32_t width = 1920, height = 1080;
-    uint32_t samples = 128;
-    uint32_t bounces = 16;
-
-    std::string filename = "render.png";
-
-    bool sequence = true;
-
-    std::string video_filename_base = "tmp/video";
-    uint32_t framerate = 30;
-    float duration = 10;
-  };
-
   class rt
   {
   public:
@@ -38,21 +23,18 @@ namespace raytracing
     scene mScene;
     gui mGui;
     window mWindow;
-    render_options mRenderOptions;
+    final_render mFinalRender;
     utils::time_handler mTimeHandler;
 
     bool mVSyncEnabled = false;
 
-    rt() = default;
+    rt();
     rt(const rt&) = delete;
 
     ~rt();
 
     void init(const init_options& options);
     void run();
-
-    void render_to_image();
-    void render_to_video();
 
     bool is_loading() const;
 
@@ -74,13 +56,8 @@ namespace raytracing
 
     static rt* sInstance;
 
-    friend class camera;
-    friend class input;
-    friend class render;
     friend class gui;
     friend class serializer;
-    friend class skybox;
-    friend class textures;
-    friend class bounding_volume_builder;
+    friend class final_render;
   };
 } // namespace raytracing

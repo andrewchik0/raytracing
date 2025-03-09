@@ -38,7 +38,6 @@ namespace raytracing
     glm::vec3 mUp = { 0, 1, 0 };
     glm::vec3 mRight = { 1, 0, 0 };
 
-    friend class rt;
     friend class render;
   };
 }

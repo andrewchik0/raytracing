@@ -27,7 +27,7 @@ namespace raytracing
     for (size_t i = 0; i < mTexturesData.size(); ++i)
     {
       size_t index = i;
-      textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([index]
+      textureLoadingJobs.emplace_back(rt::get()->thread_pool().enqueue([index]
         {
           if (rt::get()->mRender.mTextures.mTextureFilenames[index].ends_with("__loaded"))
             return;
@@ -45,7 +45,7 @@ namespace raytracing
       ));
     }
 
-    textureLoadingJobs.emplace_back(rt::get()->mThreadPool.enqueue([&]
+    textureLoadingJobs.emplace_back(rt::get()->thread_pool().enqueue([&]
     {
       int channels;
       mSkyTextureData = stbi_loadf(rt::get()->mScene.mSkyFilename.c_str(), &mSkyWidth, &mSkyHeight, &channels, 3);
@@ -133,20 +133,20 @@ namespace raytracing
 
   void textures::bind()
   {
-    rt::get()->mRender.mShader.use();
-    size_t index = rt::get()->mRender.mShader.get_free_texture_index();
+    rt::get()->mRender.get_main_shader().use();
+    size_t index = rt::get()->mRender.get_main_shader().get_free_texture_index();
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
-    rt::get()->mRender.mShader.set_uniform("texArray", index);
+    rt::get()->mRender.get_main_shader().set_uniform("texArray", index);
     glActiveTexture(GL_TEXTURE0 + index + 1);
     glBindTexture(GL_TEXTURE_2D, mSky);
-    rt::get()->mRender.mShader.set_uniform("sky", index + 1);
+    rt::get()->mRender.get_main_shader().set_uniform("sky", index + 1);
     glActiveTexture(GL_TEXTURE0 + index + 2);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-    rt::get()->mRender.mShader.set_uniform("boundingVolumesTexture", index + 2);
+    rt::get()->mRender.get_main_shader().set_uniform("boundingVolumesTexture", index + 2);
     glActiveTexture(GL_TEXTURE0 + index + 3);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-    rt::get()->mRender.mShader.set_uniform("verticesTexture", index + 3);
+    rt::get()->mRender.get_main_shader().set_uniform("verticesTexture", index + 3);
   }
 
   void textures::reload()

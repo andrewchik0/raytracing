@@ -11,6 +11,8 @@ namespace raytracing
 {
   rt* rt::sInstance = nullptr;
 
+  rt::rt() : mRender(), mScene(), mGui(), mWindow(), mFinalRender(this) {}
+
   rt::~rt()
   {
     NFD_Quit();
@@ -81,82 +83,6 @@ namespace raytracing
         mInput.clear();
       }
     }
-  }
-
-  void rt::render_to_image()
-  {
-    render_texture rt(mRenderOptions.width, mRenderOptions.height);
-
-    // Store data
-    uint32_t bounces = mRender.mBouncesCount;
-    size_t accumulatingFrameIndex = mRender.mAccumulatingFrameIndex;
-    size_t maxAccumulation = mRender.mMaxAccumulation;
-    int renderMode = mRender.mRenderMode;
-
-    mRender.mRenderMode = true;
-    mRender.mBouncesCount = mRenderOptions.bounces;
-    mRender.mAccumulatingFrameIndex = 0;
-    mRender.mMaxAccumulation = mRenderOptions.samples;
-    set_viewport(mRenderOptions.width, mRenderOptions.height);
-
-    size_t sampleCounter = 0;
-
-    while (sampleCounter++ < mRenderOptions.samples)
-    {
-      mRender.clear();
-      mRender.draw(&rt);
-      mTimeHandler.tick();
-    }
-
-    rt.write_to_file(mRenderOptions.filename);
-
-    // Restore data
-    mRender.mBouncesCount = bounces;
-    mRender.mRenderMode = renderMode;
-    mRender.mMaxAccumulation = maxAccumulation;
-    mRender.mAccumulatingFrameIndex = accumulatingFrameIndex;
-    set_viewport();
-  }
-
-  void rt::render_to_video()
-  {
-    // Store data
-    uint32_t bounces = mRender.mBouncesCount;
-    size_t accumulatingFrameIndex = mRender.mAccumulatingFrameIndex;
-    size_t maxAccumulation = mRender.mMaxAccumulation;
-    int renderMode = mRender.mRenderMode;
-
-    mRender.mRenderMode = true;
-    mRender.mBouncesCount = mRenderOptions.bounces;
-    mRender.reset_accumulation();
-    mRender.mMaxAccumulation = mRenderOptions.samples;
-
-    set_viewport(mRenderOptions.width, mRenderOptions.height);
-
-    for (size_t i = 0; i < mRenderOptions.duration * mRenderOptions.framerate; i++)
-    {
-      render_texture rt(mRenderOptions.width, mRenderOptions.height);
-      size_t sampleCounter = 0;
-      mScene.mCamera.move_right(0.1);
-
-      while (sampleCounter++ < mRenderOptions.samples)
-      {
-        mRender.clear();
-        mRender.draw(&rt);
-        mTimeHandler.tick();
-      }
-
-      mRender.reset_accumulation();
-
-      rt.write_to_file(mRenderOptions.video_filename_base + std::to_string(i) + ".png");
-    }
-
-    // Restore data
-    mRender.mBouncesCount = bounces;
-    mRender.mRenderMode = renderMode;
-    mRender.mMaxAccumulation = maxAccumulation;
-    mRender.mAccumulatingFrameIndex = accumulatingFrameIndex;
-    set_viewport();
   }
 
   void rt::set_viewport()

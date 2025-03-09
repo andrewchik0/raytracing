@@ -51,6 +51,8 @@ add_executable(ray-tracing
   src/scene/scene.h
   src/render/storage_buffer.cpp
   src/render/storage_buffer.h
+  src/final_render.cpp
+  src/final_render.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)

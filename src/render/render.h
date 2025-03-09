@@ -36,6 +36,7 @@ namespace raytracing
     float mExposure = 2.5;
     float mBlurSize = 5.0;
 
+    int32_t mDebugTextureLayer = 0;
     std::string mShaderErrors;
 
     void init();
@@ -44,9 +45,13 @@ namespace raytracing
     void draw(const render_texture* target = nullptr);
     void resize(uint32_t width, uint32_t height);
 
-    void push_scene();
-
     void reset_accumulation();
+    status load_shaders();
+
+    shader& get_main_shader()
+      { return mShader; }
+    render_texture& get_final_texture()
+      { return mFinalTexture; }
 
   private:
     shader
@@ -62,23 +67,14 @@ namespace raytracing
       mAccumulatedTexture,
       mFinalTexture;
 
-    int32_t mDebugTextureLayer = 0;
-
     int32_t mAccumulatingFrameIndex = 0;
 
     uniform_buffer mSceneBuffer, mGlobalDataBuffer;
     storage_buffer mBVHBuffer, mVerticesBuffer;
 
+    void push_scene();
     void set_uniforms();
 
     bool should_accumulate();
-
-    status load_shaders();
-
-    friend class rt;
-    friend class gui;
-    friend class serializer;
-    friend class textures;
-    friend class bounding_volume_builder;
   };
 }

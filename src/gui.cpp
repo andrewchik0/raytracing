@@ -138,7 +138,7 @@ namespace raytracing
     mViewportPosition = {ImGui::GetCurrentWindow()->Pos.x, ImGui::GetCurrentWindow()->Pos.y};
     if (rt::get()->mLoaded)
     {
-      ImGui::Image(rt::get()->mRender.mFinalTexture);
+      ImGui::Image(rt::get()->mRender.get_final_texture());
     }
     else
     {
@@ -508,30 +508,30 @@ namespace raytracing
   void gui::render_tab()
   {
     uint32_t minSamples = 1, minBounces = 1;
-    ImGui::DragScalar("Samples", ImGuiDataType_U32, &rt::get()->mRenderOptions.samples, 1, &minSamples);
-    ImGui::DragScalar("Bounces", ImGuiDataType_U32, &rt::get()->mRenderOptions.bounces, 1, &minBounces);
+    ImGui::DragScalar("Samples", ImGuiDataType_U32, &rt::get()->mFinalRender.mRenderOptions.samples, 1, &minSamples);
+    ImGui::DragScalar("Bounces", ImGuiDataType_U32, &rt::get()->mFinalRender.mRenderOptions.bounces, 1, &minBounces);
     auto width = ImGui::GetWindowWidth();
     ImGui::PushItemWidth(width * 0.33 - 15);
-    ImGui::DragScalar("###ResolutionWidth", ImGuiDataType_U32, &rt::get()->mRenderOptions.width, 1, nullptr, nullptr, nullptr);
+    ImGui::DragScalar("###ResolutionWidth", ImGuiDataType_U32, &rt::get()->mFinalRender.mRenderOptions.width, 1, nullptr, nullptr, nullptr);
     ImGui::SameLine();
     ImGui::Text("x");
     ImGui::SameLine();
-    ImGui::DragScalar("Resolution", ImGuiDataType_U32, &rt::get()->mRenderOptions.height);
+    ImGui::DragScalar("Resolution", ImGuiDataType_U32, &rt::get()->mFinalRender.mRenderOptions.height);
     ImGui::PopItemWidth();
-    ImGui::Checkbox("Render sequence", &rt::get()->mRenderOptions.sequence);
-    if (rt::get()->mRenderOptions.sequence)
+    ImGui::Checkbox("Render sequence", &rt::get()->mFinalRender.mRenderOptions.sequence);
+    if (rt::get()->mFinalRender.mRenderOptions.sequence)
     {
-      ImGui::DragFloat("Video duration (s)", &rt::get()->mRenderOptions.duration, 1, 0, 0, "%.1f");
-      ImGui::DragScalar("Framerate", ImGuiDataType_U32, &rt::get()->mRenderOptions.framerate);
-      ImGui::InputText("Filename base", &rt::get()->mRenderOptions.video_filename_base);
+      ImGui::DragFloat("Video duration (s)", &rt::get()->mFinalRender.mRenderOptions.duration, 1, 0, 0, "%.1f");
+      ImGui::DragScalar("Framerate", ImGuiDataType_U32, &rt::get()->mFinalRender.mRenderOptions.framerate);
+      ImGui::InputText("Filename base", &rt::get()->mFinalRender.mRenderOptions.video_filename_base);
       if (ImGui::Button("Render"))
-        rt::get()->render_to_image();
+        rt::get()->mFinalRender.render_to_video();
     }
     else
     {
-      ImGui::InputText("Filename", &rt::get()->mRenderOptions.filename);
+      ImGui::InputText("Filename", &rt::get()->mFinalRender.mRenderOptions.filename);
       if (ImGui::Button("Render"))
-        rt::get()->render_to_image();
+        rt::get()->mFinalRender.render_to_image();
     }
   }
 
