@@ -1,16 +1,50 @@
 # Ray tracing rendering engine
 
-### Getting Started
+## Building a project
 
-1. Clone repository `git clone https://github.com/andrewchik0/raytracing.git`
-2. Build via CMake
+1. Clone the repository `git clone https://github.com/andrewchik0/raytracing.git`
+2. Build with **CMake**
 3. **CLion**:
    - Set working directory to `$PROJECT_DIR$` in **Run | Edit Configurations**
 4. **VS Code**:
-   - Add this in `.vscode/launch.json` 
+   - Add this to `.vscode/launch.json` 
    ```json
    "cwd": "${workspaceFolder}"
    ```
 5. Run `ray-tracing` target
 
-![Rendered image](./screenshot.png)
+## Render example
+![Final render](./render.png)
+
+## Features
+
+### Real-Time Preview & Editing
+- Viewport preview
+- Real-time scene editing – modify objects and materials<br>
+  <img src="assets/readme/viewport.jpg" width="400">
+
+### Camera options
+- Exposure & Gamma
+- Field of view
+- Bloom intensity 
+
+### Save & Load
+- Save and load scenes in YAML format
+```yaml
+exposure: 5.96000004
+gamma: 0.860000014
+sky_filename: assets/skies/sky.hdr
+camera:
+  position: [1.75998688, 0.858130753, 2.13128805]
+  direction: [-0.649915993, -0.377010763, -0.659903109]
+  fov: 90
+```
+
+### Viewport options
+- Anti-aliasing algorithms - FXAA or SSAA
+- Normal interpolation – toggle smooth shading
+- Texture Layer Viewing - inspect different material maps individually<br>
+<img src="assets/readme/texture.jpg" width="400">
+
+### High-Quality Image Output
+- Render to PNG using the `Render` tab for high-quality final image output

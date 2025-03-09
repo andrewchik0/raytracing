@@ -225,7 +225,7 @@ namespace raytracing
       ImGui::EndDisabled();
       int minAccumulation = 1, minBounces = 2;
       check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
-      check(ImGui::DragScalar("Maximum accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
+      check(ImGui::DragScalar("Accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
       ImGui::DragFloat("Camera speed", &rt::get()->mScene.mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
       ImGui::DragFloat("Mouse sensitivity", &rt::get()->mScene.mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
       ImGui::TreePop();
