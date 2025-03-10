@@ -69,7 +69,7 @@ namespace raytracing
     {
       render_texture rt(mRenderOptions.width, mRenderOptions.height);
       size_t sampleCounter = 0;
-      mRt->mScene.mCamera.move_right(0.1);
+      mRt->mScene.mCamera.move_right(0.01);
 
       while (sampleCounter++ < mRenderOptions.samples)
       {

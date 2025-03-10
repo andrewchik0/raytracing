@@ -16,6 +16,9 @@ if %errorlevel% neq 0 (
 
 :: Encode video
 ffmpeg -r %fps% -i %input% -c:v libx264 -crf %crf% -pix_fmt yuv420p %output%
+if %errorlevel% neq 0 (
+    echo Failed to encode video: %output%.
+    exit /b 1
+)
 
 echo Video encoding complete: %output%
-pause
