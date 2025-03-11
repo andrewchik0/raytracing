@@ -37,8 +37,9 @@
   int accumulationIndex;            \
 }
 
-#define BVH_BINDING 3
-#define VERTICES_BINDING 4
+#define BVH_ENTRIES_BINDING 3
+#define BVH_BINDING 4
+#define VERTICES_BINDING 5
 
 #define DEBUG_TEXTURE_LAYER_DEFAULT 0
 #define DEBUG_TEXTURE_LAYER_NORMAL 1

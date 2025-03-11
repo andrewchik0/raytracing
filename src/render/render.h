@@ -70,9 +70,10 @@ namespace raytracing
     int32_t mAccumulatingFrameIndex = 0;
 
     uniform_buffer mSceneBuffer, mGlobalDataBuffer;
-    storage_buffer mBVHBuffer, mVerticesBuffer;
+    storage_buffer mBVHEntriesBuffer, mBVHBuffer, mVerticesBuffer;
 
     void push_scene();
+    void push_geometry();
     void set_uniforms();
 
     bool should_accumulate();

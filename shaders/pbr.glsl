@@ -90,7 +90,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 {
   if (renderMode != 1 && showTextures != 1)
   {
-    sampleColor = vec3(max(dot(normalize((vec3(1.0))) - 0.4, hit.normal), 0.02));
+    sampleColor = vec3(max(dot(normalize((vec3(1.0))), hit.normal) + 1.0, 0.02)) / 3.5;
     return false;
   }
 

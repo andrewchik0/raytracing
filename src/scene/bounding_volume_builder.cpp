@@ -7,9 +7,9 @@
 
 namespace raytracing
 {
-  void bounding_volume_builder::build_node(int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start, int32_t end)
+  void bounding_volume_builder::build_node(int32_t modelIndex, int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start, int32_t end)
   {
-    BVHNode* node = &(mBVHNodes[nodeIndex]);
+    BVHNode* node = &(mBVHNodes[modelIndex][nodeIndex]);
     node->start = start;
     node->count = end - start;
 
@@ -17,10 +17,10 @@ namespace raytracing
 
     for (size_t i = start; i < end; ++i)
     {
-      glm::ivec3 tri = scene.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = scene.mVertices[tri.x].position;
-      glm::vec3 v1 = scene.mVertices[tri.y].position;
-      glm::vec3 v2 = scene.mVertices[tri.z].position;
+      glm::ivec3 tri = scene.mTriangles[modelIndex][triangleIndices[i]];
+      glm::vec3 v0 = scene.mVertices[modelIndex][tri.x].position;
+      glm::vec3 v1 = scene.mVertices[modelIndex][tri.y].position;
+      glm::vec3 v2 = scene.mVertices[modelIndex][tri.z].position;
 
       node->bounds.expand(v0);
       node->bounds.expand(v1);
@@ -41,10 +41,10 @@ namespace raytracing
     std::unordered_map<int32_t, float> centroidMap;
     for (int32_t i = start; i < end; ++i)
     {
-      glm::ivec3 tri = scene.mTriangles[triangleIndices[i]];
-      glm::vec3 v0 = scene.mVertices[tri.x].position;
-      glm::vec3 v1 = scene.mVertices[tri.y].position;
-      glm::vec3 v2 = scene.mVertices[tri.z].position;
+      glm::ivec3 tri = scene.mTriangles[modelIndex][triangleIndices[i]];
+      glm::vec3 v0 = scene.mVertices[modelIndex][tri.x].position;
+      glm::vec3 v1 = scene.mVertices[modelIndex][tri.y].position;
+      glm::vec3 v2 = scene.mVertices[modelIndex][tri.z].position;
       centroidMap[triangleIndices[i]] = (v0[axis] + v1[axis] + v2[axis]) / 3.0f;
     }
 
@@ -56,69 +56,86 @@ namespace raytracing
       }
     );
 
-    int32_t leftIndex = mBVHNodes.size();
-    mBVHNodes.emplace_back();
-    int32_t rightIndex = mBVHNodes.size();
-    mBVHNodes.emplace_back();
+    int32_t leftIndex = mBVHNodes[modelIndex].size();
+    mBVHNodes[modelIndex].emplace_back();
+    int32_t rightIndex = mBVHNodes[modelIndex].size();
+    mBVHNodes[modelIndex].emplace_back();
 
-    mBVHNodes[nodeIndex].left = leftIndex;
-    mBVHNodes[nodeIndex].right = rightIndex;
+    mBVHNodes[modelIndex][nodeIndex].left = leftIndex;
+    mBVHNodes[modelIndex][nodeIndex].right = rightIndex;
 
-    mBVHNodes[nodeIndex].count = 0;
-    mBVHNodes[nodeIndex].start = 0;
+    mBVHNodes[modelIndex][nodeIndex].count = 0;
+    mBVHNodes[modelIndex][nodeIndex].start = 0;
 
-    build_node(leftIndex, triangleIndices, start, mid);
-    build_node(rightIndex, triangleIndices, mid, end);
+    build_node(modelIndex, leftIndex, triangleIndices, start, mid);
+    build_node(modelIndex, rightIndex, triangleIndices, mid, end);
   }
 
   void bounding_volume_builder::store_bvh()
   {
     for (auto it = rt::get()->mScene.mBoundingVolumes.begin(); it != rt::get()->mScene.mBoundingVolumes.end(); ++it)
     {
-      *it = BoundingVolume {};
+      *it = BoundingVolume{};
     }
 
     int maxTriangle = 0;
 
-    for (auto it = mBVHNodes.begin(); it < mBVHNodes.end(); ++it)
+    int currentIndex = 0;
+    int currentTriangleIndex = 0;
+    for (size_t i = 0; i < mBVHNodes.size(); ++i)
     {
-      if (rt::get()->mScene.mTriangles.size() > it->start && it->left == -1 && it->right == -1)
+      for (auto it = mBVHNodes[i].begin(); it < mBVHNodes[i].end(); ++it)
       {
-        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].x, maxTriangle);
-        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].y, maxTriangle);
-        maxTriangle = glm::max(rt::get()->mScene.mTriangles[it->start].z, maxTriangle);
+        if (rt::get()->mScene.mTriangles[i].size() > it->start && it->left == -1 && it->right == -1)
+        {
+          maxTriangle = glm::max(rt::get()->mScene.mTriangles[i][it->start].x, maxTriangle);
+          maxTriangle = glm::max(rt::get()->mScene.mTriangles[i][it->start].y, maxTriangle);
+          maxTriangle = glm::max(rt::get()->mScene.mTriangles[i][it->start].z, maxTriangle);
+        }
+        glm::ivec4 triangle = rt::get()->mScene.mTriangles[i][it->start];
+        triangle.x += currentTriangleIndex;
+        triangle.y += currentTriangleIndex;
+        triangle.z += currentTriangleIndex;
+        rt::get()->mScene.mBoundingVolumes.push_back(BoundingVolume{
+          it->bounds.min, float(it->left), it->bounds.max, float(it->right),
+          rt::get()->mScene.mTriangles[i].size() > it->start && it->left == -1 && it->right == -1 ? triangle
+                                                                                                  : glm::ivec4(0)});
       }
-      rt::get()->mScene.mBoundingVolumes.push_back(BoundingVolume
-      {
-        it->bounds.min,
-        float(it->left),
-        it->bounds.max,
-        float(it->right),
-        rt::get()->mScene.mTriangles.size() > it->start &&
-        it->left == -1 &&
-        it->right == -1 ?
-          rt::get()->mScene.mTriangles[it->start] :
-          glm::ivec4(0)
-      });
+      rt::get()->mScene.mBVHEntries.count++;
+      rt::get()->mScene.mBVHEntries.indices.push_back(currentIndex);
+      currentIndex += mBVHNodes[i].size();
+      currentTriangleIndex += rt::get()->mScene.mVertices[i].size();
     }
   }
 
   void bounding_volume_builder::build()
   {
-    std::vector<uint32_t> triangleIndices(rt::get()->mScene.mTriangles.size());
-    std::iota(triangleIndices.begin(), triangleIndices.end(), 0);
-
     mBVHNodes.clear();
-    mBVHNodes.emplace_back();
-
-    build_node(0, triangleIndices, 0, rt::get()->mScene.mTriangles.size());
-
-    std::vector<glm::ivec4> triangleCopies(rt::get()->mScene.mTriangles.size());
-    for (size_t i = 0; i < triangleIndices.size(); ++i)
+    mBVHNodes.resize(rt::get()->mScene.mTriangles.size());
+    std::vector<std::future<void>> builderFutures;
+    for (size_t i = 0; i < rt::get()->mScene.mTriangles.size(); ++i)
     {
-      triangleCopies[i] = rt::get()->mScene.mTriangles[triangleIndices[i]];
+      builderFutures.push_back(rt::get()->thread_pool().enqueue([&, i]
+      {
+        std::vector<uint32_t> triangleIndices(rt::get()->mScene.mTriangles[i].size());
+        std::iota(triangleIndices.begin(), triangleIndices.end(), 0);
+
+        mBVHNodes[i].clear();
+        mBVHNodes[i].emplace_back();
+
+        build_node(i, 0, triangleIndices, 0, rt::get()->mScene.mTriangles[i].size());
+
+        std::vector<glm::ivec4> triangleCopies(rt::get()->mScene.mTriangles[i].size());
+        for (size_t j = 0; j < triangleIndices.size(); ++j)
+        {
+          triangleCopies[j] = rt::get()->mScene.mTriangles[i][triangleIndices[j]];
+        }
+        std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mScene.mTriangles[i].begin());
+      }));
     }
-    std::copy_n(triangleCopies.begin(), triangleCopies.size(), rt::get()->mScene.mTriangles.begin());
+
+    for (auto& fut : builderFutures)
+      fut.wait();
 
     store_bvh();
     mBVHNodes.clear();

@@ -38,7 +38,11 @@ namespace raytracing
 
     bool is_loading() const;
 
-    static rt* get() { return sInstance; }
+    static rt* get()
+    {
+      rt_assert(sInstance != nullptr, "Application instance is NULL!");
+      return sInstance;
+    }
 
     utils::thread_pool& thread_pool() { return mThreadPool; }
 

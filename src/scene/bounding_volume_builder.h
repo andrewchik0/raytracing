@@ -44,13 +44,16 @@ namespace raytracing
     bounding_volume_builder() = default;
     bounding_volume_builder(const bounding_volume_builder&) = delete;
 
+    ~bounding_volume_builder() = default;
+
     void build();
 
   private:
-    std::vector<BVHNode> mBVHNodes;
+    std::vector<std::vector<BVHNode>> mBVHNodes;
 
     void store_bvh();
-    void build_node(int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start, int32_t end);
+    void build_node(int32_t modelIndex, int32_t nodeIndex, std::vector<uint32_t>& triangleIndices, int32_t start,
+                    int32_t end);
 
     friend class gui;
   };

@@ -258,11 +258,18 @@ namespace raytracing
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
     if (rt::get()->mBVHLoading && rt::get()->mScene.mModels.size())
+    {
+      size_t allTrianglesCount = 0, allBVHNodesCount = 0;
+      for (auto& it : rt::get()->mScene.mTriangles)
+        allTrianglesCount += it.size();
+      for (auto& it : rt::get()->mScene.mBoundingVolumeBuilder.mBVHNodes)
+        allBVHNodesCount += it.size();
       ImGui::Text("Building bounding volume hierarchies... %.1f%%",
-        float(rt::get()->mScene.mBoundingVolumeBuilder.mBVHNodes.size()) /
-        float(rt::get()->mScene.mTriangles.size() * 2) *
+        float(allBVHNodesCount) /
+        float(allTrianglesCount * 2) *
         100.0f
       );
+    }
     if (rt::get()->mTexturesLoading)
       ImGui::Text("Loading textures...");
     if (rt::get()->mModelsLoading)

@@ -14,8 +14,8 @@ namespace raytracing
       {
         if (m.load() == status::success)
         {
-          mTriangles.insert(mTriangles.end(), m.mTriangles.begin(), m.mTriangles.end());
-          mVertices.insert(mVertices.end(), m.mVertices.begin(), m.mVertices.end());
+          mTriangles.push_back(std::move(m.mTriangles));
+          mVertices.push_back(std::move(m.mVertices));
         }
       }));
     }

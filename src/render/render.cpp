@@ -14,6 +14,7 @@ namespace raytracing
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.get_handle());
+    mBVHEntriesBuffer.create(BVH_ENTRIES_BINDING);
     mBVHBuffer.create(BVH_BINDING);
     mVerticesBuffer.create(VERTICES_BINDING);
   }
@@ -21,6 +22,7 @@ namespace raytracing
   void render::post_init()
   {
     mTextures.load_to_gpu();
+    push_geometry();
     mAccumulatingFrameIndex = 0;
     clear();
   }
@@ -112,7 +114,18 @@ namespace raytracing
     buffer.planesCount = rt::get()->mScene.mPlanesCount;
     buffer.spheresCount = rt::get()->mScene.mSpheresCount;
     mSceneBuffer.set(&buffer);
-    mVerticesBuffer.set(rt::get()->mScene.mVertices.data(), rt::get()->mScene.mVertices.size() * sizeof(Vertex));
+    rt::get()->mScene.mBVHEntries.indices.insert(rt::get()->mScene.mBVHEntries.indices.begin(), rt::get()->mScene.mBVHEntries.count);
+    mBVHEntriesBuffer.set(rt::get()->mScene.mBVHEntries.indices.data(), sizeof(int) * (rt::get()->mScene.mBVHEntries.indices.size()));
+    rt::get()->mScene.mBVHEntries.indices.erase(rt::get()->mScene.mBVHEntries.indices.begin());
+  }
+
+  void render::push_geometry()
+  {
+    std::vector<Vertex> vertices;
+
+    for (auto& modelVertices: rt::get()->mScene.mVertices)
+      vertices.insert(vertices.end(), modelVertices.begin(), modelVertices.end());
+    mVerticesBuffer.set(vertices.data(), vertices.size() * sizeof(Vertex));
     mBVHBuffer.set(rt::get()->mScene.mBoundingVolumes.data(), rt::get()->mScene.mBoundingVolumes.size() * sizeof(BoundingVolume));
   }
 

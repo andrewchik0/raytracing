@@ -48,15 +48,18 @@ HitData closestHit(Ray ray)
     }
   }
 
-  HitData bvhHit = intersectBVH(ray);
-  if (result.distance > bvhHit.distance)
+  for (int i = 0; i < entriesCount; i++)
   {
-    result.distance = bvhHit.distance;
-    result.normal = bvhHit.normal;
-    result.materialIndex = bvhHit.materialIndex;
-    result.textureCoordinates = bvhHit.textureCoordinates;
-    result.tangent = bvhHit.tangent;
-    result.bitangent = bvhHit.bitangent;
+    HitData bvhHit = intersectBVH(ray, i);
+    if (result.distance > bvhHit.distance)
+    {
+      result.distance = bvhHit.distance;
+      result.normal = bvhHit.normal;
+      result.materialIndex = bvhHit.materialIndex;
+      result.textureCoordinates = bvhHit.textureCoordinates;
+      result.tangent = bvhHit.tangent;
+      result.bitangent = bvhHit.bitangent;
+    }
   }
 
   result.position = ray.direction * (result.distance) + ray.origin;

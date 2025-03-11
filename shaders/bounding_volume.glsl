@@ -1,6 +1,12 @@
 #include "uniforms.h"
 #include "types.glsl"
 
+layout(std430, binding = BVH_ENTRIES_BINDING) buffer BVHEntries
+{
+  int entriesCount;
+  int entries[];
+};
+
 layout(std430, binding = BVH_BINDING) buffer BVHBuffer
 {
   BoundingVolume bvhNodes[];
@@ -14,7 +20,7 @@ layout(std430, binding = VERTICES_BINDING) buffer VertexBuffer
 // DO NOT TOUCH IN CLion it will crash GLSL plugin
 #define STACK_SIZE 32
 
-HitData intersectBVH(Ray ray)
+HitData intersectBVH(Ray ray, int modelIndex)
 {
   vec3 invDir = 1.0 / ray.direction;
   HitData hit;
@@ -30,7 +36,7 @@ HitData intersectBVH(Ray ray)
   {
     int nodeIndex = int(stack[--stackPtr]);
 
-    BoundingVolume volume = bvhNodes[nodeIndex];
+    BoundingVolume volume = bvhNodes[nodeIndex + entries[modelIndex]];
 
     if (rayAABBIntersect(ray.origin, invDir, volume.min, volume.max) == FAR_PLANE)
       continue;

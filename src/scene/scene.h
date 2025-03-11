@@ -48,8 +48,14 @@ namespace raytracing
     std::array<PlaneObject, MAX_PLANES> mPlanes;
     std::array<Material, MAX_MATERIALS> mMaterials;
 
-    std::vector<Vertex> mVertices;
-    std::vector<ivec4> mTriangles;
+    std::vector<std::vector<Vertex>> mVertices;
+    std::vector<std::vector<ivec4>> mTriangles;
+
+    struct
+    {
+      int count = 0;
+      std::vector<int> indices;
+    } mBVHEntries;
     std::vector<BoundingVolume> mBoundingVolumes;
 
     // Additional data stored separately in order to easily pass main data to the shader
