@@ -16,6 +16,8 @@ namespace raytracing
     void from_file(const std::filesystem::path& path);
     void write_to_file(const std::filesystem::path& path);
 
+    void copy_from(const texture& other);
+
     [[nodiscard]] uint32_t width() const;
     [[nodiscard]] uint32_t height() const;
 

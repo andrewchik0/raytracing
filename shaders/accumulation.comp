@@ -7,7 +7,7 @@ uniform int frameIndex;
 
 void main()
 {
-  vec4 accumulated = texture(accumulatedTexture, texCoord);
+  vec4 accumulated = texture(accumulatedTexture, vec2(texCoord.x, 1.0 - texCoord.y));
   vec4 lastFrame = texture(lastFrameTexture, texCoord);
   outColor((accumulated * (frameIndex - 1) + lastFrame) / frameIndex);
 }

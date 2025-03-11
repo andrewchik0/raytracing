@@ -40,7 +40,7 @@ namespace raytracing
     }
   }
 
-  void render::draw(const render_texture* target /* = nullptr */)
+  void render::draw(render_texture* target /* = nullptr */)
   {
     if (!should_accumulate())
       return;
@@ -74,15 +74,14 @@ namespace raytracing
     mAccumulationShader.dispatch_compute(mFinalTexture);
 
     // Store final buffer in accumulation buffer
-    mDummyShader.set_uniform("frameTexture", mFinalTexture);
-    mDummyShader.dispatch_compute(mAccumulatedTexture);
-
-    mark_zone("Post processing pass");
+    mAccumulatedTexture.copy_from(mFinalTexture);
 
     if (target)
     {
-      mDummyShader.dispatch_compute(*target);
+      target->copy_from(mFinalTexture);
     }
+
+    mark_zone("Post processing pass");
   }
 
 

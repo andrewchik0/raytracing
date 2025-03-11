@@ -288,7 +288,7 @@ namespace raytracing
       rt::get()->mScene.mCamera.mDirection = normalize(rt::get()->mScene.mCamera.mDirection);
       check(ImGui::DragFloat("Gamma", &rt::get()->mRender.mGamma, 0.01, 0.01, 100, "%.2f"));
       check(ImGui::DragFloat("Exposure", &rt::get()->mRender.mExposure, 0.01, 0.01, 100, "%.2f"));
-      check(ImGui::DragFloat("Blur size", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f"));
+      check(ImGui::DragFloat("Bloom intensity", &rt::get()->mRender.mBlurSize, 0.1, 0, 100, "%.1f"));
       check(ImGui::DragFloat("FOV", &rt::get()->mScene.mCamera.mFovY, 0.1, 30.0, 150.0, "%.1f"));
       ImGui::TreePop();
     }

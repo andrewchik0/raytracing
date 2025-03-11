@@ -58,4 +58,12 @@ namespace raytracing
     stbi_write_png(path.string().c_str(), mWidth, mHeight, 4, pixels.data(), 0);
     stbi_flip_vertically_on_write(false);
   }
+
+  void texture::copy_from(const texture& other)
+  {
+    glCopyImageSubData(
+      other.get_texture_handle(), GL_TEXTURE_2D, 0, 0, 0, 0,
+      mTextureHandle, GL_TEXTURE_2D, 0, 0, 0, 0,
+      mWidth, mHeight, 1);
+  }
 } // namespace raytracing
