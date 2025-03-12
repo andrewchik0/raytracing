@@ -36,10 +36,11 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
   float lambda = max(length(dudx), length(dudy));
   mat.lod = log2(max(lambda * textureSize(texArray, 0).x, 1.0));
 
-  mat.albedo =
+  mat.albedo = max(
     float(materials[hit.materialIndex].textureIndex != -1) *
     textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).rgb +
-    float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].albedo;
+    float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].albedo,
+    vec3(0.05));
 
   mat.metallic =
     float(materials[hit.materialIndex].metallicTextureIndex != -1) *

@@ -1,7 +1,7 @@
 exposure: 1.8
 gamma: 1
 blur_radius: 0
-sky_filename: assets/skies/sky.hdr
+sky_filename: assets/skies/cloudy.hdr
 camera:
   position: [ 12.953716, 1.1365173, 13.150791 ]
   direction: [ 0.6601755, -0.1621098, -0.73340905 ]
