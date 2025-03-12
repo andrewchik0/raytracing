@@ -2,11 +2,6 @@
 #include "utils.glsl"
 #include "types.glsl"
 
-float fresnelSchlick(float cosTheta, float f0)
-{
-  return f0 + (1.0 - f0) * pow(1 - cosTheta, 5.0);
-}
-
 struct SampledMaterial
 {
   vec2 uv;
@@ -20,22 +15,16 @@ struct SampledMaterial
   vec3 emissivity;
 };
 
-vec3 reflectance(Ray ray, inout SampledMaterial material)
+vec3 hash3(uvec3 p)
 {
-  float r = max(material.roughness, 0.01);
-  float m = material.metallic;
+  p = 1103515245U * ((p >> 1U) ^ p.yzx);
+  p = 1103515245U * ((p >> 1U) ^ p.yzx);
+  return vec3(p & 0xFFFFFFU) / float(0xFFFFFFU);
+}
 
-  if (m > 0.99)
-  {
-    return reflect(ray.direction, material.normal);
-  }
-  else
-  {
-    vec3 diffuse = randomHemisphereDirection(material.normal, material.normal + ray.direction + gl_GlobalInvocationID);
-    vec3 specular = reflect(ray.direction, material.normal);
-
-    return mix(specular, diffuse, r);
-  }
+float fresnelSchlik(float cosTheta, float f0)
+{
+  return f0 + (1.0 - f0) * pow(1 - max(cosTheta, 0.0), 5.0);
 }
 
 SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
@@ -54,17 +43,20 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
 
   mat.metallic =
     float(materials[hit.materialIndex].metallicTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).b;
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).b +
+    float(materials[hit.materialIndex].metallicTextureIndex == -1) * materials[hit.materialIndex].metallic;
 
   mat.specular =
     float(materials[hit.materialIndex].specularTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r +
-    float(materials[hit.materialIndex].specularTextureIndex == -1) * 0.5;
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r * materials[hit.materialIndex].specular +
+    float(materials[hit.materialIndex].specularTextureIndex == -1) * materials[hit.materialIndex].specular;
 
   mat.roughness =
-    float(materials[hit.materialIndex].roughnessTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).g +
-    float(materials[hit.materialIndex].roughnessTextureIndex == -1) * 0.5;
+    materials[hit.materialIndex].sg == 1 ?
+      (1.0 - textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).a) :
+      float(materials[hit.materialIndex].roughnessTextureIndex != -1) *
+      textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).g +
+      float(materials[hit.materialIndex].roughnessTextureIndex == -1) * materials[hit.materialIndex].roughness;
 
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
   mat.normal =
@@ -79,7 +71,10 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
     float(materials[hit.materialIndex].emissiveTextureIndex == -1) *
     materials[hit.materialIndex].emissivity;
 
-  mat.alpha = textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a;
+  mat.alpha =
+    float(materials[hit.materialIndex].textureIndex != -1) *
+    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a +
+    float(materials[hit.materialIndex].textureIndex == -1) * 1.0;
   return mat;
 }
 
@@ -129,39 +124,64 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
+  // Pass ray through if alpha is near zero (for grass, leaves, etc...)
+  if (mat.alpha <= 0.1)
+  {
+    ray.origin = hit.position + ray.direction * bias;
+    return true;
+  }
+
+  // Do not refract if material is emissive
   if (mat.emissivity.x + mat.emissivity.y + mat.emissivity.z > 0)
   {
     sampleColor = mat.emissivity;
     return false;
   }
 
-  float fresnel = fresnelSchlick(abs(dot(-ray.direction, mat.normal)), mat.alpha < 0.99 ? 0.2 : 0.4);
-  float random0to1 =
-    random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y) +
-    random(ray.direction.z + gl_LocalInvocationID.y + gl_GlobalInvocationID.y) +
-    random(ray.direction.y + gl_LocalInvocationID.x + gl_GlobalInvocationID.x);
-  random0to1 /= 3;
+  // Convert specular to metallic if needed
+  if (materials[hit.materialIndex].sg == 1)
+  {
+    mat.metallic = clamp((mat.specular - 0.04) / (1.0 - 0.04), 0.0, 1.0);
+    if (mat.specular < 1e-3)
+    {
+      mat.roughness = 1.0;
+    }
+  }
 
-  if (mat.alpha < 0.99 && random0to1 > fresnel)
+  // Set new ray origin
+  ray.origin = hit.position + mat.normal * bias;
+
+  // Random value for mixing
+  float random0to1 =
+    (random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y + sampleCounter) +
+    random(ray.direction.z + gl_LocalInvocationID.y + gl_GlobalInvocationID.y + sampleCounter) +
+    random(ray.direction.y + gl_LocalInvocationID.x + gl_GlobalInvocationID.x + sampleCounter)) / 3;
+
+  // Calculate metallic & roughness coefficients
+  float f0 = mix(0.3, .35, 1.0 - mat.metallic);
+  float fresnel = min(fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0), 0.4);
+
+  // Get random and specular new ray directions
+  vec3 seed = hash3(uvec3(uvec2(texCoord * windowSize.xy), int(time + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0)); // tired of looking for nice seed, just use hash
+  vec3 randomDir = randomHemisphereDirection(mat.normal, seed);
+  vec3 specularDir = reflect(ray.direction, mat.normal);
+
+  vec3 metallicDir, metallicColor, dielectricDir = randomDir, dielectricColor = sampleColor * mat.albedo;
+  if (fresnel > random0to1)
+  {
+    dielectricDir = mix(specularDir, randomDir, mat.roughness);
+    dielectricColor = sampleColor + mat.emissivity;
+  }
+  else if (mat.alpha > 0.1 && mat.alpha < 0.99)
   {
     ray.origin = hit.position + ray.direction * bias;
     return true;
   }
+  metallicDir = mix(specularDir, randomDir, mat.roughness);
+  metallicColor = sampleColor * mat.albedo + mat.emissivity;
 
-  if (random0to1 > fresnel || mat.roughness > 0.45)
-  {
-    mat.roughness = 1.0;
-    sampleColor = sampleColor * mat.albedo + mat.emissivity;
-    ray.origin = hit.position + mat.normal * bias;
-    ray.direction = reflectance(ray, mat);
-  }
-  else
-  {
-    mat.albedo = vec3(1);
-    mat.roughness = 0;
-    sampleColor = sampleColor * mat.albedo + mat.emissivity;
-    ray.origin = hit.position + mat.normal * bias;
-    ray.direction = reflectance(ray, mat);
-  }
+  ray.direction = mix(dielectricDir, metallicDir, mat.metallic);
+  sampleColor = mix(dielectricColor, metallicColor, mat.metallic);
+
   return true;
 }

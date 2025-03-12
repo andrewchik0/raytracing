@@ -16,7 +16,7 @@ namespace raytracing
   struct init_options
   {
     std::string title = "Ray Tracing";
-    std::filesystem::path scene_filename;
+    std::filesystem::path scene_filename = "scenes/empty.yaml";
     bool maximized = true;
     uint32_t width = 1200, height = 700;
   };

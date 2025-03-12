@@ -50,7 +50,7 @@ namespace raytracing
 
     bool mIsViewPortInFocus = false;
     glm::ivec2 mViewportPosition;
-    glm::ivec2 mViewportSize;
+    glm::ivec2 mViewportSize = { 1, 1 };
 
     gui() = default;
     gui(const gui&) = delete;

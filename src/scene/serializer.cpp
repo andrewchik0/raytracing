@@ -125,6 +125,9 @@ namespace raytracing
 {
   void serializer::load(const std::filesystem::path& filename)
   {
+    if (!std::filesystem::exists(filename))
+      return;
+
     rt::get()->mThreadPool.restart();
     rt::get()->mModelsLoading = false;
     rt::get()->mTexturesLoading = false;
@@ -209,6 +212,7 @@ namespace raytracing
           if (materialNode["albedo"]) material.albedo = materialNode["albedo"].as<glm::vec3>();
           if (materialNode["emissivity"]) material.emissivity = materialNode["emissivity"].as<glm::vec3>();
           if (materialNode["roughness"]) material.roughness = materialNode["roughness"].as<float>();
+          if (materialNode["metallic"]) material.metallic = materialNode["metallic"].as<float>();
           if (materialNode["texture_id"]) material.textureIndex = materialNode["texture_id"].as<int>();
           if (materialNode["normal_texture_id"]) material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
           if (materialNode["metallic_texture_id"]) material.metallicTextureIndex = materialNode["metallic_texture_id"].as<int>();
@@ -317,6 +321,7 @@ namespace raytracing
         out << YAML::Key << "albedo" << YAML::Value << rt::get()->mScene.mMaterials[i].albedo;
         out << YAML::Key << "emissivity" << YAML::Value << rt::get()->mScene.mMaterials[i].emissivity;
         out << YAML::Key << "roughness" << YAML::Value << rt::get()->mScene.mMaterials[i].roughness;
+        out << YAML::Key << "metallic" << YAML::Value << rt::get()->mScene.mMaterials[i].metallic;
         out << YAML::Key << "texture_coordinates_multiplier" << YAML::Value << rt::get()->mScene.mMaterials[i].textureCoordinatesMultiplier;
         out << YAML::Key << "texture_id" << YAML::Value << rt::get()->mScene.mMaterials[i].textureIndex;
         out << YAML::Key << "metallic_texture_id" << YAML::Value << rt::get()->mScene.mMaterials[i].metallicTextureIndex;

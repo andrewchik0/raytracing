@@ -55,19 +55,6 @@ namespace raytracing
       thread.wait();
   }
 
-  void textures::allocate_triangles_buffer()
-  {
-    glGenTextures(1, &mBoundingVolumesTexture);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTextureDataSize, sMaxTextureDataSize, 1);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
-    glGenTextures(1, &mVerticesDataTexture);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-    glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA32F, sMaxTextureDataSize, sMaxTextureDataSize, 1);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-  }
-
   void textures::load_to_gpu()
   {
     int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
@@ -141,50 +128,12 @@ namespace raytracing
     glActiveTexture(GL_TEXTURE0 + index + 1);
     glBindTexture(GL_TEXTURE_2D, mSky);
     rt::get()->mRender.get_main_shader().set_uniform("sky", index + 1);
-    glActiveTexture(GL_TEXTURE0 + index + 2);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-    rt::get()->mRender.get_main_shader().set_uniform("boundingVolumesTexture", index + 2);
-    glActiveTexture(GL_TEXTURE0 + index + 3);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-    rt::get()->mRender.get_main_shader().set_uniform("verticesTexture", index + 3);
   }
 
   void textures::reload()
   {
     unload();
     load_to_memory();
-  }
-
-  void textures::load_triangles_to_gpu(std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices)
-  {
-    {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, mBoundingVolumesTexture);
-      size_t boundVolumeSize = sizeof(BoundingVolume) / 16;
-      size_t currentSizeVec4s = bounds.size() * boundVolumeSize;
-      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTextureDataSize - 1) / sMaxTextureDataSize) * sMaxTextureDataSize;
-      size_t newSizeVolumes = newSizeVec4s / boundVolumeSize + 1;
-      bounds.resize(newSizeVolumes);
-      glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTextureDataSize, (newSizeVec4s) / sMaxTextureDataSize, 1, GL_RGBA, GL_FLOAT,
-        bounds.data()
-      );
-    }
-
-    {
-      glBindTexture(GL_TEXTURE_2D_ARRAY, mVerticesDataTexture);
-      size_t vertexSize = sizeof(Vertex) / 16;
-      size_t currentSizeVec4s = vertices.size() * vertexSize;
-      size_t newSizeVec4s = ((currentSizeVec4s + sMaxTextureDataSize - 1) / sMaxTextureDataSize) * sMaxTextureDataSize;
-      size_t newSizeVertices = newSizeVec4s / vertexSize + 1;
-      vertices.resize(newSizeVertices);
-      glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0,
-        sMaxTextureDataSize, (newSizeVec4s) / sMaxTextureDataSize, 1, GL_RGBA, GL_FLOAT,
-        vertices.data()
-      );
-    }
-    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   }
 
   void textures::load_from_filesystem()

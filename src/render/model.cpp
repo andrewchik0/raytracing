@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <iostream>
+
 #include "rt.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,6 +10,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
+#include "assimp/pbrmaterial.h"
 
 
 namespace raytracing
@@ -136,6 +140,8 @@ namespace raytracing
     float opacity = -1.0f;
     float reflectivity = -1.0f;
     float refractiveIndex = -1.0f;
+    float roughness = -1.0f;
+    float metallic = -1.0f;
 
     material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
     material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
@@ -148,9 +154,11 @@ namespace raytracing
     material->Get(AI_MATKEY_OPACITY, opacity);
     material->Get(AI_MATKEY_REFLECTIVITY, reflectivity);
     material->Get(AI_MATKEY_REFRACTI, refractiveIndex);
+    material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
+    material->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
 
-    float metallic = (reflectivity > 0.5f && specular.r > 0.5f) ? 1.0f : 0.0f;
-    float roughness = 1.0f - std::sqrt(std::max(0.0f, std::min(shininess / 100.0f, 1.0f)));
+    int hasSG = 0;
+    material->Get(AI_MATKEY_GLTF_PBRSPECULARGLOSSINESS, hasSG);
 
     std::string baseColorTexture = get_texture_path(material, aiTextureType_DIFFUSE);
     std::string metallicTexture = get_texture_path(material, aiTextureType_METALNESS);
@@ -172,7 +180,9 @@ namespace raytracing
 
     mat.albedo = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
     mat.emissivity = glm::vec3(emissive.r, emissive.g, emissive.b);
-    mat.roughness = glm::sqrt(2.0f / (shininess + 2));
+    mat.roughness = roughness;
+    mat.specular = specular.r;
+    mat.sg = hasSG;
 
     if (baseColorTexture.size() > 0)
       mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());
@@ -180,6 +190,8 @@ namespace raytracing
       mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string());
     if (roughnessTexture.size() > 0)
       mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / roughnessTexture).string());
+    else if (hasSG && specularTexture.size() > 0)
+      mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
     if (specularTexture.size() > 0)
       mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
     if (emissiveTexture.size() > 0)

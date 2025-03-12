@@ -1,12 +1,15 @@
 exposure: 1.8
 gamma: 1
 blur_radius: 0
-sky_filename: assets/skies/outdoor.hdr
+sky_filename: assets/skies/sky.hdr
 camera:
-  position: [1.46941185, 1.17562461, 3.08327079]
-  direction: [-0.476157397, -0.359194309, -0.80265373]
+  position: [ 12.953716, 1.1365173, 13.150791 ]
+  direction: [ 0.6601755, -0.1621098, -0.73340905 ]
   fov: 70
 objects:
   - type: model
+    filename: assets/models/street/scene.gltf
+    matrix: [1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1]
+  - type: model
     filename: assets/models/koenigsegg/scene.gltf
-    matrix: [10, 0, 0, 0,   0, 10, 0, 0,   0, 0, 10, 0,   0, 0, 0, 1]
+    matrix: [10, 0, 0, 0,   0, 10, 0, 0,   0, 0, 10, 0,   15.3, 0, 9, 1]

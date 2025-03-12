@@ -48,7 +48,8 @@ struct Material
   = -1
 #endif
   ;
-  vec2 _;
+  int sg;
+  float specular;
   int emissiveTextureIndex
 #ifdef __cplusplus
   = -1
@@ -57,6 +58,12 @@ struct Material
   int roughnessTextureIndex
 #ifdef __cplusplus
   = -1
+#endif
+  ;
+  vec3 _;
+  float metallic
+#ifdef __cplusplus
+   = 0
 #endif
   ;
 };

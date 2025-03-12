@@ -32,7 +32,7 @@ namespace raytracing
     void move_up(float deltaSpeed);
 
   private:
-    float mHalfHeight = 0, mHalfWidth = 0;
+    float mHalfHeight = 1, mHalfWidth = 1;
     float mAspect = 1.0;
 
     glm::vec3 mUp = { 0, 1, 0 };

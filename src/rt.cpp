@@ -18,7 +18,7 @@ namespace raytracing
     NFD_Quit();
   }
 
-  void rt::init(const init_options& options)
+  void rt::init(const init_options& options /* = init_options() */)
   {
     sInstance = this;
 

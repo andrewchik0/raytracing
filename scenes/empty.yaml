@@ -1,0 +1,8 @@
+exposure: 3.12
+gamma: 1.04
+blur_radius: 0
+sky_filename: assets/skies/sky.hdr
+camera:
+  position: [4.3683662, 3.9676435, 5.97036]
+  direction: [-0.010001402, -0.07493311, -0.9971362]
+  fov: 90

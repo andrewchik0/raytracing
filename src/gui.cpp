@@ -471,6 +471,8 @@ namespace raytracing
         ImGui::InputText(label.c_str(), &rt::get()->mScene.mMaterialsAdditional[i].name);
         label = "Albedo###Albedo" + std::to_string(i);
         check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mMaterials[i].albedo.x, 0.01f, 0.0f, 1.0f, "%.2f"));
+        label = "Metallic###Metallic" + std::to_string(i);
+        check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mMaterials[i].metallic, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Roughness###Roughness" + std::to_string(i);
         check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mMaterials[i].roughness, 0.01f, 0.0f, 1.0f, "%.2f"));
         label = "Emissivity###Emissivity" + std::to_string(i);
@@ -481,6 +483,8 @@ namespace raytracing
         check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].normalTextureIndex));
         label = "Metallic Texture ID###MetallicTextureID" + std::to_string(i);
         check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].metallicTextureIndex));
+        label = "Roughness Texture ID###RoughnessTextureID" + std::to_string(i);
+        check(ImGui::InputInt(label.c_str(), &rt::get()->mScene.mMaterials[i].roughnessTextureIndex));
         label = "Texture Coordinates Multiplier###TextureCoordinatesMultiplier" + std::to_string(i);
         check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mMaterials[i].textureCoordinatesMultiplier, 0.01f, 0.01f,
                          100.0f, "%.2f"));

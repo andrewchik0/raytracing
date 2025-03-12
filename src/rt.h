@@ -33,7 +33,7 @@ namespace raytracing
 
     ~rt();
 
-    void init(const init_options& options);
+    void init(const init_options& options = init_options());
     void run();
 
     bool is_loading() const;

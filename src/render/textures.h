@@ -9,10 +9,6 @@ namespace raytracing
   class textures
   {
   public:
-    static constexpr size_t
-      sMaxTextureDataSize = 4096,
-      sMaxBoundingVolumes = sMaxTextureDataSize * sMaxTextureDataSize,
-      sMaxVertices = sMaxTextureDataSize * sMaxTextureDataSize;
 
     textures() = default;
     textures(const textures&) = delete;
@@ -24,14 +20,11 @@ namespace raytracing
     void reload();
     void unload();
 
-    void load_triangles_to_gpu(std::vector<BoundingVolume>& bounds, std::vector<Vertex>& vertices);
     void load_to_gpu();
 
     size_t add_texture(const std::string& name);
     size_t add_texture(const std::string& name, ubyte* data);
     void load_from_filesystem();
-
-    void allocate_triangles_buffer();
 
   private:
 
@@ -43,8 +36,6 @@ namespace raytracing
 
     uint32_t mTextureArray = 0;              // Usual material textures
     uint32_t mSky = 0;                       // Sky texture
-    uint32_t mVerticesDataTexture = 0;       // Vertices data encoded into a texture
-    uint32_t mBoundingVolumesTexture = 0;    // Bounding volumes data encoded into a texture
 
     std::vector<std::string> mTextureFilenames;
     std::vector<uchar *> mTexturesData;

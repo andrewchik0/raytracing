@@ -1,4 +1,4 @@
-#define MAX_SPHERES 32
+#define MAX_SPHERES 128
 struct SphereObject
 {
   vec3 center;

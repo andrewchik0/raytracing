@@ -70,7 +70,8 @@ vec3 castRay(Ray inputRay)
 {
   vec3 resultColor = vec3(0);
 
-  for (uint sampleCounter = 0; sampleCounter < samples; sampleCounter++)
+  uint sampleCounter;
+  for (sampleCounter = 0; sampleCounter < samples; sampleCounter++)
   {
     Ray ray;
     ray.origin = inputRay.origin;
