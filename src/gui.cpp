@@ -214,6 +214,7 @@ namespace raytracing
       check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
       check(ImGui::Checkbox("Show textures", &rt::get()->mRender.mShowTextures));
       check(ImGui::Checkbox("Post processing", &rt::get()->mRender.mPostProcessing));
+      check(ImGui::Checkbox("Denoise (works bad)", &rt::get()->mRender.mDenoise));
       if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
         rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
       check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));
@@ -315,6 +316,16 @@ namespace raytracing
       pop_font();
 
     push_font(headerFontScale);
+    if (ImGui::TreeNode(ICON_FA_WATER " Water settings"))
+    {
+      pop_font();
+      water_section();
+      ImGui::TreePop();
+    }
+    else
+      pop_font();
+
+    push_font(headerFontScale);
     if (ImGui::TreeNode(ICON_FA_CIRCLE " Materials"))
     {
       pop_font();
@@ -340,13 +351,14 @@ namespace raytracing
     std::string label;
     for (size_t i = 0; i < rt::get()->mScene.mSpheresCount; ++i)
     {
-      label = rt::get()->mScene.mSpheresAdditional[i].name +"###Sphere" + std::to_string(i);
+      label = rt::get()->mScene.mSpheresAdditional[i].name + "###Sphere" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
         label = "Name###SphereName" + std::to_string(i);
         ImGui::InputText(label.c_str(), &rt::get()->mScene.mSpheresAdditional[i].name);
         label = "Position###SpherePosition" + std::to_string(i);
-        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f"));
+        check(
+          ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mSpheres[i].center.x, 0.01f, -100.0f, 100.0f, "%.2f"));
         label = "Radius###SphereRadius" + std::to_string(i);
         check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mSpheres[i].radius, 0.01f, 0.01f, 100.0f, "%.2f"));
         label = "Material ID##SphereMaterialID" + std::to_string(i);
@@ -366,7 +378,7 @@ namespace raytracing
         ImGui::InputText(label.c_str(), &rt::get()->mScene.mPlanesAdditional[i].name);
         label = "Normal###PlaneNormal" + std::to_string(i);
         if (check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mPlanes[i].normal.x, 0.01f, -1.0f, 1.0f, "%.2f")))
-          rt::get()->mScene.mPlanes[i].normal=  normalize(rt::get()->mScene.mPlanes[i].normal);
+          rt::get()->mScene.mPlanes[i].normal = normalize(rt::get()->mScene.mPlanes[i].normal);
         label = "Distance###PlaneDistance" + std::to_string(i);
         check(ImGui::DragFloat(label.c_str(), &rt::get()->mScene.mPlanes[i].distance, 0.01f, 0, 0, "%.2f"));
         label = "Material ID##PlaneMaterialID" + std::to_string(i);
@@ -392,6 +404,26 @@ namespace raytracing
 
     if (mAddItemOpened)
       add_item_window();
+  }
+
+  void gui::water_section()
+  {
+    static bool renderWater = rt::get()->mScene.mWater.isShown;
+    static bool autoAnimate = false;
+    if (check(ImGui::Checkbox("Render water", &renderWater)))
+      rt::get()->mScene.mWater.isShown = renderWater;
+    check(ImGui::Checkbox("Auto animate", &autoAnimate));
+    check(ImGui::DragFloat("Size", &rt::get()->mScene.mWater.size, 0.01f, 0.01f, 100.0f, "%.2f"));
+    check(ImGui::DragFloat("Amplitude", &rt::get()->mScene.mWater.amplitude, 0.01f, 0.01f, 100.0f, "%.2f"));
+    check(ImGui::DragFloat("Animation speed", &rt::get()->mScene.mWater.speed, 0.01f, 0.01f, 100.0f, "%.2f"));
+    check(ImGui::DragInt("Height map samples", &rt::get()->mScene.mWater.samples, 1, 1, 1024));
+    check(ImGui::SliderFloat("Animation", &rt::get()->mScene.mWater.animationTime, 0.0f, 10.0f, "%.3f"));
+
+    if (autoAnimate)
+    {
+      rt::get()->mScene.mWater.animationTime += rt::get()->mTimeHandler.mDeltaTime * rt::get()->mScene.mWater.speed;
+      check(true);
+    }
   }
 
   void gui::add_item_window()

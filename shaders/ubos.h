@@ -1,10 +1,24 @@
 // ReSharper disable CppMissingIncludeGuard
+
+#define WATER_MATERIAL (MAX_MATERIALS + 1)
+struct Water
+{
+  int isShown;
+  float speed;
+  float amplitude;
+  float animationTime;
+  vec2 _;
+  float size;
+  int samples;
+};
+
 #define SCENE_BINDING 1
 #define SceneBufferStruct SceneBuffer           \
 {                                               \
   SphereObject spheres[MAX_SPHERES];            \
   PlaneObject planes[MAX_PLANES];               \
   Material materials[MAX_MATERIALS];            \
+  Water water;                                  \
   uint spheresCount;                            \
   uint planesCount;                             \
 }

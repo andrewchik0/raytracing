@@ -27,8 +27,29 @@ float fresnelSchlik(float cosTheta, float f0)
   return f0 + (1.0 - f0) * pow(1 - max(cosTheta, 0.0), 5.0);
 }
 
+void waterMaterial(HitData hit, inout SampledMaterial mat)
+{
+  mat.normal = hit.normal;
+  mat.uv = hit.textureCoordinates - floor(hit.textureCoordinates);
+  mat.albedo = vec3(0.2, 0.3, 0.5);
+  float wave = pow(hit.position.y / water.amplitude, 20) * 400;
+  mat.albedo += wave;
+  mat.metallic = 0;
+  mat.alpha = 1;
+  mat.roughness = wave;
+  mat.lod = 0;
+  mat.emissivity = vec3(0);
+  mat.specular = 0;
+}
+
 SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
 {
+  if (hit.materialIndex == WATER_MATERIAL)
+  {
+    waterMaterial(hit, mat);
+    return mat;
+  }
+
   mat.uv = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
   loadUV(mat.uv, hit.materialIndex);
   vec2 dudx = getDDX();

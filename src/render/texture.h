@@ -18,6 +18,8 @@ namespace raytracing
 
     void copy_from(const texture& other);
 
+    void set_repeated(bool repeated);
+
     [[nodiscard]] uint32_t width() const;
     [[nodiscard]] uint32_t height() const;
 

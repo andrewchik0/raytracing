@@ -1,0 +1,45 @@
+exposure: 3.12
+gamma: 1.04
+blur_radius: 0
+sky_filename: assets/skies/sky.hdr
+camera:
+  position: [-4.752342, 3.1165524, 1.427712]
+  direction: [0.95714587, -0.2820104, 0.06586479]
+  fov: 90
+objects:
+  - type: sphere
+    name: Sphere
+    position: [0.12, 2.22, 0]
+    radius: 1
+    materialIndex: 0
+  - type: sphere
+    name: Sphere
+    position: [0.36, 2.22, 2.38]
+    radius: 1
+    materialIndex: 1
+  - type: water
+    amplitude: 2.19
+    speed: 1
+    samples: 16
+    size: 0.1
+materials:
+  - name: Material
+    albedo: [0.92, 0.65, 0]
+    emissivity: [0, 0, 0]
+    roughness: 0
+    metallic: 0
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+  - name: Material
+    albedo: [0.94, 0.5, 0]
+    emissivity: [0, 0, 0]
+    roughness: 0
+    metallic: 1
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+textures:
+  []

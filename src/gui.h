@@ -70,6 +70,7 @@ namespace raytracing
     void general_tab();
     void scene_tab();
     void objects_section();
+    void water_section();
     void add_item_window();
     void materials_section();
     void textures_section();

@@ -61,9 +61,15 @@ namespace raytracing
 
   void texture::copy_from(const texture& other)
   {
-    glCopyImageSubData(
-      other.get_texture_handle(), GL_TEXTURE_2D, 0, 0, 0, 0,
-      mTextureHandle, GL_TEXTURE_2D, 0, 0, 0, 0,
-      mWidth, mHeight, 1);
+    glCopyImageSubData(other.get_texture_handle(), GL_TEXTURE_2D, 0, 0, 0, 0, mTextureHandle, GL_TEXTURE_2D, 0, 0, 0, 0,
+                       mWidth, mHeight, 1);
+  }
+
+  void texture::set_repeated(bool repeated)
+  {
+    glBindTexture(GL_TEXTURE_2D, mTextureHandle);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, repeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, repeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 } // namespace raytracing

@@ -15,7 +15,7 @@ namespace raytracing
   class scene
   {
   public:
-    scene() = default;
+    scene();
     ~scene() = default;
 
     std::string mSceneFilename = "";
@@ -53,6 +53,8 @@ namespace raytracing
 
     std::vector<std::vector<Vertex>> mVertices;
     std::vector<std::vector<ivec4>> mTriangles;
+
+    Water mWater;
 
     struct
     {

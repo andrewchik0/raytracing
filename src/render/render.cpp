@@ -14,9 +14,13 @@ namespace raytracing
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.get_handle());
+    mSceneBuffer.bind_to_shader("SceneBuffer", mNoiseGeneratorShader.get_handle());
     mBVHEntriesBuffer.create(BVH_ENTRIES_BINDING);
     mBVHBuffer.create(BVH_BINDING);
     mVerticesBuffer.create(VERTICES_BINDING);
+
+    mNoiseTextureBuffer.resize(NOISE_WIDTH, NOISE_HEIGHT);
+    mNoiseTextureBuffer.set_repeated(true);
   }
 
   void render::post_init()
@@ -48,9 +52,16 @@ namespace raytracing
       return;
     mAccumulatingFrameIndex++;
 
+    // Noise generator
+    if (mGenerateNoise)
+    {
+      mNoiseGeneratorShader.dispatch_compute(mNoiseTextureBuffer);
+    }
+
     // Main pass
     set_uniforms();
     push_scene();
+    mShader.set_uniform("noiseTexture", mNoiseTextureBuffer);
     mTextures.bind();
     mShader.dispatch_compute(mLastFrameTexture);
     mark_zone("Main pass");
@@ -120,6 +131,7 @@ namespace raytracing
     memcpy(buffer.planes, rt::get()->mScene.mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
     memcpy(buffer.spheres, rt::get()->mScene.mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
     memcpy(buffer.materials, rt::get()->mScene.mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
+    memcpy(&buffer.water, &rt::get()->mScene.mWater, sizeof(Water));
     buffer.planesCount = rt::get()->mScene.mPlanesCount;
     buffer.spheresCount = rt::get()->mScene.mSpheresCount;
     mSceneBuffer.set(&buffer);
@@ -153,6 +165,7 @@ namespace raytracing
       mBloomShader.load("./shaders/bloom.comp"),
       mAccumulationShader.load("./shaders/accumulation.comp"),
       mDenoiseShader.load("./shaders/denoise.comp"),
+      mNoiseGeneratorShader.load("./shaders/noise_generator.comp"),
       mDummyShader.load("./shaders/empty.comp"),
     };
 

@@ -128,27 +128,30 @@ namespace raytracing
     if (!std::filesystem::exists(filename))
       return;
 
+    scene &Scene = rt::get()->mScene;
+
     rt::get()->mThreadPool.restart();
     rt::get()->mModelsLoading = false;
     rt::get()->mTexturesLoading = false;
     rt::get()->mBVHLoading = false;
     rt::get()->mRender.reset_accumulation();
     rt::get()->mRender.clear();
-    rt::get()->mScene.mModels.clear();
-    rt::get()->mScene.mSceneFilename = filename.string();
-    rt::get()->mScene.mBoundingVolumes.clear();
-    rt::get()->mScene.mTriangles.clear();
-    rt::get()->mScene.mVertices.clear();
-    rt::get()->mScene.mSceneFilename.resize(256, 0);
-    rt::get()->mScene.mSpheresCount = 0;
-    rt::get()->mScene.mPlanesCount = 0;
-    rt::get()->mScene.mMaterialsCount = 0;
     rt::get()->mRender.mTextures.mTextureFilenames.clear();
-
-    YAML::Node scene = YAML::LoadFile(filename.string());
+    rt::get()->mRender.mGenerateNoise = false;
+    Scene.mWater.isShown = false;
+    Scene.mModels.clear();
+    Scene.mSceneFilename = filename.string();
+    Scene.mBoundingVolumes.clear();
+    Scene.mTriangles.clear();
+    Scene.mVertices.clear();
+    Scene.mSceneFilename.resize(256, 0);
+    Scene.mSpheresCount = 0;
+    Scene.mPlanesCount = 0;
+    Scene.mMaterialsCount = 0;
 
     {
-      if (scene["sky_filename"]) rt::get()->mScene.mSkyFilename = scene["sky_filename"].as<std::string>();
+      YAML::Node scene = YAML::LoadFile(filename.string());
+      if (scene["sky_filename"]) Scene.mSkyFilename = scene["sky_filename"].as<std::string>();
       if (scene["gamma"]) rt::get()->mRender.mGamma = scene["gamma"].as<float>();
       if (scene["exposure"]) rt::get()->mRender.mExposure = scene["exposure"].as<float>();
       if (scene["blur_radius"]) rt::get()->mRender.mBlurSize = scene["blur_radius"].as<float>();
@@ -156,9 +159,9 @@ namespace raytracing
       if (scene["camera"])
       {
         auto camera = scene["camera"].as<YAML::Node>();
-        if (camera["fov"]) rt::get()->mScene.mCamera.mFovY = camera["fov"].as<float>();
-        if (camera["position"]) rt::get()->mScene.mCamera.mPosition = camera["position"].as<glm::vec3>();
-        if (camera["direction"]) rt::get()->mScene.mCamera.mDirection = camera["direction"].as<glm::vec3>();
+        if (camera["fov"]) Scene.mCamera.mFovY = camera["fov"].as<float>();
+        if (camera["position"]) Scene.mCamera.mPosition = camera["position"].as<glm::vec3>();
+        if (camera["direction"]) Scene.mCamera.mDirection = camera["direction"].as<glm::vec3>();
       }
 
       if (scene["objects"])
@@ -177,9 +180,9 @@ namespace raytracing
             if (object["position"]) sphere.center = object["position"].as<glm::vec3>();
             if (object["radius"]) sphere.radius = object["radius"].as<float>();
             if (object["materialIndex"]) sphere.materialIndex = object["materialIndex"].as<int>();
-            std::string name = "Sphere " + std::to_string(rt::get()->mScene.mSpheresCount + 1);
+            std::string name = "Sphere " + std::to_string(Scene.mSpheresCount + 1);
             if (object["name"]) name = object["name"].as<std::string>();
-            rt::get()->mScene.add_sphere(name, sphere);
+            Scene.add_sphere(name, sphere);
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "plane") == 0)
           {
@@ -187,15 +190,24 @@ namespace raytracing
             if (object["normal"]) plane.normal = object["normal"].as<glm::vec3>();
             if (object["distance"]) plane.distance = object["distance"].as<float>();
             if (object["materialIndex"]) plane.materialIndex = object["materialIndex"].as<int>();
-            std::string name = "Plane " + std::to_string(rt::get()->mScene.mPlanesCount + 1);
+            std::string name = "Plane " + std::to_string(Scene.mPlanesCount + 1);
             if (object["name"]) name = object["name"].as<std::string>();
-            rt::get()->mScene.add_plane(name, plane);
+            Scene.add_plane(name, plane);
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0 && object["filename"])
           {
             glm::mat4 modelMatrix = glm::mat4(1.0f);
             if (object["matrix"]) modelMatrix = object["matrix"].as<glm::mat4>();
-            rt::get()->mScene.add_model(object["filename"].as<std::string>(), modelMatrix);
+            Scene.add_model(object["filename"].as<std::string>(), modelMatrix);
+          }
+          if (strcmp(object["type"].as<std::string>().c_str(), "water") == 0)
+          {
+            rt::get()->mRender.mGenerateNoise = true;
+            Scene.mWater.isShown = true;
+            if (object["amplitude"]) Scene.mWater.amplitude = object["amplitude"].as<float>();
+            if (object["speed"]) Scene.mWater.speed = object["speed"].as<float>();
+            if (object["samples"]) Scene.mWater.samples = object["samples"].as<float>();
+            if (object["size"]) Scene.mWater.size = object["size"].as<float>();
           }
         }
       }
@@ -217,9 +229,9 @@ namespace raytracing
           if (materialNode["normal_texture_id"]) material.normalTextureIndex = materialNode["normal_texture_id"].as<int>();
           if (materialNode["metallic_texture_id"]) material.metallicTextureIndex = materialNode["metallic_texture_id"].as<int>();
           if (materialNode["texture_coordinates_multiplier"]) material.textureCoordinatesMultiplier = materialNode["texture_coordinates_multiplier"].as<float>();
-          std::string name = "Material " + std::to_string(rt::get()->mScene.mMaterialsCount + 1);
+          std::string name = "Material " + std::to_string(Scene.mMaterialsCount + 1);
           if (materialNode["name"]) name = materialNode["name"].as<std::string>();
-          rt::get()->mScene.add_material(name, material);
+          Scene.add_material(name, material);
         }
       }
 
@@ -240,8 +252,8 @@ namespace raytracing
   void serializer::load()
   {
     nfdu8char_t* outPath;
-    const nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
-    nfdopendialogu8args_t args = {0};
+    constexpr nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
+    nfdopendialogu8args_t args = {nullptr};
     args.filterList = filters;
     args.filterCount = 1;
     auto defaultPath = (std::filesystem::current_path() / "scenes").string();
@@ -257,21 +269,22 @@ namespace raytracing
 
   void serializer::save(const std::filesystem::path& filename)
   {
+    scene &Scene = rt::get()->mScene;
     YAML::Emitter out;
     out << YAML::BeginMap;
 
     out << YAML::Key << "exposure" << YAML::Value << rt::get()->mRender.mExposure;
     out << YAML::Key << "gamma" << YAML::Value << rt::get()->mRender.mGamma;
     out << YAML::Key << "blur_radius" << YAML::Value << rt::get()->mRender.mBlurSize;
-    out << YAML::Key << "sky_filename" << YAML::Value << rt::get()->mScene.mSkyFilename;
+    out << YAML::Key << "sky_filename" << YAML::Value << Scene.mSkyFilename;
 
     {
       out << YAML::Key << "camera";
 
       out << YAML::BeginMap;
-      out << YAML::Key << "position" << YAML::Value << rt::get()->mScene.mCamera.mPosition;
-      out << YAML::Key << "direction" << YAML::Value << rt::get()->mScene.mCamera.mDirection;
-      out << YAML::Key << "fov" << YAML::Value << rt::get()->mScene.mCamera.mFovY;
+      out << YAML::Key << "position" << YAML::Value << Scene.mCamera.mPosition;
+      out << YAML::Key << "direction" << YAML::Value << Scene.mCamera.mDirection;
+      out << YAML::Key << "fov" << YAML::Value << Scene.mCamera.mFovY;
       out << YAML::EndMap;
     }
 
@@ -279,32 +292,42 @@ namespace raytracing
       out << YAML::Key << "objects";
 
       out << YAML::BeginSeq;
-      for (size_t i = 0; i < rt::get()->mScene.mSpheresCount; i++)
+      for (size_t i = 0; i < Scene.mSpheresCount; i++)
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "sphere";
-        out << YAML::Key << "name" << YAML::Value << rt::get()->mScene.mSpheresAdditional[i].name;
-        out << YAML::Key << "position" << YAML::Value << rt::get()->mScene.mSpheres[i].center;
-        out << YAML::Key << "radius" << YAML::Value << rt::get()->mScene.mSpheres[i].radius;
-        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mScene.mSpheres[i].materialIndex;
+        out << YAML::Key << "name" << YAML::Value << Scene.mSpheresAdditional[i].name;
+        out << YAML::Key << "position" << YAML::Value << Scene.mSpheres[i].center;
+        out << YAML::Key << "radius" << YAML::Value << Scene.mSpheres[i].radius;
+        out << YAML::Key << "materialIndex" << YAML::Value << Scene.mSpheres[i].materialIndex;
         out << YAML::EndMap;
       }
-      for (size_t i = 0; i < rt::get()->mScene.mPlanesCount; i++)
+      for (size_t i = 0; i < Scene.mPlanesCount; i++)
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "plane";
-        out << YAML::Key << "name" << YAML::Value << rt::get()->mScene.mPlanesAdditional[i].name;
-        out << YAML::Key << "normal" << YAML::Value << rt::get()->mScene.mPlanes[i].normal;
-        out << YAML::Key << "distance" << YAML::Value << rt::get()->mScene.mPlanes[i].distance;
-        out << YAML::Key << "materialIndex" << YAML::Value << rt::get()->mScene.mPlanes[i].materialIndex;
+        out << YAML::Key << "name" << YAML::Value << Scene.mPlanesAdditional[i].name;
+        out << YAML::Key << "normal" << YAML::Value << Scene.mPlanes[i].normal;
+        out << YAML::Key << "distance" << YAML::Value << Scene.mPlanes[i].distance;
+        out << YAML::Key << "materialIndex" << YAML::Value << Scene.mPlanes[i].materialIndex;
         out << YAML::EndMap;
       }
-      for (auto it = rt::get()->mScene.mModels.begin(); it != rt::get()->mScene.mModels.end(); ++it)
+      for (auto it = Scene.mModels.begin(); it != Scene.mModels.end(); ++it)
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "model";
         out << YAML::Key << "filename" << YAML::Value << it->mFilename.c_str();
         out << YAML::Key << "matrix" << YAML::Value << it->mModelMatrix;
+        out << YAML::EndMap;
+      }
+      if (Scene.mWater.isShown)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "water";
+        out << YAML::Key << "amplitude" << YAML::Value << Scene.mWater.amplitude;
+        out << YAML::Key << "speed" << YAML::Value << Scene.mWater.speed;
+        out << YAML::Key << "samples" << YAML::Value << Scene.mWater.samples;
+        out << YAML::Key << "size" << YAML::Value << Scene.mWater.size;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;
@@ -314,18 +337,18 @@ namespace raytracing
       out << YAML::Key << "materials";
 
       out << YAML::BeginSeq;
-      for (size_t i = 0; i < rt::get()->mScene.mMaterialsCount; i++)
+      for (size_t i = 0; i < Scene.mMaterialsCount; i++)
       {
         out << YAML::BeginMap;
-        out << YAML::Key << "name" << YAML::Value << rt::get()->mScene.mMaterialsAdditional[i].name;
-        out << YAML::Key << "albedo" << YAML::Value << rt::get()->mScene.mMaterials[i].albedo;
-        out << YAML::Key << "emissivity" << YAML::Value << rt::get()->mScene.mMaterials[i].emissivity;
-        out << YAML::Key << "roughness" << YAML::Value << rt::get()->mScene.mMaterials[i].roughness;
-        out << YAML::Key << "metallic" << YAML::Value << rt::get()->mScene.mMaterials[i].metallic;
-        out << YAML::Key << "texture_coordinates_multiplier" << YAML::Value << rt::get()->mScene.mMaterials[i].textureCoordinatesMultiplier;
-        out << YAML::Key << "texture_id" << YAML::Value << rt::get()->mScene.mMaterials[i].textureIndex;
-        out << YAML::Key << "metallic_texture_id" << YAML::Value << rt::get()->mScene.mMaterials[i].metallicTextureIndex;
-        out << YAML::Key << "normal_texture_id" << YAML::Value << rt::get()->mScene.mMaterials[i].normalTextureIndex;
+        out << YAML::Key << "name" << YAML::Value << Scene.mMaterialsAdditional[i].name;
+        out << YAML::Key << "albedo" << YAML::Value << Scene.mMaterials[i].albedo;
+        out << YAML::Key << "emissivity" << YAML::Value << Scene.mMaterials[i].emissivity;
+        out << YAML::Key << "roughness" << YAML::Value << Scene.mMaterials[i].roughness;
+        out << YAML::Key << "metallic" << YAML::Value << Scene.mMaterials[i].metallic;
+        out << YAML::Key << "texture_coordinates_multiplier" << YAML::Value << Scene.mMaterials[i].textureCoordinatesMultiplier;
+        out << YAML::Key << "texture_id" << YAML::Value << Scene.mMaterials[i].textureIndex;
+        out << YAML::Key << "metallic_texture_id" << YAML::Value << Scene.mMaterials[i].metallicTextureIndex;
+        out << YAML::Key << "normal_texture_id" << YAML::Value << Scene.mMaterials[i].normalTextureIndex;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

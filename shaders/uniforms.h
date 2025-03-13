@@ -75,3 +75,6 @@ struct Material
 
 #include "objects.h"
 #include "ubos.h"
+
+#define NOISE_WIDTH 1024
+#define NOISE_HEIGHT 1024

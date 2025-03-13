@@ -48,6 +48,18 @@ HitData closestHit(Ray ray)
     }
   }
 
+  if (water.isShown == 1)
+  {
+    float d = rayIntersectsHeightmap(ray, noiseTexture, water.amplitude, water.samples, water.size);
+    if (d > 0 && result.distance > d)
+    {
+      result.distance = d;
+      result.position = ray.direction * (result.distance) + ray.origin;
+      result.normal = getHeightMapNormal(result.position.xz, noiseTexture, water.amplitude, water.size);
+      result.materialIndex = WATER_MATERIAL;
+    }
+  }
+
   for (int i = 0; i < entriesCount; i++)
   {
     HitData bvhHit = intersectBVH(ray, i);
@@ -98,5 +110,5 @@ vec3 castRay(Ray inputRay)
 
     resultColor += sampleColor;
   }
-  return resultColor / samples;
+  return resultColor / sampleCounter;
 }

@@ -4,6 +4,17 @@
 
 namespace raytracing
 {
+  
+  scene::scene() : mSpheres(), mPlanes(), mMaterials()
+  {
+    mWater.isShown = false;
+    mWater.amplitude = 0.1f;
+    mWater.speed = 1.0f;
+    mWater.animationTime = 0.0f;
+    mWater.samples = 16;
+    mWater.size = 1.0f;
+  }
+
   void scene::load_models()
   {
     std::vector<std::future<void>> modelFutures;

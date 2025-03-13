@@ -6,10 +6,10 @@ layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
 
 uniform sampler2D renderedTexture;
 
-#include "denoise.glsl"
+#include "third_party/denoise.glsl"
 
 void main()
 {
-  vec4 resultColor = smartDeNoise(renderedTexture, vec2(texCoord.x, 1.0 - texCoord.y), 3, 24, 0.100);
+  vec4 resultColor = smartDeNoise(renderedTexture, vec2(texCoord.x, 1.0 - texCoord.y), 3, 1.5, 0.200);
   outColor(resultColor);
 }

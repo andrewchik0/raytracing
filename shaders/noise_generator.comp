@@ -1,0 +1,16 @@
+#include "version.glsl"
+#include "compute.glsl"
+
+#include "uniforms.h"
+layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
+layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
+
+uniform sampler2D renderedTexture;
+
+#include "third_party/noise.glsl"
+
+void main()
+{
+  float noise = fbm(texCoord, vec2(2), 9, /*shift:*/ 23.0,  /*timeShift: */ water.animationTime * water.speed, /*gain:*/ 0.49, /*lacunarity*/ 2.0, /*octaveFactor:*/ -0.5, 0.0);
+  outColor(vec4(noise, noise, noise, 1.0));
+}

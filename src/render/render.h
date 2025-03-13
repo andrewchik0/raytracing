@@ -29,6 +29,7 @@ namespace raytracing
     bool mShowTextures = false;
     bool mPostProcessing = true;
     bool mDenoise = false;
+    bool mGenerateNoise = true;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
     uint32_t mMaxAccumulation = 32;
@@ -61,6 +62,7 @@ namespace raytracing
       mBloomShader,
       mAccumulationShader,
       mDenoiseShader,
+      mNoiseGeneratorShader,
       mDummyShader;
     render_texture
       mLastFrameTexture,
@@ -68,6 +70,7 @@ namespace raytracing
       mPostProcessedTexture,
       mAccumulatedTexture,
       mDenoisedTexture,
+      mNoiseTextureBuffer,
       mFinalTexture;
 
     int32_t mAccumulatingFrameIndex = 0;
