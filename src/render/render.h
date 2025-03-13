@@ -28,6 +28,7 @@ namespace raytracing
     bool mInterpolateNormals = true;
     bool mShowTextures = false;
     bool mPostProcessing = true;
+    bool mDenoise = false;
     uint32_t mSamplesCount = 1;
     uint32_t mBouncesCount = 16;
     uint32_t mMaxAccumulation = 32;
@@ -51,7 +52,7 @@ namespace raytracing
     shader& get_main_shader()
       { return mShader; }
     render_texture& get_final_texture()
-      { return mFinalTexture; }
+      { return mDenoise ? mDenoisedTexture : mFinalTexture; }
 
   private:
     shader
@@ -59,12 +60,14 @@ namespace raytracing
       mPostShader,
       mBloomShader,
       mAccumulationShader,
+      mDenoiseShader,
       mDummyShader;
     render_texture
       mLastFrameTexture,
       mBloomTexture,
       mPostProcessedTexture,
       mAccumulatedTexture,
+      mDenoisedTexture,
       mFinalTexture;
 
     int32_t mAccumulatingFrameIndex = 0;

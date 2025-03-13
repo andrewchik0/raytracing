@@ -1,0 +1,15 @@
+#include "version.glsl"
+#include "compute.glsl"
+
+#include "uniforms.h"
+layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
+
+uniform sampler2D renderedTexture;
+
+#include "denoise.glsl"
+
+void main()
+{
+  vec4 resultColor = smartDeNoise(renderedTexture, vec2(texCoord.x, 1.0 - texCoord.y), 3, 24, 0.100);
+  outColor(resultColor);
+}

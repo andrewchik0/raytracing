@@ -78,9 +78,17 @@ namespace raytracing
     // Store final buffer in accumulation buffer
     mAccumulatedTexture.copy_from(mFinalTexture);
 
+    // Denoise final image
+    if (mDenoise)
+    {
+      mDenoiseShader.set_uniform("renderedTexture", mFinalTexture);
+      mDenoiseShader.dispatch_compute(mDenoisedTexture);
+    }
+
+    // Store to external buffer if needed
     if (target)
     {
-      target->copy_from(mFinalTexture);
+      target->copy_from(mDenoise ? mDenoisedTexture : mFinalTexture);
     }
 
     mark_zone("Post processing pass");
@@ -98,6 +106,7 @@ namespace raytracing
       mBloomTexture.resize(width, height) &&
       mPostProcessedTexture.resize(width, height) &&
       mAccumulatedTexture.resize(width, height) &&
+      mDenoisedTexture.resize(width, height) &&
       mFinalTexture.resize(width, height);
 
     rt_assert(result, "Failed to resize framebuffers");
@@ -143,6 +152,7 @@ namespace raytracing
       mPostShader.load("./shaders/post.comp"),
       mBloomShader.load("./shaders/bloom.comp"),
       mAccumulationShader.load("./shaders/accumulation.comp"),
+      mDenoiseShader.load("./shaders/denoise.comp"),
       mDummyShader.load("./shaders/empty.comp"),
     };
 
