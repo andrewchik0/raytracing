@@ -2,6 +2,7 @@
 
 #include "bounding_volume_builder.h"
 #include "camera.h"
+#include "render/grid.h"
 #include "render/model.h"
 
 namespace raytracing
@@ -22,12 +23,14 @@ namespace raytracing
 
     camera mCamera;
     std::vector<model> mModels;
+    std::vector<grid> mGrids;
 
     void load_models();
 
     void update(float deltaTime);
 
     void add_model(const std::string& filename, const glm::mat4& matrix = glm::mat4(1.0f));
+    void add_grid(grid&& grid);
 
     void add_sphere(const std::string& name, const SphereObject& object);
     void add_plane(const std::string& name, const PlaneObject& object);

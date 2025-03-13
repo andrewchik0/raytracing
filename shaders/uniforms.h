@@ -60,7 +60,12 @@ struct Material
   = -1
 #endif
   ;
-  vec3 _;
+  vec2 _;
+  float alpha
+#ifdef __cplusplus
+  = 1.0f
+#endif
+  ;
   float metallic
 #ifdef __cplusplus
    = 0

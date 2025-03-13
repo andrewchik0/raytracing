@@ -53,6 +53,8 @@ add_executable(ray-tracing
   src/render/storage_buffer.h
   src/final_render.cpp
   src/final_render.h
+  src/render/grid.cpp
+  src/render/grid.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)

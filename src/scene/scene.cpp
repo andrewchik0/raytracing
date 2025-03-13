@@ -14,8 +14,8 @@ namespace raytracing
       {
         if (m.load() == status::success)
         {
-          mTriangles.push_back(std::move(m.mTriangles));
-          mVertices.push_back(std::move(m.mVertices));
+          mTriangles.emplace_back(std::move(m.mTriangles));
+          mVertices.emplace_back(std::move(m.mVertices));
         }
       }));
     }
@@ -74,7 +74,14 @@ namespace raytracing
     model m;
     m.mFilename = filename;
     m.mModelMatrix = matrix;
-    mModels.push_back(m);
+    mModels.push_back(std::move(m));
+  }
+
+  void scene::add_grid(grid&& grid)
+  {
+    mTriangles.emplace_back(std::move(grid.mTriangles));
+    mVertices.emplace_back(std::move(grid.mVertices));
+    mGrids.emplace_back(std::move(grid));
   }
 
 } // namespace raytracing

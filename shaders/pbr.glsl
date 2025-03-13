@@ -75,7 +75,7 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
   mat.alpha =
     float(materials[hit.materialIndex].textureIndex != -1) *
     textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a +
-    float(materials[hit.materialIndex].textureIndex == -1) * 1.0;
+    float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].alpha;
   return mat;
 }
 
