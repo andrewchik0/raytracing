@@ -220,7 +220,7 @@ namespace raytracing
       check(ImGui::Checkbox("Interpolate normals", &rt::get()->mRender.mInterpolateNormals));
       check(ImGui::Checkbox("Show textures", &rt::get()->mRender.mShowTextures));
       check(ImGui::Checkbox("Post processing", &rt::get()->mRender.mPostProcessing));
-      check(ImGui::Checkbox("Denoise (works bad)", &rt::get()->mRender.mDenoise));
+      ImGui::Checkbox("Denoise (works bad)", &rt::get()->mRender.mDenoise);
       if (check(ImGui::Checkbox("V-Sync", &rt::get()->mVSyncEnabled)))
         rt::get()->mWindow.vsync(rt::get()->mVSyncEnabled);
       check(ImGui::Checkbox("FXAA", &rt::get()->mRender.mUseFXAA));

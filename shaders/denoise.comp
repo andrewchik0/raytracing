@@ -10,6 +10,6 @@ uniform sampler2D renderedTexture;
 
 void main()
 {
-  vec4 resultColor = smartDeNoise(renderedTexture, vec2(texCoord.x, 1.0 - texCoord.y), 3, 1.5, 0.200);
+  vec4 resultColor = smartDeNoise(renderedTexture, vec2(texCoord.x, 1.0 - texCoord.y), 1.5, 7, 0.03);
   outColor(resultColor);
 }

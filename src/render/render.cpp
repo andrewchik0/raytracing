@@ -48,46 +48,47 @@ namespace raytracing
 
   void render::draw(render_texture* target /* = nullptr */)
   {
-    if (!should_accumulate())
-      return;
-    mAccumulatingFrameIndex++;
-
-    // Noise generator
-    if (mGenerateNoise)
+    if (should_accumulate())
     {
-      mNoiseGeneratorShader.dispatch_compute(mNoiseTextureBuffer);
+      mAccumulatingFrameIndex++;
+
+      // Noise generator
+      if (mGenerateNoise)
+      {
+        mNoiseGeneratorShader.dispatch_compute(mNoiseTextureBuffer);
+      }
+
+      // Main pass
+      set_uniforms();
+      push_scene();
+      mShader.set_uniform("noiseTexture", mNoiseTextureBuffer);
+      mTextures.bind();
+      mShader.dispatch_compute(mLastFrameTexture);
+      mark_zone("Main pass");
+
+      // Bloom pass
+      if (mBlurSize != 0)
+      {
+        mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
+        mBloomShader.dispatch_compute(mBloomTexture);
+        mark_zone("Bloom pass");
+      }
+
+
+      // Post-processing pass
+      mPostShader.set_uniform("renderedTexture", mLastFrameTexture);
+      mPostShader.set_uniform("bloomTexture", mBloomTexture);
+      mPostShader.dispatch_compute(mPostProcessedTexture);
+
+      // Accumulation pass
+      mAccumulationShader.set_uniform("lastFrameTexture", mPostProcessedTexture);
+      mAccumulationShader.set_uniform("accumulatedTexture", mAccumulatedTexture);
+      mAccumulationShader.set_uniform("frameIndex", mAccumulatingFrameIndex);
+      mAccumulationShader.dispatch_compute(mFinalTexture);
+
+      // Store final buffer in accumulation buffer
+      mAccumulatedTexture.copy_from(mFinalTexture);
     }
-
-    // Main pass
-    set_uniforms();
-    push_scene();
-    mShader.set_uniform("noiseTexture", mNoiseTextureBuffer);
-    mTextures.bind();
-    mShader.dispatch_compute(mLastFrameTexture);
-    mark_zone("Main pass");
-
-    // Bloom pass
-    if (mBlurSize != 0)
-    {
-      mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
-      mBloomShader.dispatch_compute(mBloomTexture);
-      mark_zone("Bloom pass");
-    }
-
-
-    // Post-processing pass
-    mPostShader.set_uniform("renderedTexture", mLastFrameTexture);
-    mPostShader.set_uniform("bloomTexture", mBloomTexture);
-    mPostShader.dispatch_compute(mPostProcessedTexture);
-
-    // Accumulation pass
-    mAccumulationShader.set_uniform("lastFrameTexture", mPostProcessedTexture);
-    mAccumulationShader.set_uniform("accumulatedTexture", mAccumulatedTexture);
-    mAccumulationShader.set_uniform("frameIndex", mAccumulatingFrameIndex);
-    mAccumulationShader.dispatch_compute(mFinalTexture);
-
-    // Store final buffer in accumulation buffer
-    mAccumulatedTexture.copy_from(mFinalTexture);
 
     // Denoise final image
     if (mDenoise)
