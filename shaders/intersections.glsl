@@ -63,58 +63,92 @@ float rayAABBIntersect(vec3 rayOrigin, vec3 rayDirInv, vec3 boxMin, vec3 boxMax)
   return (tFar > max(tNear, 0.0)) ? tNear : FAR_PLANE;
 }
 
+// Manual Bilinear Interpolation
+float getHeight(vec2 texCoords, float size, sampler2D heightMap)
+{
+  float texSize = textureSize(heightMap, 0).x;
+  vec2 uv = texCoords * size;
+  vec2 texelPos = uv * texSize; // Convert to texel space
+
+  vec2 i = floor(texelPos);
+  vec2 f = fract(texelPos); // Fractional part for interpolation
+
+  // Convert back to normalized UVs
+  vec2 uv00 = (i + vec2(0.0, 0.0)) / texSize;
+  vec2 uv10 = (i + vec2(1.0, 0.0)) / texSize;
+  vec2 uv01 = (i + vec2(0.0, 1.0)) / texSize;
+  vec2 uv11 = (i + vec2(1.0, 1.0)) / texSize;
+
+  // Sample height values
+  float h00 = texture(heightMap, uv00).r;
+  float h10 = texture(heightMap, uv10).r;
+  float h01 = texture(heightMap, uv01).r;
+  float h11 = texture(heightMap, uv11).r;
+
+  // Bilinear interpolation
+  float h0 = mix(h00, h10, f.x);
+  float h1 = mix(h01, h11, f.x);
+  return mix(h0, h1, f.y);
+}
+
 float rayIntersectsHeightmap(Ray ray, sampler2D heightMap, float intensity, int samples, float size)
 {
   // intersect with bounding box of heightmap
-  vec3 min = vec3(-FAR_PLANE, 0, -FAR_PLANE);
-  vec3 max = vec3(FAR_PLANE, intensity, FAR_PLANE);
-  float t_aabb = rayAABBIntersect(ray.origin, 1.0 / ray.direction, min, max);
+  vec3 aabbMin = vec3(-FAR_PLANE, 0, -FAR_PLANE);
+  vec3 aabbMax = vec3(FAR_PLANE, intensity, FAR_PLANE);
+  float t_aabb = rayAABBIntersect(ray.origin, 1.0 / ray.direction, aabbMin, aabbMax);
   if (t_aabb == FAR_PLANE) return FAR_PLANE; // Ray is pointing away
 
-  // Intersect ray with flat plane (y=0)
-  float t_plane = -ray.origin.y / ray.direction.y;
+  // Intersect ray with bottom and top planes (y=0, y=intensity)
+  // If plane is behind the camera set starting search point to camera
+  float t_bottomPlane = max(-ray.origin.y / ray.direction.y, 0);
+  float t_upperPlane = max((intensity - ray.origin.y) / ray.direction.y, 0.0);
 
-  // Compute the height at (x, z)
-  vec3 hit = ray.origin + t_plane * ray.direction;
-  float h = texture(heightMap, hit.xz * size).r * intensity;
-
-  // Binary search to refine intersection
-  float t_min = 0, t_max = t_plane;
-  for (int i = 0; i < samples; i++) // Increase iterations for better accuracy
+  if (t_upperPlane > t_bottomPlane)
   {
-    float t_mid = 0.5f * (t_min + t_max);
-    vec3 mid_point = ray.origin + t_mid * ray.direction;
-    float h_mid = texture(heightMap, mid_point.xz * size).r * intensity;
+    // If ray is pointing to upper plane
+    float dt = (t_upperPlane - t_bottomPlane) / float(samples);
+    float t;
+    for (t = t_bottomPlane; t < t_upperPlane; t += dt)
+    {
+      vec3 midPoint = ray.origin + t * ray.direction;
+      float sampledHeight = getHeight(midPoint.xz, size, heightMap) * intensity;
 
-    if (mid_point.y > h_mid)
-      t_min = t_mid;
-    else
-      t_max = t_mid;
+      if (midPoint.y > sampledHeight) return t;
+    }
+    return t;
   }
+  else
+  {
+    // If ray is pointing to bottom plane
+    float dt = (t_bottomPlane - t_upperPlane) / float(samples);
+    float t;
+    for (t = t_upperPlane; t < t_bottomPlane; t += dt)
+    {
+      vec3 midPoint = ray.origin + t * ray.direction;
+      float sampledHeight = getHeight(midPoint.xz, size, heightMap) * intensity;
 
-  return t_max;
+      if (midPoint.y < sampledHeight) return t;
+    }
+    return t;
+  }
 }
 
 vec3 getHeightMapNormal(vec2 pos, sampler2D heightMap, float intensity, float size)
 {
-  float dx = 1.0 / float(textureSize(heightMap, 0).x - 1);
-  float dy = 1.0 / float(textureSize(heightMap, 0).y - 1);
+  vec2 uv = pos * size;
+  float texelSize = 1.0 / textureSize(heightMap, 0).x; // Texel size in UV space
 
-  vec2 uvL = vec2(pos.x - dx * 100, pos.y);
-  vec2 uvR = vec2(pos.x + dx * 100, pos.y);
-  vec2 uvD = vec2(pos.x, pos.y - dy);
-  vec2 uvU = vec2(pos.x, pos.y + dy);
+  vec2 uvL = uv - vec2(texelSize, 0.0);
+  vec2 uvR = uv + vec2(texelSize, 0.0);
+  vec2 uvD = uv - vec2(0.0, texelSize);
+  vec2 uvU = uv + vec2(0.0, texelSize);
 
-  uvL = uvL - floor(uvL);
-  uvR = uvR - floor(uvR);
-  uvD = uvD - floor(uvD);
-  uvU = uvU - floor(uvU);
+  float hL = getHeight(uvL, 1.0, heightMap) * intensity;
+  float hR = getHeight(uvR, 1.0, heightMap) * intensity;
+  float hD = getHeight(uvD, 1.0, heightMap) * intensity;
+  float hU = getHeight(uvU, 1.0, heightMap) * intensity;
 
-  float hL = texture(heightMap, uvL * size).r * intensity;
-  float hR = texture(heightMap, uvR * size).r * intensity;
-  float hD = texture(heightMap, uvD * size).r * intensity;
-  float hU = texture(heightMap, uvU * size).r * intensity;
-
-  vec3 normal = normalize(vec3((hL - hR) * intensity, 2.0, (hD - hU) * intensity));
+  vec3 normal = normalize(vec3((hL - hR), 2.0 * texelSize.x, (hD - hU)));
   return normal;
 }

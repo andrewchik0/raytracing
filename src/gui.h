@@ -83,6 +83,7 @@ namespace raytracing
 
     bool mAddItemOpened = false;
     bool mShowAbout = false;
+    bool mAnimateWater = false;
 
     void setup_style();
   };

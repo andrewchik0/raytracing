@@ -17,3 +17,17 @@ struct Ray
   vec3 origin;
   vec3 direction;
 };
+
+struct SampledMaterial
+{
+  vec2 uv;
+  float lod;
+  vec3 albedo;
+  float roughness;
+  float specular;
+  float metallic;
+  vec3 normal;
+  float alpha;
+  float f0;
+  vec3 emissivity;
+};

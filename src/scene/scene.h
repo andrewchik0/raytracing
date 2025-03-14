@@ -73,5 +73,6 @@ namespace raytracing
     friend class bounding_volume_builder;
     friend class gui;
     friend class serializer;
+    friend class final_render;
   };
 }

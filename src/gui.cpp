@@ -151,6 +151,12 @@ namespace raytracing
 
     ImGui::PopStyleVar();
 
+    if (mAnimateWater)
+    {
+      rt::get()->mScene.mWater.animationTime += rt::get()->mTimeHandler.mDeltaTime * rt::get()->mScene.mWater.speed;
+      check(true);
+    }
+
     ImGui::Begin("Render");
     render_tab();
     ImGui::End();
@@ -226,6 +232,7 @@ namespace raytracing
       ImGui::EndDisabled();
       int minAccumulation = 1, minBounces = 2;
       check(ImGui::DragScalar("Bounces count", ImGuiDataType_U32, &rt::get()->mRender.mBouncesCount, 1, &minBounces));
+      check(ImGui::DragScalar("Samples per frame", ImGuiDataType_U32, &rt::get()->mRender.mSamplesCount, 1, &minAccumulation));
       check(ImGui::DragScalar("Accumulated frames", ImGuiDataType_U32, &rt::get()->mRender.mMaxAccumulation, 1, &minAccumulation));
       ImGui::DragFloat("Camera speed", &rt::get()->mScene.mCamera.mSpeed, 0.01, 0.01, 1000, "%.2f");
       ImGui::DragFloat("Mouse sensitivity", &rt::get()->mScene.mCamera.mMouseSensitivity, 0.01, 0.01, 100, "%.2f");
@@ -409,21 +416,14 @@ namespace raytracing
   void gui::water_section()
   {
     static bool renderWater = rt::get()->mScene.mWater.isShown;
-    static bool autoAnimate = false;
     if (check(ImGui::Checkbox("Render water", &renderWater)))
       rt::get()->mScene.mWater.isShown = renderWater;
-    check(ImGui::Checkbox("Auto animate", &autoAnimate));
+    check(ImGui::Checkbox("Auto animate", &mAnimateWater));
     check(ImGui::DragFloat("Size", &rt::get()->mScene.mWater.size, 0.01f, 0.01f, 100.0f, "%.2f"));
     check(ImGui::DragFloat("Amplitude", &rt::get()->mScene.mWater.amplitude, 0.01f, 0.01f, 100.0f, "%.2f"));
     check(ImGui::DragFloat("Animation speed", &rt::get()->mScene.mWater.speed, 0.01f, 0.01f, 100.0f, "%.2f"));
     check(ImGui::DragInt("Height map samples", &rt::get()->mScene.mWater.samples, 1, 1, 1024));
     check(ImGui::SliderFloat("Animation", &rt::get()->mScene.mWater.animationTime, 0.0f, 10.0f, "%.3f"));
-
-    if (autoAnimate)
-    {
-      rt::get()->mScene.mWater.animationTime += rt::get()->mTimeHandler.mDeltaTime * rt::get()->mScene.mWater.speed;
-      check(true);
-    }
   }
 
   void gui::add_item_window()

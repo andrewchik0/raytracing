@@ -54,9 +54,7 @@ namespace raytracing
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    stbi_flip_vertically_on_write(true);
     stbi_write_png(path.string().c_str(), mWidth, mHeight, 4, pixels.data(), 0);
-    stbi_flip_vertically_on_write(false);
   }
 
   void texture::copy_from(const texture& other)

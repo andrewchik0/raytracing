@@ -17,6 +17,7 @@ namespace raytracing
 
     // Store data
     uint32_t bounces = mRt->mRender.mBouncesCount;
+    uint32_t samples = mRt->mRender.mSamplesCount;
     size_t maxAccumulation = mRt->mRender.mMaxAccumulation;
     int renderMode = mRt->mRender.mRenderMode;
 
@@ -24,6 +25,7 @@ namespace raytracing
     mRt->mRender.mBouncesCount = mRenderOptions.bounces;
     mRt->mRender.reset_accumulation();
     mRt->mRender.mMaxAccumulation = mRenderOptions.samples;
+    mRt->mRender.mSamplesCount = 1;
     mRt->set_viewport(mRenderOptions.width, mRenderOptions.height);
 
     size_t sampleCounter = 0;
@@ -42,6 +44,7 @@ namespace raytracing
     mRt->mRender.mRenderMode = renderMode;
     mRt->mRender.mMaxAccumulation = maxAccumulation;
     mRt->mRender.reset_accumulation();
+    mRt->mRender.mSamplesCount = samples;
     mRt->set_viewport();
   }
 
@@ -69,7 +72,7 @@ namespace raytracing
     {
       render_texture rt(mRenderOptions.width, mRenderOptions.height);
       size_t sampleCounter = 0;
-      mRt->mScene.mCamera.move_right(0.01);
+      mRt->mScene.mWater.animationTime += mRt->mScene.mWater.speed * 1.0 / mRenderOptions.framerate;
 
       while (sampleCounter++ < mRenderOptions.samples)
       {

@@ -1,10 +1,10 @@
 exposure: 3.12
 gamma: 1.04
 blur_radius: 0
-sky_filename: assets/skies/sky.hdr
+sky_filename: assets/skies/cloudy.hdr
 camera:
-  position: [-4.752342, 3.1165524, 1.427712]
-  direction: [0.95714587, -0.2820104, 0.06586479]
+  position: [-6.2481904, 4.1213613, 2.22274]
+  direction: [0.958512, -0.25874746, -0.1105783]
   fov: 90
 objects:
   - type: sphere
@@ -20,8 +20,8 @@ objects:
   - type: water
     amplitude: 2.19
     speed: 1
-    samples: 16
-    size: 0.1
+    samples: 1024
+    size: 0.03
 materials:
   - name: Material
     albedo: [0.92, 0.65, 0]

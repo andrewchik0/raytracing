@@ -1,19 +1,7 @@
 #include "uniforms.h"
 #include "utils.glsl"
 #include "types.glsl"
-
-struct SampledMaterial
-{
-  vec2 uv;
-  float lod;
-  vec3 albedo;
-  float roughness;
-  float specular;
-  float metallic;
-  vec3 normal;
-  float alpha;
-  vec3 emissivity;
-};
+#include "water.glsl"
 
 vec3 hash3(uvec3 p)
 {
@@ -27,28 +15,15 @@ float fresnelSchlik(float cosTheta, float f0)
   return f0 + (1.0 - f0) * pow(1 - max(cosTheta, 0.0), 5.0);
 }
 
-void waterMaterial(HitData hit, inout SampledMaterial mat)
-{
-  mat.normal = hit.normal;
-  mat.uv = hit.textureCoordinates - floor(hit.textureCoordinates);
-  mat.albedo = vec3(0.2, 0.3, 0.5);
-  float wave = pow(hit.position.y / water.amplitude, 20) * 400;
-  mat.albedo += wave;
-  mat.metallic = 0;
-  mat.alpha = 1;
-  mat.roughness = wave;
-  mat.lod = 0;
-  mat.emissivity = vec3(0);
-  mat.specular = 0;
-}
-
-SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat)
+SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
 {
   if (hit.materialIndex == WATER_MATERIAL)
   {
-    waterMaterial(hit, mat);
+    waterMaterial(hit, mat, ray);
     return mat;
   }
+
+  mat.f0 = -1.0;
 
   mat.uv = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
   loadUV(mat.uv, hit.materialIndex);
@@ -113,7 +88,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   float bias = 1e-5;
   SampledMaterial mat;
-  sampleMaterial(hit, mat);
+  sampleMaterial(hit, mat, ray);
 
   if (renderMode != 1)
   {
@@ -180,8 +155,8 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     random(ray.direction.y + gl_LocalInvocationID.x + gl_GlobalInvocationID.x + sampleCounter)) / 3;
 
   // Calculate metallic & roughness coefficients
-  float f0 = mix(0.3, .35, 1.0 - mat.metallic);
-  float fresnel = min(fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0), 0.4);
+  float f0 = mat.f0 == -1.0 ? mix(0.3, .35, 1.0 - mat.metallic) : mat.f0;
+  float fresnel = mat.f0 == -1.0 ? min(fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0), 0.4) : fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0);
 
   // Get random and specular new ray directions
   vec3 seed = hash3(uvec3(uvec2(texCoord * windowSize.xy), int(time + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0)); // tired of looking for nice seed, just use hash
