@@ -17,14 +17,14 @@ HitData closestHit(Ray ray)
   HitData result;
   result.distance = FAR_PLANE;
 
-  for (uint i = 0; i < spheresCount; i++)
+  for (uint i = 0; i < u_spheresCount; i++)
   {
-    float d = raySphereIntersect(ray, spheres[i].center.xyz, spheres[i].radius);
+    float d = raySphereIntersect(ray, u_spheres[i].center.xyz, u_spheres[i].radius);
     if (d > 0 && result.distance > d)
     {
       result.distance = d;
-      result.normal = normalize(ray.direction * d + ray.origin - spheres[i].center.xyz);
-      result.materialIndex = spheres[i].materialIndex;
+      result.normal = normalize(ray.direction * d + ray.origin - u_spheres[i].center.xyz);
+      result.materialIndex = u_spheres[i].materialIndex;
       float theta = atan(sqrt(result.normal.x * result.normal.x + result.normal.z * result.normal.z), result.normal.y);
       float phi = atan(result.normal.x, result.normal.z);
       result.textureCoordinates = vec2(phi / PI / 2.0f + 0.5, theta / PI);
@@ -34,14 +34,14 @@ HitData closestHit(Ray ray)
     }
   }
 
-  for (uint i = 0; i < planesCount; i++)
+  for (uint i = 0; i < u_planesCount; i++)
   {
-    float d = rayPlaneIntersect(ray, planes[i].normal.xyz, planes[i].distance);
+    float d = rayPlaneIntersect(ray, u_planes[i].normal.xyz, u_planes[i].distance);
     if (d > 0 && result.distance > d)
     {
       result.distance = d;
-      result.normal = planes[i].normal.xyz;
-      result.materialIndex = planes[i].materialIndex;
+      result.normal = u_planes[i].normal.xyz;
+      result.materialIndex = u_planes[i].materialIndex;
       result.textureCoordinates = (ray.direction * d + ray.origin).xz;
       result.tangent = vec3(1, 0, 0);
       result.bitangent = vec3(0, 0, 1);
@@ -49,14 +49,14 @@ HitData closestHit(Ray ray)
     }
   }
 
-  if (water.isShown == 1)
+  if (u_water.isShown == 1)
   {
-    float d = rayIntersectsHeightmap(ray, noiseTexture, water.amplitude, water.samples, water.size);
+    float d = rayIntersectsHeightmap(ray, u_noiseTexture, u_water.amplitude, u_water.samples, u_water.size);
     if (d > 0 && result.distance > d)
     {
       result.distance = d;
       result.position = ray.direction * (result.distance) + ray.origin;
-      result.normal = getHeightMapNormal(result.position.xz, noiseTexture, water.amplitude, water.size);
+      result.normal = getHeightMapNormal(result.position.xz, u_noiseTexture, u_water.amplitude, u_water.size);
       result.materialIndex = WATER_MATERIAL;
       result.textureCoordinates = vec2(0);
     }
@@ -76,7 +76,7 @@ HitData closestHit(Ray ray)
     }
   }
 
-  if (mandelbulb.isShown == 1)
+  if (u_mandelbulb.isShown == 1)
   {
     HitData rayMarchHit = mandelbulbIntersect(ray);
     if (rayMarchHit.distance < result.distance)
@@ -99,21 +99,21 @@ vec3 castRay(Ray inputRay)
   vec3 resultColor = vec3(0);
 
   uint sampleCounter;
-  for (sampleCounter = 0; sampleCounter < samples; sampleCounter++)
+  for (sampleCounter = 0; sampleCounter < u_samples; sampleCounter++)
   {
     Ray ray;
     ray.origin = inputRay.origin;
     ray.direction = inputRay.direction;
     vec3 sampleColor = vec3(1);
 
-    for (uint i = 0; i < bounces; i++)
+    for (uint i = 0; i < u_bounces; i++)
     {
       HitData hit = closestHit(ray);
       if (hit.distance == FAR_PLANE)
       {
         float theta = atan(sqrt(ray.direction.x * ray.direction.x + ray.direction.z * ray.direction.z), ray.direction.y);
         float phi = atan(ray.direction.x, ray.direction.z);
-        vec3 skyColor = min(texture(sky, vec2(phi / PI / 2.0 + 0.5, theta / PI)).rgb, vec3(42.0));
+        vec3 skyColor = min(texture(u_sky, vec2(phi / PI / 2.0 + 0.5, theta / PI)).rgb, vec3(42.0));
         sampleColor *= skyColor;
         break;
       }
@@ -126,5 +126,5 @@ vec3 castRay(Ray inputRay)
 
     resultColor += sampleColor;
   }
-  return resultColor / samples;
+  return resultColor / u_samples;
 }

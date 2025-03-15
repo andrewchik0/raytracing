@@ -124,10 +124,10 @@ namespace raytracing
     size_t index = rt::get()->mRender.get_main_shader().get_free_texture_index();
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
-    rt::get()->mRender.get_main_shader().set_uniform("texArray", index);
+    rt::get()->mRender.get_main_shader().set_uniform("u_texArray", index);
     glActiveTexture(GL_TEXTURE0 + index + 1);
     glBindTexture(GL_TEXTURE_2D, mSky);
-    rt::get()->mRender.get_main_shader().set_uniform("sky", index + 1);
+    rt::get()->mRender.get_main_shader().set_uniform("u_sky", index + 1);
   }
 
   void textures::reload()

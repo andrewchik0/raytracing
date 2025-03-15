@@ -7,16 +7,6 @@ camera:
   direction: [0.4856086, -0.2620461, 0.83397615]
   fov: 90
 objects:
-  - type: sphere
-    name: Sphere
-    position: [0.12, 4.52, 0]
-    radius: 1
-    materialIndex: 0
-  - type: sphere
-    name: Sphere
-    position: [0.36, 4.43, 2.38]
-    radius: 1
-    materialIndex: 1
   - type: water
     albedo: [0.3, 0.6, 0.7]
     amplitude: 5.49

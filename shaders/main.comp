@@ -1,10 +1,9 @@
 #include "version.glsl"
 #include "compute.glsl"
 
-uniform sampler2D noiseTexture;
-uniform sampler2D sky;
-uniform sampler2DArray texArray;
-uniform isampler2DArray trianglesTexture;
+uniform sampler2D u_noiseTexture;
+uniform sampler2D u_sky;
+uniform sampler2DArray u_texArray;
 
 #include "uniforms.h"
 
@@ -15,22 +14,22 @@ layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 
 void main()
 {
-  if (useSSAA != 1)
+  if (u_useSSAA != 1)
   {
     Ray ray;
-    ray.origin = cameraPosition.xyz;
-    ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord, halfWidth, halfHeight);
+    ray.origin = u_cameraPosition.xyz;
+    ray.direction = calculateRayDirection(u_cameraDirection.xyz, u_cameraRight.xyz, u_cameraUp.xyz, texCoord, u_halfWidth, u_halfHeight);
     outColor(vec4(castRay(ray), 1.0));
   }
   else
   {
     Ray ray;
-    vec2 pixelSize = 1.0 / windowSize.xy;
-    vec2 cellSize = pixelSize / SSAAGridSize;
-    float x = -cellSize.x * SSAAGridSize / 2.0 + cellSize.x * 0.5 + cellSize.x * (accumulationIndex % SSAAGridSize);
-    float y = -cellSize.y * SSAAGridSize / 2.0 + cellSize.y * 0.5 + cellSize.y * floor((accumulationIndex / SSAAGridSize) % SSAAGridSize);
-    ray.origin = cameraPosition.xyz;
-    ray.direction = calculateRayDirection(cameraDirection.xyz, cameraRight.xyz, cameraUp.xyz, texCoord + vec2(x, y), halfWidth, halfHeight);
+    vec2 pixelSize = 1.0 / u_windowSize.xy;
+    vec2 cellSize = pixelSize / u_SSAAGridSize;
+    float x = -cellSize.x * u_SSAAGridSize / 2.0 + cellSize.x * 0.5 + cellSize.x * (u_accumulationIndex % u_SSAAGridSize);
+    float y = -cellSize.y * u_SSAAGridSize / 2.0 + cellSize.y * 0.5 + cellSize.y * floor((u_accumulationIndex / u_SSAAGridSize) % u_SSAAGridSize);
+    ray.origin = u_cameraPosition.xyz;
+    ray.direction = calculateRayDirection(u_cameraDirection.xyz, u_cameraRight.xyz, u_cameraUp.xyz, texCoord + vec2(x, y), u_halfWidth, u_halfHeight);
     outColor(vec4(castRay(ray), 1.0));
   }
 }

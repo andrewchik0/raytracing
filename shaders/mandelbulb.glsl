@@ -49,7 +49,7 @@ HitData mandelbulbIntersect(Ray ray)
 
   for (int i = 0; i < maxSteps; i++)
   {
-    float dist = mandelbulbSDF(currentOrigin - mandelbulb.position);
+    float dist = mandelbulbSDF(currentOrigin - u_mandelbulb.position);
 
     // If close enough, hit detected
     if (dist < epsilon && totalDistance < result.distance)

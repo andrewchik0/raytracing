@@ -1,11 +1,11 @@
 #include "version.glsl"
 #include "compute.glsl"
 
-uniform sampler2D renderedTexture;
+uniform sampler2D u_renderedTexture;
 
 void main()
 {
-  vec3 color = texture(renderedTexture, texCoord).xyz;
+  vec3 color = texture(u_renderedTexture, texCoord).xyz;
   float brightness = dot(color, vec3(1.0));
   if (brightness > 1.0)
     outColor(vec4(color, 1.0));

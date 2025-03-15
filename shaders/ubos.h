@@ -24,43 +24,43 @@ struct Mandelbulb
 };
 
 #define SCENE_BINDING 1
-#define SceneBufferStruct SceneBuffer           \
-{                                               \
-  SphereObject spheres[MAX_SPHERES];            \
-  PlaneObject planes[MAX_PLANES];               \
-  Material materials[MAX_MATERIALS];            \
-  Water water;                                  \
-  Mandelbulb mandelbulb;                        \
-  uint spheresCount;                            \
-  uint planesCount;                             \
+#define SceneBufferStruct SceneBuffer             \
+{                                                 \
+  SphereObject u_spheres[MAX_SPHERES];            \
+  PlaneObject u_planes[MAX_PLANES];               \
+  Material u_materials[MAX_MATERIALS];            \
+  Water u_water;                                  \
+  Mandelbulb u_mandelbulb;                        \
+  uint u_spheresCount;                            \
+  uint u_planesCount;                             \
 }
 
 #define GLOBAL_DATA_BINDING 2
-#define GlobalDataStruct GlobalData \
-{                                   \
-  vec3 cameraPosition;              \
-  float halfHeight;                 \
-  vec3 cameraDirection;             \
-  float halfWidth;                  \
-  vec3 cameraRight;                 \
-  float time;                       \
-  vec3 cameraUp;                    \
-  float gamma;                      \
-  vec4 windowSize;                  \
-  float exposure;                   \
-  float blurSize;                   \
-  int samples;                      \
-  int bounces;                      \
-  int maxTextureSize;               \
-  int useFXAA;                      \
-  int renderMode;                   \
-  int interpolateNormals;           \
-  int showTextures;                 \
-  int postProcessing;               \
-  int debugTextureLayer;            \
-  int useSSAA;                      \
-  int SSAAGridSize;                 \
-  int accumulationIndex;            \
+#define GlobalDataStruct GlobalData   \
+{                                     \
+  vec3 u_cameraPosition;              \
+  float u_halfHeight;                 \
+  vec3 u_cameraDirection;             \
+  float u_halfWidth;                  \
+  vec3 u_cameraRight;                 \
+  float u_time;                       \
+  vec3 u_cameraUp;                    \
+  float u_gamma;                      \
+  vec4 u_windowSize;                  \
+  float u_exposure;                   \
+  float u_blurSize;                   \
+  int u_samples;                      \
+  int u_bounces;                      \
+  int u_maxTextureSize;               \
+  int u_useFXAA;                      \
+  int u_renderMode;                   \
+  int u_interpolateNormals;           \
+  int u_showTextures;                 \
+  int u_postProcessing;               \
+  int u_debugTextureLayer;            \
+  int u_useSSAA;                      \
+  int u_SSAAGridSize;                 \
+  int u_accumulationIndex;            \
 }
 
 #define BVH_ENTRIES_BINDING 3

@@ -5,12 +5,10 @@
 layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
 layout (std140, binding = SCENE_BINDING) uniform SceneBufferStruct;
 
-uniform sampler2D renderedTexture;
-
 #include "third_party/noise.glsl"
 
 void main()
 {
-  float noise = fbm(texCoord, vec2(1), 9, /*shift:*/ 23.0,  /*timeShift: */ water.animationTime * water.speed, /*gain:*/ 0.4, /*lacunarity*/ 2, /*octaveFactor:*/ -0.5, 0.0);
+  float noise = fbm(texCoord, vec2(1), 9, /*shift:*/ 23.0,  /*timeShift: */ u_water.animationTime * u_water.speed, /*gain:*/ 0.4, /*lacunarity*/ 2, /*octaveFactor:*/ -0.5, 0.0);
   outColor(vec4(noise, noise, noise, 1.0));
 }

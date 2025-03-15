@@ -25,53 +25,53 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
 
   mat.f0 = -1.0;
 
-  mat.uv = hit.textureCoordinates * materials[hit.materialIndex].textureCoordinatesMultiplier;
+  mat.uv = hit.textureCoordinates * u_materials[hit.materialIndex].textureCoordinatesMultiplier;
   loadUV(mat.uv, hit.materialIndex);
   vec2 dudx = getDDX();
   vec2 dudy = getDDY();
   float lambda = max(length(dudx), length(dudy));
-  mat.lod = log2(max(lambda * textureSize(texArray, 0).x, 1.0));
+  mat.lod = log2(max(lambda * textureSize(u_texArray, 0).x, 1.0));
 
   mat.albedo = max(
-    float(materials[hit.materialIndex].textureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).rgb +
-    float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].albedo,
+    float(u_materials[hit.materialIndex].textureIndex != -1) *
+    textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].textureIndex), mat.lod).rgb +
+    float(u_materials[hit.materialIndex].textureIndex == -1) * u_materials[hit.materialIndex].albedo,
     vec3(0.05));
 
   mat.metallic =
-    float(materials[hit.materialIndex].metallicTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].metallicTextureIndex), mat.lod).b +
-    float(materials[hit.materialIndex].metallicTextureIndex == -1) * materials[hit.materialIndex].metallic;
+    float(u_materials[hit.materialIndex].metallicTextureIndex != -1) *
+    textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].metallicTextureIndex), mat.lod).b +
+    float(u_materials[hit.materialIndex].metallicTextureIndex == -1) * u_materials[hit.materialIndex].metallic;
 
   mat.specular =
-    float(materials[hit.materialIndex].specularTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].specularTextureIndex), mat.lod).r * materials[hit.materialIndex].specular +
-    float(materials[hit.materialIndex].specularTextureIndex == -1) * materials[hit.materialIndex].specular;
+    float(u_materials[hit.materialIndex].specularTextureIndex != -1) *
+    textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].specularTextureIndex), mat.lod).r * u_materials[hit.materialIndex].specular +
+    float(u_materials[hit.materialIndex].specularTextureIndex == -1) * u_materials[hit.materialIndex].specular;
 
   mat.roughness =
-    materials[hit.materialIndex].sg == 1 ?
-      (1.0 - textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).a) :
-      float(materials[hit.materialIndex].roughnessTextureIndex != -1) *
-      textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].roughnessTextureIndex), mat.lod).g +
-      float(materials[hit.materialIndex].roughnessTextureIndex == -1) * materials[hit.materialIndex].roughness;
+    u_materials[hit.materialIndex].sg == 1 ?
+      (1.0 - textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].roughnessTextureIndex), mat.lod).a) :
+      float(u_materials[hit.materialIndex].roughnessTextureIndex != -1) *
+      textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].roughnessTextureIndex), mat.lod).g +
+      float(u_materials[hit.materialIndex].roughnessTextureIndex == -1) * u_materials[hit.materialIndex].roughness;
 
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
   mat.normal =
-    float((materials[hit.materialIndex].normalTextureIndex != -1)) *
-    TBN * (textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].normalTextureIndex), mat.lod).rgb * 2.0 - 1) +
-    float((materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
+    float((u_materials[hit.materialIndex].normalTextureIndex != -1)) *
+    TBN * (textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].normalTextureIndex), mat.lod).rgb * 2.0 - 1) +
+    float((u_materials[hit.materialIndex].normalTextureIndex == -1)) * hit.normal;
 
   mat.emissivity =
-    float(materials[hit.materialIndex].emissiveTextureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].emissiveTextureIndex), mat.lod).rgb *
-    materials[hit.materialIndex].emissivity +
-    float(materials[hit.materialIndex].emissiveTextureIndex == -1) *
-    materials[hit.materialIndex].emissivity;
+    float(u_materials[hit.materialIndex].emissiveTextureIndex != -1) *
+    textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].emissiveTextureIndex), mat.lod).rgb *
+    u_materials[hit.materialIndex].emissivity +
+    float(u_materials[hit.materialIndex].emissiveTextureIndex == -1) *
+    u_materials[hit.materialIndex].emissivity;
 
   mat.alpha =
-    float(materials[hit.materialIndex].textureIndex != -1) *
-    textureLod(texArray, vec3(mat.uv, materials[hit.materialIndex].textureIndex), mat.lod).a +
-    float(materials[hit.materialIndex].textureIndex == -1) * materials[hit.materialIndex].alpha;
+    float(u_materials[hit.materialIndex].textureIndex != -1) *
+    textureLod(u_texArray, vec3(mat.uv, u_materials[hit.materialIndex].textureIndex), mat.lod).a +
+    float(u_materials[hit.materialIndex].textureIndex == -1) * u_materials[hit.materialIndex].alpha;
   return mat;
 }
 
@@ -80,7 +80,7 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
  */
 bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 sampleColor, inout Ray ray)
 {
-  if (renderMode != 1 && showTextures != 1)
+  if (u_renderMode != 1 && u_showTextures != 1)
   {
     sampleColor = vec3(max(dot(normalize((vec3(1.0))), hit.normal) + 1.0, 0.02)) / 3.5;
     return false;
@@ -90,9 +90,9 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
   SampledMaterial mat;
   sampleMaterial(hit, mat, ray);
 
-  if (renderMode != 1)
+  if (u_renderMode != 1)
   {
-    switch (debugTextureLayer)
+    switch (u_debugTextureLayer)
     {
     case DEBUG_TEXTURE_LAYER_DEFAULT:
       sampleColor = mat.albedo;
@@ -136,7 +136,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
   }
 
   // Convert specular to metallic if needed
-  if (materials[hit.materialIndex].sg == 1)
+  if (u_materials[hit.materialIndex].sg == 1)
   {
     mat.metallic = clamp((mat.specular - 0.04) / (1.0 - 0.04), 0.0, 1.0);
     if (mat.specular < 1e-3)
@@ -145,7 +145,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
-  vec3 seed = hash3(uvec3(uvec2(texCoord * windowSize.xy), int(time * 1000 + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0) ^ floatBitsToUint(ray.origin * 1024.0));
+  vec3 seed = hash3(uvec3(uvec2(texCoord * u_windowSize.xy), int(u_time * 1000 + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0) ^ floatBitsToUint(ray.origin * 1024.0));
 
   // Set new ray origin
   ray.origin = hit.position + mat.normal * bias;

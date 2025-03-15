@@ -88,7 +88,7 @@ float getHeight(vec2 texCoords, float size, sampler2D heightMap)
   // Bilinear interpolation
   float h0 = mix(h00, h10, f.x);
   float h1 = mix(h01, h11, f.x);
-  return interpolateNormals == 1 ? mix(h0, h1, f.y) : (h00 + h01 + h10 + h11) / 4.0;
+  return u_interpolateNormals == 1 ? mix(h0, h1, f.y) : (h00 + h01 + h10 + h11) / 4.0;
 }
 
 float rayIntersectsHeightmap(Ray ray, sampler2D heightMap, float intensity, int samples, float size)

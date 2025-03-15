@@ -79,7 +79,7 @@ HitData intersectBVH(Ray ray, int modelIndex)
     Vertex v1 = vertices[foundTriangle.y];
     Vertex v2 = vertices[foundTriangle.z];
 
-    if (interpolateNormals == 1)
+    if (u_interpolateNormals == 1)
     {
       hit.normal = normalize(w * v0.normal.xyz + u * v1.normal.xyz + v * v2.normal.xyz);
       hit.tangent = normalize(w * v0.tangent.xyz + u * v1.tangent.xyz + v * v2.tangent.xyz);

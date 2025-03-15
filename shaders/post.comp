@@ -7,8 +7,8 @@ layout (std140, binding = GLOBAL_DATA_BINDING) uniform GlobalDataStruct;
 #include "utils.glsl"
 #include "fxaa.glsl"
 
-uniform sampler2D renderedTexture;
-uniform sampler2D bloomTexture;
+uniform sampler2D u_renderedTexture;
+uniform sampler2D u_bloomTexture;
 
 vec3 ACESFilm(vec3 x)
 {
@@ -22,29 +22,29 @@ vec3 ACESFilm(vec3 x)
 
 void main()
 {
-  if (postProcessing != 1)
+  if (u_postProcessing != 1)
   {
-    outColor(vec4(texture(renderedTexture, texCoord).xyz, 1.0));
+    outColor(vec4(texture(u_renderedTexture, texCoord).xyz, 1.0));
     return;
   }
 
   vec4 resultColor;
-  if (useFXAA == 1)
+  if (u_useFXAA == 1)
   {
-    resultColor = fxaa(renderedTexture, texCoord, windowSize.xy);
+    resultColor = fxaa(u_renderedTexture, texCoord, u_windowSize.xy);
   }
   else
   {
-    resultColor = vec4(texture(renderedTexture, texCoord).xyz, 1.0);
+    resultColor = vec4(texture(u_renderedTexture, texCoord).xyz, 1.0);
   }
 
-  if (renderMode == 1 && blurSize != 0)
+  if (u_renderMode == 1 && u_blurSize != 0)
   {
-    resultColor.rgb += max(gaussian_blur(bloomTexture, windowSize.xy, texCoord, blurSize), vec3(0.0));
+    resultColor.rgb += max(gaussian_blur(u_bloomTexture, u_windowSize.xy, texCoord, u_blurSize), vec3(0.0));
   }
 
-  vec3 mapped = vec3(1.0) - exp(-resultColor.rgb * exposure);
-  mapped = pow(mapped, vec3(1.0 / gamma));
+  vec3 mapped = vec3(1.0) - exp(-resultColor.rgb * u_exposure);
+  mapped = pow(mapped, vec3(1.0 / u_gamma));
   mapped = ACESFilm(mapped);
   resultColor = vec4(mapped, 1.0);
   outColor(resultColor);

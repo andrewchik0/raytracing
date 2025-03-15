@@ -67,7 +67,7 @@ float random( vec4  v ) { return floatConstruct(hash(floatBitsToUint(v))); }
 
 vec3 randomOnSphere(vec3 seed)
 {
-  vec3 rand = vec3(random(vec2(time, seed.x)), random(vec2(time, seed.y)), random(vec2(time, seed.z)));
+  vec3 rand = vec3(random(vec2(u_time, seed.x)), random(vec2(u_time, seed.y)), random(vec2(u_time, seed.z)));
   float theta = rand.x * 2.0 * 3.14159265;
   float v = rand.y;
   float phi = acos(2.0 * v - 1.0);
@@ -80,8 +80,8 @@ vec3 randomOnSphere(vec3 seed)
 
 vec3 randomHemisphereDirection(vec3 normal, vec3 rand)
 {
-  float rand1 = random(rand.xy + time);
-  float rand2 = random(rand.yz + time);
+  float rand1 = random(rand.xy + u_time);
+  float rand2 = random(rand.yz + u_time);
   float theta = acos(rand1);
   float phi = 2.0 * 3.14159265359 * rand2;
 

@@ -61,7 +61,7 @@ namespace raytracing
       // Main pass
       set_uniforms();
       push_scene();
-      mShader.set_uniform("noiseTexture", mNoiseTextureBuffer);
+      mShader.set_uniform("u_noiseTexture", mNoiseTextureBuffer);
       mTextures.bind();
       mShader.dispatch_compute(mLastFrameTexture);
       mark_zone("Main pass");
@@ -69,21 +69,21 @@ namespace raytracing
       // Bloom pass
       if (mBlurSize != 0)
       {
-        mBloomShader.set_uniform("renderedTexture", mLastFrameTexture);
+        mBloomShader.set_uniform("u_renderedTexture", mLastFrameTexture);
         mBloomShader.dispatch_compute(mBloomTexture);
         mark_zone("Bloom pass");
       }
 
 
       // Post-processing pass
-      mPostShader.set_uniform("renderedTexture", mLastFrameTexture);
-      mPostShader.set_uniform("bloomTexture", mBloomTexture);
+      mPostShader.set_uniform("u_renderedTexture", mLastFrameTexture);
+      mPostShader.set_uniform("u_bloomTexture", mBloomTexture);
       mPostShader.dispatch_compute(mPostProcessedTexture);
 
       // Accumulation pass
-      mAccumulationShader.set_uniform("lastFrameTexture", mPostProcessedTexture);
-      mAccumulationShader.set_uniform("accumulatedTexture", mAccumulatedTexture);
-      mAccumulationShader.set_uniform("frameIndex", mAccumulatingFrameIndex);
+      mAccumulationShader.set_uniform("u_lastFrameTexture", mPostProcessedTexture);
+      mAccumulationShader.set_uniform("u_accumulatedTexture", mAccumulatedTexture);
+      mAccumulationShader.set_uniform("u_frameIndex", mAccumulatingFrameIndex);
       mAccumulationShader.dispatch_compute(mFinalTexture);
 
       // Store final buffer in accumulation buffer
@@ -93,7 +93,7 @@ namespace raytracing
     // Denoise final image
     if (mDenoise)
     {
-      mDenoiseShader.set_uniform("renderedTexture", mFinalTexture);
+      mDenoiseShader.set_uniform("u_renderedTexture", mFinalTexture);
       mDenoiseShader.dispatch_compute(mDenoisedTexture);
     }
 
@@ -129,13 +129,13 @@ namespace raytracing
   void render::push_scene()
   {
     SceneBuffer buffer = {};
-    memcpy(buffer.planes, rt::get()->mScene.mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
-    memcpy(buffer.spheres, rt::get()->mScene.mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
-    memcpy(buffer.materials, rt::get()->mScene.mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
-    memcpy(&buffer.water, &rt::get()->mScene.mWater, sizeof(Water));
-    memcpy(&buffer.mandelbulb, &rt::get()->mScene.mMandelbulb, sizeof(Mandelbulb));
-    buffer.planesCount = rt::get()->mScene.mPlanesCount;
-    buffer.spheresCount = rt::get()->mScene.mSpheresCount;
+    memcpy(buffer.u_planes, rt::get()->mScene.mPlanes.data(), sizeof(PlaneObject) * MAX_PLANES);
+    memcpy(buffer.u_spheres, rt::get()->mScene.mSpheres.data(), sizeof(SphereObject) * MAX_SPHERES);
+    memcpy(buffer.u_materials, rt::get()->mScene.mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
+    memcpy(&buffer.u_water, &rt::get()->mScene.mWater, sizeof(Water));
+    memcpy(&buffer.u_mandelbulb, &rt::get()->mScene.mMandelbulb, sizeof(Mandelbulb));
+    buffer.u_planesCount = rt::get()->mScene.mPlanesCount;
+    buffer.u_spheresCount = rt::get()->mScene.mSpheresCount;
     mSceneBuffer.set(&buffer);
     rt::get()->mScene.mBVHEntries.indices.insert(rt::get()->mScene.mBVHEntries.indices.begin(), rt::get()->mScene.mBVHEntries.count);
     mBVHEntriesBuffer.set(rt::get()->mScene.mBVHEntries.indices.data(), sizeof(int) * (rt::get()->mScene.mBVHEntries.indices.size()));
@@ -181,28 +181,28 @@ namespace raytracing
   void render::set_uniforms()
   {
     GlobalData data;
-    data.cameraDirection = rt::get()->mScene.mCamera.mDirection;
-    data.cameraPosition = rt::get()->mScene.mCamera.mPosition;
-    data.cameraUp = rt::get()->mScene.mCamera.mUp;
-    data.cameraRight = rt::get()->mScene.mCamera.mRight;
-    data.time = rt::get()->mTimeHandler.mTimeSinceStart;
-    data.samples = mSamplesCount;
-    data.bounces = mBouncesCount;
-    data.halfHeight = rt::get()->mScene.mCamera.mHalfHeight;
-    data.halfWidth = rt::get()->mScene.mCamera.mHalfWidth;
-    data.useFXAA = mUseFXAA;
-    data.gamma = mGamma;
-    data.exposure = mExposure;
-    data.blurSize = mBlurSize;
-    data.windowSize = {mViewportWidth, mViewportHeight, 0, 0};
-    data.renderMode = mRenderMode;
-    data.interpolateNormals = mInterpolateNormals;
-    data.showTextures = mShowTextures;
-    data.postProcessing = mPostProcessing;
-    data.debugTextureLayer = mDebugTextureLayer;
-    data.useSSAA = mUseSSAA;
-    data.SSAAGridSize = mSSAAGridSize;
-    data.accumulationIndex = mAccumulatingFrameIndex;
+    data.u_cameraDirection = rt::get()->mScene.mCamera.mDirection;
+    data.u_cameraPosition = rt::get()->mScene.mCamera.mPosition;
+    data.u_cameraUp = rt::get()->mScene.mCamera.mUp;
+    data.u_cameraRight = rt::get()->mScene.mCamera.mRight;
+    data.u_time = rt::get()->mTimeHandler.mTimeSinceStart;
+    data.u_samples = mSamplesCount;
+    data.u_bounces = mBouncesCount;
+    data.u_halfHeight = rt::get()->mScene.mCamera.mHalfHeight;
+    data.u_halfWidth = rt::get()->mScene.mCamera.mHalfWidth;
+    data.u_useFXAA = mUseFXAA;
+    data.u_gamma = mGamma;
+    data.u_exposure = mExposure;
+    data.u_blurSize = mBlurSize;
+    data.u_windowSize = {mViewportWidth, mViewportHeight, 0, 0};
+    data.u_renderMode = mRenderMode;
+    data.u_interpolateNormals = mInterpolateNormals;
+    data.u_showTextures = mShowTextures;
+    data.u_postProcessing = mPostProcessing;
+    data.u_debugTextureLayer = mDebugTextureLayer;
+    data.u_useSSAA = mUseSSAA;
+    data.u_SSAAGridSize = mSSAAGridSize;
+    data.u_accumulationIndex = mAccumulatingFrameIndex;
     mGlobalDataBuffer.set(&data);
   }
 } // namespace raytracing

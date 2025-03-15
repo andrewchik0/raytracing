@@ -2,7 +2,7 @@
 
 float computePeaks(vec2 uv, sampler2D heightMap, float sampleSize)
 {
-  uv = uv * water.size;
+  uv = uv * u_water.size;
   float texelSize = 1.0 / textureSize(heightMap, 0).x; // Texel size in UV space
 
   vec2 uvL = uv - vec2(texelSize, 0.0) * sampleSize;
@@ -25,10 +25,10 @@ void waterMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
 {
   mat.normal = hit.normal;
   mat.uv = hit.textureCoordinates - floor(hit.textureCoordinates);
-  mat.albedo = water.albedo;
+  mat.albedo = u_water.albedo;
   mat.metallic = 0.0;
   mat.alpha = .7;
-  mat.roughness = water.roughness;
+  mat.roughness = u_water.roughness;
   mat.lod = 0;
   mat.emissivity = vec3(0);
   mat.specular = 0;

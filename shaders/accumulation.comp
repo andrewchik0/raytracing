@@ -1,13 +1,13 @@
 #include "version.glsl"
 #include "compute.glsl"
 
-uniform sampler2D lastFrameTexture;
-uniform sampler2D accumulatedTexture;
-uniform int frameIndex;
+uniform sampler2D u_lastFrameTexture;
+uniform sampler2D u_accumulatedTexture;
+uniform int u_frameIndex;
 
 void main()
 {
-  vec4 accumulated = texture(accumulatedTexture, vec2(texCoord.x, 1.0 - texCoord.y));
-  vec4 lastFrame = texture(lastFrameTexture, texCoord);
-  outColor((accumulated * (frameIndex - 1) + lastFrame) / frameIndex);
+  vec4 accumulated = texture(u_accumulatedTexture, vec2(texCoord.x, 1.0 - texCoord.y));
+  vec4 lastFrame = texture(u_lastFrameTexture, texCoord);
+  outColor((accumulated * (u_frameIndex - 1) + lastFrame) / u_frameIndex);
 }
