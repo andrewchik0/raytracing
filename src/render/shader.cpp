@@ -1,6 +1,7 @@
 #include "shader.h"
 
 #include <fstream>
+#include <regex>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -56,6 +57,102 @@ namespace raytracing
     return load(shaders, shaderStagesCount);
   }
 
+  std::string shader::parse_shader_error(const std::set<std::string>& includedFiles, std::string& fullShaderCode,
+                                         const std::vector<byte>& shaderErrors, const info& shader)
+  {
+    //
+    // Not the best method to handle errors, but enough for debugging
+    //
+    std::string parsedError;
+    std::istringstream log(shaderErrors.data());
+    std::string line;
+
+    // Parse every error produced by glsl compiler
+    while (std::getline(log, line)) // Reads up to '\n'
+    {
+      std::regex numPattern(R"(\d+)");
+      std::sregex_iterator it(line.begin(), line.end(), numPattern);
+      std::sregex_iterator end;
+      int32_t originalLineNumber = -1;
+
+      int count = 0;
+      while (it != end)
+      {
+        count++;
+        if (count == 2)
+          originalLineNumber = std::stoi(it->str());
+        ++it;
+      }
+      if (originalLineNumber == -1)
+        continue;
+
+      // Find the original file where error occurred
+      std::stringstream fullShaderCodeStream(fullShaderCode);
+      std::string lineOfError;
+      size_t counter = 0;
+      while (std::getline(fullShaderCodeStream, lineOfError))
+      {
+        counter++;
+        if (counter == originalLineNumber)
+          break;
+      }
+      if (counter != originalLineNumber)
+        continue;
+
+      std::string fileNameOfError;
+      size_t foundLineOfError = -1;
+      std::set<std::string> fullIncludedFiles = includedFiles;
+      fullIncludedFiles.emplace(shader.path);
+      for (auto file : fullIncludedFiles)
+      {
+        std::ifstream fileStream(file);
+        std::string lineToFind;
+        size_t counter = 0;
+        bool found = false;
+        while (std::getline(fileStream, lineToFind))
+        {
+          counter++;
+          if (lineToFind == lineOfError)
+          {
+            found = true;
+            break;
+          }
+        }
+        if (found)
+        {
+          foundLineOfError = counter;
+          fileNameOfError = file;
+          break;
+        }
+      }
+      if (foundLineOfError != -1)
+      {
+        std::sregex_iterator replaceIt(line.begin(), line.end(), numPattern);
+        std::sregex_iterator replaceEnd;
+
+        int replaceCount = 0;
+        std::string result = line;
+
+        while (replaceIt != replaceEnd)
+        {
+          replaceCount++;
+          if (replaceCount == 2)
+          {
+            result.replace(replaceIt->position(), replaceIt->length(), std::to_string(foundLineOfError));
+            break;
+          }
+          ++replaceIt;
+        }
+        if (replaceCount < 2)
+          break;
+
+        fileNameOfError.replace(0, 10, "");
+        parsedError += fileNameOfError + ": " + result + '\n';
+      }
+    }
+    return parsedError;
+  }
+
   status shader::load(info* shaders, const size_t infoCount)
   {
     if (glIsProgram(mShaderHandle))
@@ -85,7 +182,24 @@ namespace raytracing
       if (success != GL_TRUE)
       {
         glGetShaderInfoLog(shaders[i].shader, infoLog.size(), nullptr, infoLog.data());
-        rt::get()->mRender.mShaderErrors += "ERROR: Failed to compile shader: " + shaders[i].path + '\n' + infoLog.data() + '\n';
+        std::string shaderKind;
+        switch (shaders[i].type)
+        {
+        case GL_VERTEX_SHADER:
+          shaderKind = "vertex";
+          break;
+        case GL_COMPUTE_SHADER:
+          shaderKind = "compute";
+          break;
+        case GL_FRAGMENT_SHADER:
+          shaderKind = "fragment";
+          break;
+        default:
+          shaderKind = "unknown";
+        }
+        rt::get()->mRender.mShaderErrors +=
+          "ERROR: Failed to compile " + shaderKind + " shader\n" +
+          parse_shader_error(includedFiles, text, infoLog, shaders[i]);
       }
 
       glAttachShader(mShaderHandle, shaders[i].shader);
@@ -93,11 +207,6 @@ namespace raytracing
 
     glLinkProgram(mShaderHandle);
     glGetProgramiv(mShaderHandle, GL_LINK_STATUS, &success);
-    if (success != GL_TRUE)
-    {
-      glGetProgramInfoLog(mShaderHandle, infoLog.size(), nullptr, infoLog.data());
-      rt::get()->mRender.mShaderErrors += "ERROR: Failed to link shaders\n" + std::string(infoLog.data()) + '\n';
-    }
 
     for (uint32_t i = 0; i < infoCount; ++i)
     {

@@ -72,6 +72,9 @@ namespace raytracing
     };
     std::vector<texture_data> mTextures;
 
+    static std::string parse_shader_error(const std::set<std::string>& includedFiles, std::string& fullShaderCode,
+                                          const std::vector<byte>& shaderErrors, const info& shader);
+
     status load(info* shaders, size_t infoCount);
 
     int32_t get_uniform_location(const std::string& name);
