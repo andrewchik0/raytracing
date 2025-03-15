@@ -12,6 +12,13 @@ struct Water
   int samples;
 };
 
+#define MANDELBULB_MATERIAL (MAX_MATERIALS + 2)
+struct Mandelbulb
+{
+  vec3 position;
+  int isShown;
+};
+
 #define SCENE_BINDING 1
 #define SceneBufferStruct SceneBuffer           \
 {                                               \
@@ -19,6 +26,7 @@ struct Water
   PlaneObject planes[MAX_PLANES];               \
   Material materials[MAX_MATERIALS];            \
   Water water;                                  \
+  Mandelbulb mandelbulb;                        \
   uint spheresCount;                            \
   uint planesCount;                             \
 }

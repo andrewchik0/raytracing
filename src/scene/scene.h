@@ -55,6 +55,7 @@ namespace raytracing
     std::vector<std::vector<ivec4>> mTriangles;
 
     Water mWater;
+    Mandelbulb mMandelbulb;
 
     struct
     {

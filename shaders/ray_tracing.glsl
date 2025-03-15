@@ -3,6 +3,7 @@
 #include "intersections.glsl"
 #include "bounding_volume.glsl"
 #include "pbr.glsl"
+#include "mandelbulb.glsl"
 
 vec3 calculateRayDirection(vec3 cameraDirection, vec3 cameraRight, vec3 cameraUp, vec2 texCoords, float halfWidth, float halfHeight)
 {
@@ -57,6 +58,7 @@ HitData closestHit(Ray ray)
       result.position = ray.direction * (result.distance) + ray.origin;
       result.normal = getHeightMapNormal(result.position.xz, noiseTexture, water.amplitude, water.size);
       result.materialIndex = WATER_MATERIAL;
+      result.textureCoordinates = vec2(0);
     }
   }
 
@@ -71,6 +73,20 @@ HitData closestHit(Ray ray)
       result.textureCoordinates = bvhHit.textureCoordinates;
       result.tangent = bvhHit.tangent;
       result.bitangent = bvhHit.bitangent;
+    }
+  }
+
+  if (mandelbulb.isShown == 1)
+  {
+    HitData rayMarchHit = mandelbulbIntersect(ray);
+    if (rayMarchHit.distance < result.distance)
+    {
+      result.distance = rayMarchHit.distance;
+      result.normal = rayMarchHit.normal;
+      result.materialIndex = rayMarchHit.materialIndex;
+      result.textureCoordinates = rayMarchHit.textureCoordinates;
+      result.tangent = rayMarchHit.tangent;
+      result.bitangent = rayMarchHit.bitangent;
     }
   }
 

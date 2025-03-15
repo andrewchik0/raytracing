@@ -139,6 +139,7 @@ namespace raytracing
     rt::get()->mRender.mTextures.mTextureFilenames.clear();
     rt::get()->mRender.mGenerateNoise = false;
     Scene.mWater.isShown = false;
+    Scene.mMandelbulb.isShown = false;
     Scene.mModels.clear();
     Scene.mSceneFilename = filename.string();
     Scene.mBoundingVolumes.clear();
@@ -208,6 +209,11 @@ namespace raytracing
             if (object["speed"]) Scene.mWater.speed = object["speed"].as<float>();
             if (object["samples"]) Scene.mWater.samples = object["samples"].as<float>();
             if (object["size"]) Scene.mWater.size = object["size"].as<float>();
+          }
+          if (strcmp(object["type"].as<std::string>().c_str(), "mandelbulb") == 0)
+          {
+            Scene.mMandelbulb.isShown = true;
+            if (object["position"]) Scene.mMandelbulb.position = object["position"].as<glm::vec3>();
           }
         }
       }
@@ -328,6 +334,13 @@ namespace raytracing
         out << YAML::Key << "speed" << YAML::Value << Scene.mWater.speed;
         out << YAML::Key << "samples" << YAML::Value << Scene.mWater.samples;
         out << YAML::Key << "size" << YAML::Value << Scene.mWater.size;
+        out << YAML::EndMap;
+      }
+      if (Scene.mMandelbulb.isShown)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "mandelbulb";
+        out << YAML::Key << "position" << YAML::Value << Scene.mMandelbulb.position;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

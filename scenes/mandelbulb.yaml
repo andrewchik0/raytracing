@@ -1,0 +1,42 @@
+exposure: 0.88
+gamma: 1.04
+blur_radius: 0
+sky_filename: assets/skies/cloudy.hdr
+camera:
+  position: [0.4882047, 1.338373, -3.0619113]
+  direction: [-0.5788401, -0.19944975, 0.7906732]
+  fov: 90
+objects:
+  - type: sphere
+    name: Sphere
+    position: [-2.31, 0.96, -1.45]
+    radius: 1
+    materialIndex: 1
+  - type: plane
+    name: Plane
+    normal: [0, 1, 0]
+    distance: 0
+    materialIndex: 0
+  - type: mandelbulb
+    position: [0, 1, 0]
+materials:
+  - name: Material
+    albedo: [0.5, 0.5, 0.5]
+    emissivity: [0, 0, 0]
+    roughness: 1
+    metallic: 0
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+  - name: Material
+    albedo: [1, 0, 1]
+    emissivity: [0, 0, 0]
+    roughness: 0
+    metallic: 0
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+textures:
+  []
