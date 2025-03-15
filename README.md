@@ -28,6 +28,9 @@
 - Field of view
 - Bloom intensity 
 
+### Customizable water rendering
+<img src="assets/readme/water.gif" width="600">
+
 ### Save & Load
 - Save and load scenes in YAML format
 ```yaml

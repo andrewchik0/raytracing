@@ -167,7 +167,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     dielectricDir = mix(specularDir, randomDir, mat.roughness);
     dielectricColor = sampleColor + mat.emissivity;
   }
-  else if (mat.alpha > 0.1 && mat.alpha < 0.99)
+  else if (mat.alpha > 0.1 && mat.alpha < 0.99 && random(seed.x + seed.z) > mat.alpha)
   {
     ray.origin = hit.position + ray.direction * bias;
     return true;

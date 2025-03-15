@@ -27,7 +27,7 @@ void waterMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
   mat.uv = hit.textureCoordinates - floor(hit.textureCoordinates);
   mat.albedo = water.albedo;
   mat.metallic = 0.0;
-  mat.alpha = 1;
+  mat.alpha = .7;
   mat.roughness = water.roughness;
   mat.lod = 0;
   mat.emissivity = vec3(0);

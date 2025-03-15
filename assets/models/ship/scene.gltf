@@ -1,0 +1,692 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        3.4880359172821045,
+        9.983352661132813,
+        22.657127380371094
+      ],
+      "min": [
+        -3.320786237716675,
+        -13.74468994140625,
+        1.1995306015014648
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 430836,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        1.8651165962219238,
+        7.1145920753479
+      ],
+      "min": [
+        -0.011548560112714767,
+        -10.408284187316895
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 287224,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        1.8651165962219238,
+        7.1145920753479
+      ],
+      "min": [
+        -0.011548560112714767,
+        -10.408284187316895
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 574448,
+      "componentType": 5126,
+      "count": 35903,
+      "max": [
+        1.8651165962219238,
+        7.1145920753479
+      ],
+      "min": [
+        -0.011548560112714767,
+        -10.408284187316895
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 101148,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 861672,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        2.602752923965454,
+        10.325664520263672,
+        5.971731662750244
+      ],
+      "min": [
+        -2.599379539489746,
+        -11.63282585144043,
+        -1.9999947547912598
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1157148,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 574448,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 861672,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        1.9135465621948242,
+        0.9999378323554993
+      ],
+      "min": [
+        6.154165021143854e-05,
+        0.0027042203582823277
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1058656,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        1.9135465621948242,
+        0.9999378323554993
+      ],
+      "min": [
+        6.154165021143854e-05,
+        0.0027042203582823277
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1255640,
+      "componentType": 5126,
+      "count": 24623,
+      "max": [
+        1.9135465621948242,
+        0.9999378323554993
+      ],
+      "min": [
+        6.154165021143854e-05,
+        0.0027042203582823277
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 404592,
+      "componentType": 5125,
+      "count": 83694,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1452624,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        3.2490220069885254,
+        1.5351203680038452,
+        16.878726959228516
+      ],
+      "min": [
+        -2.797043800354004,
+        -8.375848770141602,
+        4.7319488525390625
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1500864,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        0.9865831136703491,
+        0.9999725222587585,
+        0.9999935626983643
+      ],
+      "min": [
+        -0.7935211062431335,
+        -0.9998685121536255,
+        -0.9990024566650391
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 968416,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        0.9998925924301147,
+        0.8625690340995789,
+        0.9222344160079956,
+        1.0
+      ],
+      "min": [
+        -0.9996777772903442,
+        -0.9693616628646851,
+        -0.9121288657188416,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1452624,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        0.9935318231582642,
+        0.9906667470932007
+      ],
+      "min": [
+        0.024344339966773987,
+        0.2421768605709076
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1484784,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        0.9935318231582642,
+        0.9906667470932007
+      ],
+      "min": [
+        0.024344339966773987,
+        0.2421768605709076
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1516944,
+      "componentType": 5126,
+      "count": 4020,
+      "max": [
+        0.9935318231582642,
+        0.9906667470932007
+      ],
+      "min": [
+        0.024344339966773987,
+        0.2421768605709076
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 739368,
+      "componentType": 5125,
+      "count": 22644,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "m23ldx0191 (https://sketchfab.com/m23ldx0191)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/dutch-ship-6e1a27f4db4c48e6adc53f6a3528ac9d",
+      "title": "Dutch ship"
+    },
+    "generator": "Sketchfab-16.60.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 829944,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1549104,
+      "byteOffset": 829944,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1549104,
+      "byteOffset": 2379048,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1032736,
+      "byteOffset": 3928152,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 4960888,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/dutch_ship_medium_rigging_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/dutch_ship_medium_rigging_normal.png"
+    },
+    {
+      "uri": "textures/dutch_ship_medium_hull_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/dutch_ship_medium_hull_normal.png"
+    },
+    {
+      "uri": "textures/dutch_ship_medium_sails_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/dutch_ship_medium_sails_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "dutch_ship_medium_rigging",
+      "normalTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8211145618000169
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "dutch_ship_medium_hull",
+      "normalTexture": {
+        "index": 3
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 2
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8211145618000169
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "dutch_ship_medium_sails",
+      "normalTexture": {
+        "index": 5
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 4
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8211145618000169
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "dutch_ship_medium_rigging_dutch_ship_medium_rigging_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 4,
+            "TEXCOORD_2": 5
+          },
+          "indices": 6,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "dutch_ship_medium_hull_dutch_ship_medium_hull_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 8,
+            "POSITION": 7,
+            "TANGENT": 9,
+            "TEXCOORD_0": 10,
+            "TEXCOORD_1": 11,
+            "TEXCOORD_2": 12
+          },
+          "indices": 13,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "dutch_ship_medium_sails_dutch_ship_medium_sails_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 15,
+            "POSITION": 14,
+            "TANGENT": 16,
+            "TEXCOORD_0": 17,
+            "TEXCOORD_1": 18,
+            "TEXCOORD_2": 19
+          },
+          "indices": 20,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        0.9997185468673706,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.219821097753917e-16,
+        -0.9997185468673706,
+        0.0,
+        0.0,
+        0.9997185468673706,
+        2.219821097753917e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "80a946ef35d844c98f5e665c9364ffaf.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        6,
+        8
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.629206793918314e-05,
+        -99.99999999999868,
+        0.0,
+        0.0,
+        99.99999999999868,
+        -1.629206793918314e-05,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Dutch Ship Medium"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        -2.646977960169688e-23,
+        0.0,
+        0.0,
+        2.646977960169688e-23,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "dutch_ship_medium_rigging"
+    },
+    {
+      "mesh": 0,
+      "name": "dutch_ship_medium_rigging_dutch_ship_medium_rigging_0"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        -2.646977960169688e-23,
+        0.0,
+        0.0,
+        2.646977960169688e-23,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "dutch_ship_medium_hull"
+    },
+    {
+      "mesh": 1,
+      "name": "dutch_ship_medium_hull_dutch_ship_medium_hull_0"
+    },
+    {
+      "children": [
+        9
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        -2.646977960169688e-23,
+        0.0,
+        0.0,
+        2.646977960169688e-23,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "dutch_ship_medium_sails"
+    },
+    {
+      "mesh": 2,
+      "name": "dutch_ship_medium_sails_dutch_ship_medium_sails_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    },
+    {
+      "sampler": 0,
+      "source": 5
+    }
+  ]
+}
