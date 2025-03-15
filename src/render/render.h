@@ -21,7 +21,7 @@ namespace raytracing
     uint32_t mViewportWidth, mViewportHeight;
     textures mTextures;
 
-    bool mUseFXAA = true;
+    bool mUseFXAA = false;
     bool mUseSSAA = true;
     int32_t mSSAAGridSize = 4;
     bool mRenderMode = false;

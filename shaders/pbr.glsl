@@ -145,21 +145,19 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     }
   }
 
+  vec3 seed = hash3(uvec3(uvec2(texCoord * windowSize.xy), int(time * 1000 + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0) ^ floatBitsToUint(ray.origin * 1024.0));
+
   // Set new ray origin
   ray.origin = hit.position + mat.normal * bias;
 
   // Random value for mixing
-  float random0to1 =
-    (random(ray.direction.x + gl_LocalInvocationID.x + gl_GlobalInvocationID.y + sampleCounter) +
-    random(ray.direction.z + gl_LocalInvocationID.y + gl_GlobalInvocationID.y + sampleCounter) +
-    random(ray.direction.y + gl_LocalInvocationID.x + gl_GlobalInvocationID.x + sampleCounter)) / 3;
+  float random0to1 = (random(seed.x) + random(seed.y) + random(seed.z)) / 3;
 
-  // Calculate metallic & roughness coefficients
+  // Calculate fresnel coefficient
   float f0 = mat.f0 == -1.0 ? mix(0.3, .35, 1.0 - mat.metallic) : mat.f0;
   float fresnel = mat.f0 == -1.0 ? min(fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0), 0.4) : fresnelSchlik(abs(dot(-ray.direction, mat.normal)), f0);
 
   // Get random and specular new ray directions
-  vec3 seed = hash3(uvec3(uvec2(texCoord * windowSize.xy), int(time + sampleCounter)) ^ floatBitsToUint(ray.direction * 4096.0)); // tired of looking for nice seed, just use hash
   vec3 randomDir = randomHemisphereDirection(mat.normal, seed);
   vec3 specularDir = reflect(ray.direction, mat.normal);
 
