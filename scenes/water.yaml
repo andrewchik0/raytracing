@@ -1,4 +1,4 @@
-exposure: 3.12
+exposure: 0.6
 gamma: 1.04
 blur_radius: 0
 sky_filename: assets/skies/cloudy.hdr
@@ -20,7 +20,7 @@ objects:
   - type: water
     amplitude: 2.19
     speed: 1
-    samples: 1024
+    samples: 256
     size: 0.03
 materials:
   - name: Material

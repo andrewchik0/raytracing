@@ -126,5 +126,5 @@ vec3 castRay(Ray inputRay)
 
     resultColor += sampleColor;
   }
-  return resultColor / sampleCounter;
+  return resultColor / samples;
 }

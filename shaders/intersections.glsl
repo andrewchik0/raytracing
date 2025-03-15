@@ -88,50 +88,39 @@ float getHeight(vec2 texCoords, float size, sampler2D heightMap)
   // Bilinear interpolation
   float h0 = mix(h00, h10, f.x);
   float h1 = mix(h01, h11, f.x);
-  return mix(h0, h1, f.y);
+  return interpolateNormals == 1 ? mix(h0, h1, f.y) : (h00 + h01 + h10 + h11) / 4.0;
 }
 
 float rayIntersectsHeightmap(Ray ray, sampler2D heightMap, float intensity, int samples, float size)
 {
-  // intersect with bounding box of heightmap
-  vec3 aabbMin = vec3(-FAR_PLANE, 0, -FAR_PLANE);
-  vec3 aabbMax = vec3(FAR_PLANE, intensity, FAR_PLANE);
-  float t_aabb = rayAABBIntersect(ray.origin, 1.0 / ray.direction, aabbMin, aabbMax);
-  if (t_aabb == FAR_PLANE) return FAR_PLANE; // Ray is pointing away
-
   // Intersect ray with bottom and top planes (y=0, y=intensity)
-  // If plane is behind the camera set starting search point to camera
-  float t_bottomPlane = max(-ray.origin.y / ray.direction.y, 0);
-  float t_upperPlane = max((intensity - ray.origin.y) / ray.direction.y, 0.0);
+  float t_bottomPlane = -ray.origin.y / ray.direction.y;
+  float t_upperPlane = (intensity - ray.origin.y) / ray.direction.y;
 
+  // Ray is pointing away
+  if (t_upperPlane < 0 && t_bottomPlane < 0) return FAR_PLANE;
+
+  t_bottomPlane = max(t_bottomPlane, 0.0);
+  t_upperPlane = max(t_upperPlane, 0.0);
+
+  // Swap planes in ray is pointing upwards
   if (t_upperPlane > t_bottomPlane)
   {
-    // If ray is pointing to upper plane
-    float dt = (t_upperPlane - t_bottomPlane) / float(samples);
-    float t;
-    for (t = t_bottomPlane; t < t_upperPlane; t += dt)
-    {
-      vec3 midPoint = ray.origin + t * ray.direction;
-      float sampledHeight = getHeight(midPoint.xz, size, heightMap) * intensity;
-
-      if (midPoint.y > sampledHeight) return t;
-    }
-    return t;
+    float tmp = t_upperPlane;
+    t_upperPlane = t_bottomPlane;
+    t_bottomPlane = tmp;
   }
-  else
+
+  float dt = (t_bottomPlane - t_upperPlane) / float(samples);
+  for (float t = t_upperPlane; t < t_bottomPlane; t += dt)
   {
-    // If ray is pointing to bottom plane
-    float dt = (t_bottomPlane - t_upperPlane) / float(samples);
-    float t;
-    for (t = t_upperPlane; t < t_bottomPlane; t += dt)
-    {
-      vec3 midPoint = ray.origin + t * ray.direction;
-      float sampledHeight = getHeight(midPoint.xz, size, heightMap) * intensity;
+    vec3 midPoint = ray.origin + t * ray.direction;
+    float sampledHeight = getHeight(midPoint.xz, size, heightMap) * intensity;
 
-      if (midPoint.y < sampledHeight) return t;
-    }
-    return t;
+    if (midPoint.y < sampledHeight) return t;
   }
+  // No intersection
+  return FAR_PLANE;
 }
 
 vec3 getHeightMapNormal(vec2 pos, sampler2D heightMap, float intensity, float size)
@@ -149,6 +138,6 @@ vec3 getHeightMapNormal(vec2 pos, sampler2D heightMap, float intensity, float si
   float hD = getHeight(uvD, 1.0, heightMap) * intensity;
   float hU = getHeight(uvU, 1.0, heightMap) * intensity;
 
-  vec3 normal = normalize(vec3((hL - hR), 2.0 * texelSize.x, (hD - hU)));
+  vec3 normal = normalize(vec3((hL - hR), 2.0 * texelSize.x / size, (hD - hU)));
   return normal;
 }
