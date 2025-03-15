@@ -206,9 +206,11 @@ namespace raytracing
             rt::get()->mRender.mGenerateNoise = true;
             Scene.mWater.isShown = true;
             if (object["amplitude"]) Scene.mWater.amplitude = object["amplitude"].as<float>();
+            if (object["albedo"]) Scene.mWater.albedo = object["albedo"].as<glm::vec3>();
             if (object["speed"]) Scene.mWater.speed = object["speed"].as<float>();
             if (object["samples"]) Scene.mWater.samples = object["samples"].as<float>();
             if (object["size"]) Scene.mWater.size = object["size"].as<float>();
+            if (object["roughness"]) Scene.mWater.roughness = object["roughness"].as<float>();
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "mandelbulb") == 0)
           {
@@ -330,7 +332,9 @@ namespace raytracing
       {
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "water";
+        out << YAML::Key << "albedo" << YAML::Value << Scene.mWater.albedo;
         out << YAML::Key << "amplitude" << YAML::Value << Scene.mWater.amplitude;
+        out << YAML::Key << "roughness" << YAML::Value << Scene.mWater.roughness;
         out << YAML::Key << "speed" << YAML::Value << Scene.mWater.speed;
         out << YAML::Key << "samples" << YAML::Value << Scene.mWater.samples;
         out << YAML::Key << "size" << YAML::Value << Scene.mWater.size;

@@ -3,13 +3,17 @@
 #define WATER_MATERIAL (MAX_MATERIALS + 1)
 struct Water
 {
+  vec3 albedo;
   int isShown;
+
   float speed;
   float amplitude;
   float animationTime;
-  vec2 _;
   float size;
+
+  vec2 _;
   int samples;
+  float roughness;
 };
 
 #define MANDELBULB_MATERIAL (MAX_MATERIALS + 2)
