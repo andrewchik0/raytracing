@@ -2,8 +2,8 @@
 
 #include "bounding_volume_builder.h"
 #include "camera.h"
+#include "grid.h"
 #include "model.h"
-#include "render/grid.h"
 
 namespace raytracing
 {

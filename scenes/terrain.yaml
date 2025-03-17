@@ -28,4 +28,9 @@ materials:
     metallic_texture_id: -1
     normal_texture_id: -1
 textures:
-  []
+  - assets/materials/grass/albedo.png
+  - assets/materials/grass/normal.png
+  - assets/materials/grass/metallic.psd
+  - assets/materials/sand/albedo.png
+  - assets/materials/sand/normal.png
+  - assets/materials/sand/metallic.psd

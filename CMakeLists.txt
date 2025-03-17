@@ -53,8 +53,8 @@ add_executable(ray-tracing
   src/render/storage_buffer.h
   src/final_render.cpp
   src/final_render.h
-  src/render/grid.cpp
-  src/render/grid.h
+  src/scene/grid.cpp
+  src/scene/grid.h
   src/scene/terrain_generator.cpp
   src/scene/terrain_generator.h
 )

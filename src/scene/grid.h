@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pch.h"
 #include "shaders/uniforms.h"
+#include "pch.h"
 
 namespace raytracing
 {

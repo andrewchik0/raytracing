@@ -113,9 +113,9 @@ materials:
     metallic_texture_id: -1
     normal_texture_id: -1
 textures:
-  - assets/materials/grass/albedo.png
-  - assets/materials/grass/normal.png
-  - assets/materials/grass/metallic.png
+  - assets/materials/metal-tiles/albedo.png
+  - assets/materials/metal-tiles/normal.png
+  - assets/materials/metal-tiles/metallic.png
   - assets/materials/stone/albedo.png
   - assets/materials/stone/normal.png
   - assets/materials/stone/metallic.psd
