@@ -1,5 +1,7 @@
 #include "serializer.h"
 
+#include <fstream>
+
 #include <nfd.h>
 #include <yaml-cpp/yaml.h>
 
