@@ -19,7 +19,7 @@ namespace raytracing
   public:
     model() = default;
 
-    [[nodiscard]] status load_from_file(std::filesystem::path file, glm::mat4 modelMatrix = glm::mat4(1.0f));
+    [[nodiscard]] status load_from_file(std::filesystem::path file);
     [[nodiscard]] status load();
 
     std::string mFilename;
@@ -27,7 +27,13 @@ namespace raytracing
     std::vector<glm::ivec4> mTriangles;
     std::vector<Vertex> mVertices;
     std::filesystem::path mBasePath;
-    glm::mat4 mModelMatrix;
+    std::vector<uint32_t> mMaterialIndices;
+    std::vector<uint32_t> mTextureIndices;
+    glm::vec3
+      mScale = glm::vec3(1.0),
+      mTranslate = glm::vec3(0.0),
+      mRotation = glm::vec3(0.0);
+    size_t index = 0;
   private:
 
     uint32_t process_material(const aiMaterial* material);

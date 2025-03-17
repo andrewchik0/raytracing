@@ -3,8 +3,7 @@
 
 layout(std430, binding = BVH_ENTRIES_BINDING) buffer BVHEntries
 {
-  int entriesCount;
-  int entries[];
+  BoundingVolumeEntry entries[];
 };
 
 layout(std430, binding = BVH_BINDING) buffer BVHBuffer
@@ -20,8 +19,21 @@ layout(std430, binding = VERTICES_BINDING) buffer VertexBuffer
 // DO NOT TOUCH IN CLion it will crash GLSL plugin
 #define STACK_SIZE 32
 
-HitData intersectBVH(Ray ray, int modelIndex)
+void transformHit(inout HitData hit, Ray originalRay, mat4 transform, mat4 inversedTransform)
 {
+  if (hit.distance == FAR_PLANE) return;
+  hit.position = (inversedTransform * vec4(hit.position, 1.0)).xyz;
+  hit.normal = normalize((transpose(inversedTransform) * vec4(hit.normal, 0.0)).xyz);
+}
+
+HitData intersectBVH(Ray inputRay, int modelIndex)
+{
+  Ray ray;
+  mat4 invMatrix = inverse(entries[modelIndex].transform);
+
+  ray.direction = (invMatrix * vec4(inputRay.direction, 0.0)).xyz;
+  ray.origin = (invMatrix * vec4(inputRay.origin, 1.0)).xyz;
+
   vec3 invDir = 1.0 / ray.direction;
   HitData hit;
   hit.distance = FAR_PLANE;
@@ -36,7 +48,7 @@ HitData intersectBVH(Ray ray, int modelIndex)
   {
     int nodeIndex = int(stack[--stackPtr]);
 
-    BoundingVolume volume = bvhNodes[nodeIndex + entries[modelIndex]];
+    BoundingVolume volume = bvhNodes[nodeIndex + entries[modelIndex].index];
 
     if (rayAABBIntersect(ray.origin, invDir, volume.min, volume.max) == FAR_PLANE)
       continue;
@@ -97,7 +109,10 @@ HitData intersectBVH(Ray ray, int modelIndex)
     hit.textureCoordinates = w * texCoords0 + u * texCoords1 + v * texCoords2;
     hit.textureCoordinates.y = 1.0 - hit.textureCoordinates.y;
     hit.materialIndex = foundTriangle.w;
+    hit.position = ray.origin + ray.direction * hit.distance;
   }
+
+  transformHit(hit, inputRay, entries[modelIndex].transform, invMatrix);
 
   return hit;
 }

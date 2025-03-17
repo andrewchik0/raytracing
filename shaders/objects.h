@@ -49,3 +49,10 @@ struct BoundingVolume
   ;
   vec4 triangle;
 };
+
+struct BoundingVolumeEntry
+{
+  vec3 _;
+  int index;
+  mat4 transform;
+};

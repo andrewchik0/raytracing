@@ -29,7 +29,7 @@ namespace raytracing
 
     void update(float deltaTime);
 
-    void add_model(const std::string& filename, const glm::mat4& matrix = glm::mat4(1.0f));
+    void add_model(const std::string& filename);
     void add_grid(grid&& grid);
 
     void add_sphere(const std::string& name, const SphereObject& object);
@@ -46,22 +46,20 @@ namespace raytracing
     bounding_volume_builder mBoundingVolumeBuilder;
   private:
 
-
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
     std::array<Material, MAX_MATERIALS> mMaterials;
 
     std::vector<std::vector<Vertex>> mVertices;
     std::vector<std::vector<ivec4>> mTriangles;
+    std::vector<uint32_t> mModelMaterials;
+    std::vector<uint32_t> mModelTextures;
 
     Water mWater;
     Mandelbulb mMandelbulb;
 
-    struct
-    {
-      int count = 0;
-      std::vector<int> indices;
-    } mBVHEntries;
+    uint32_t mBVHEntriesCount = 0;
+    std::vector<BoundingVolumeEntry> mBVHEntries;
     std::vector<BoundingVolume> mBoundingVolumes;
 
     // Additional data stored separately in order to easily pass main data to the shader
@@ -82,6 +80,6 @@ namespace raytracing
     friend class gui;
     friend class serializer;
     friend class final_render;
-    friend class terrain_generator  ;
+    friend class terrain_generator;
   };
 }

@@ -62,7 +62,7 @@ HitData closestHit(Ray ray)
     }
   }
 
-  for (int i = 0; i < entriesCount; i++)
+  for (int i = 0; i < u_bvhEntriesCount; i++)
   {
     HitData bvhHit = intersectBVH(ray, i);
     if (result.distance > bvhHit.distance)

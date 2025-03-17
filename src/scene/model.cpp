@@ -14,7 +14,7 @@
 
 namespace raytracing
 {
-  status model::load_from_file(std::filesystem::path file, glm::mat4 modelMatrix)
+  status model::load_from_file(std::filesystem::path file)
   {
     if (!std::filesystem::exists(file))
       return status::file_not_found;
@@ -33,14 +33,13 @@ namespace raytracing
       return status::error;
     }
 
-    mModelMatrix = modelMatrix;
     process_node(scene->mRootNode, scene, aiMatrix4x4());
     return status::success;
   }
 
   status model::load()
   {
-    return load_from_file(mFilename, mModelMatrix);
+    return load_from_file(mFilename);
   }
 
   void model::process_mesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform)
@@ -50,6 +49,7 @@ namespace raytracing
     {
       aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
       materialIndex = process_material(aiMat);
+      mMaterialIndices.push_back(materialIndex);
     }
 
     size_t vertexOffset = mVertices.size();
@@ -57,7 +57,7 @@ namespace raytracing
     mVertices.reserve(mVertices.size() + mesh->mNumVertices);
     mTriangles.reserve(mTriangles.size() + mesh->mNumFaces);
 
-    glm::mat4 meshTransform = mModelMatrix * glm::transpose(glm::make_mat4(&transform.a1));
+    glm::mat4 meshTransform = glm::transpose(glm::make_mat4(&transform.a1));
 
     for (size_t i = 0; i < mesh->mNumVertices; ++i)
     {
@@ -183,24 +183,24 @@ namespace raytracing
     mat.sg = hasSG;
 
     if (baseColorTexture.size() > 0)
-      mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string());
+      mTextureIndices.push_back(mat.textureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / baseColorTexture).string()));
     if (metallicTexture.size() > 0)
-      mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string());
+      mTextureIndices.push_back(mat.metallicTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / metallicTexture).string()));
     if (roughnessTexture.size() > 0)
-      mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / roughnessTexture).string());
+      mTextureIndices.push_back(mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / roughnessTexture).string()));
     else if (hasSG && specularTexture.size() > 0)
-      mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
+      mTextureIndices.push_back(mat.roughnessTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string()));
     if (specularTexture.size() > 0)
-      mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string());
+      mTextureIndices.push_back(mat.specularTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / specularTexture).string()));
     if (emissiveTexture.size() > 0)
-      mat.emissiveTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / emissiveTexture).string());
+      mTextureIndices.push_back(mat.emissiveTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / emissiveTexture).string()));
 
     if (normalTexture.size() > 0)
-      mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalTexture).string());
+      mTextureIndices.push_back(mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalTexture).string()));
     else if (normalPBR.size() > 0)
-      mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalPBR).string());
+      mTextureIndices.push_back(mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / normalPBR).string()));
     else if (heightTexture.size() > 0)
-      mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / heightTexture).string());
+      mTextureIndices.push_back(mat.normalTextureIndex = rt::get()->mRender.mTextures.add_texture((mBasePath / heightTexture).string()));
 
     rt::get()->mScene.add_material(get_material_name(material), mat);
     return rt::get()->mScene.mMaterialsCount - 1;

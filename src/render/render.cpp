@@ -143,10 +143,9 @@ namespace raytracing
     memcpy(&buffer.u_mandelbulb, &rt::get()->mScene.mMandelbulb, sizeof(Mandelbulb));
     buffer.u_planesCount = rt::get()->mScene.mPlanesCount;
     buffer.u_spheresCount = rt::get()->mScene.mSpheresCount;
+    buffer.u_bvhEntriesCount = rt::get()->mScene.mBVHEntriesCount;
     mSceneBuffer.set(&buffer);
-    rt::get()->mScene.mBVHEntries.indices.insert(rt::get()->mScene.mBVHEntries.indices.begin(), rt::get()->mScene.mBVHEntries.count);
-    mBVHEntriesBuffer.set(rt::get()->mScene.mBVHEntries.indices.data(), sizeof(int) * (rt::get()->mScene.mBVHEntries.indices.size()));
-    rt::get()->mScene.mBVHEntries.indices.erase(rt::get()->mScene.mBVHEntries.indices.begin());
+    mBVHEntriesBuffer.set(rt::get()->mScene.mBVHEntries.data(), sizeof(BoundingVolumeEntry) * (rt::get()->mScene.mBVHEntries.size()));
   }
 
   void render::push_geometry()

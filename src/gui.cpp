@@ -401,7 +401,12 @@ namespace raytracing
       label = rt::get()->mScene.mModels[i].mFilename + "###Model" + std::to_string(i);
       if (ImGui::TreeNode(label.c_str()))
       {
-        ImGui::Text(rt::get()->mScene.mModels[i].mFilename.c_str());
+        label = "Position###ModelPosition" + std::to_string(i);
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mModels[i].mTranslate.x, 0.01f, 0, 0, "%.2f"));
+        label = "Scale###ModelScale" + std::to_string(i);
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mModels[i].mScale.x, 0.01f, 0.01, 1e12, "%.2f"));
+        label = "Rotation###ModelRotation" + std::to_string(i);
+        check(ImGui::DragFloat3(label.c_str(), &rt::get()->mScene.mModels[i].mRotation.x, 0.1f, -180, 180, "%.1f"));
         ImGui::TreePop();
       }
     }

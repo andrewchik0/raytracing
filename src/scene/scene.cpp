@@ -1,11 +1,14 @@
 #include "scene.h"
 
+#include <glm/ext/matrix_transform.hpp>
+
 #include "rt.h"
 
 namespace raytracing
 {
   
-  scene::scene() : mSpheres(), mPlanes(), mMaterials()
+  scene::scene()
+    : mSpheres(), mPlanes(), mMaterials(), mMandelbulb()
   {
     mWater.isShown = false;
     mWater.animationTime = 0.0f;
@@ -27,8 +30,11 @@ namespace raytracing
       {
         if (m.load() == status::success)
         {
+          m.index = mTriangles.size();
           mTriangles.emplace_back(std::move(m.mTriangles));
           mVertices.emplace_back(std::move(m.mVertices));
+          mModelMaterials.insert(mModelMaterials.end(), m.mMaterialIndices.begin(), m.mMaterialIndices.end());
+          mModelTextures.insert(mModelTextures.end(), m.mTextureIndices.begin(), m.mTextureIndices.end());
         }
       }));
     }
@@ -37,9 +43,23 @@ namespace raytracing
       model.wait();
   }
 
-  void scene::update(float deltaTime)
+  void scene::update(const float deltaTime)
   {
     mCamera.update(deltaTime);
+    for (auto& m : mModels)
+    {
+      glm::mat4 model = glm::mat4(1.0f);
+
+      model = glm::translate(model, m.mTranslate);
+
+      model = glm::rotate(model, glm::radians(m.mRotation.x), glm::vec3(1, 0, 0));
+      model = glm::rotate(model, glm::radians(m.mRotation.y), glm::vec3(0, 1, 0));
+      model = glm::rotate(model, glm::radians(m.mRotation.z), glm::vec3(0, 0, 1));
+
+      model = glm::scale(model, m.mScale);
+
+      mBVHEntries[m.index].transform = model;
+    }
   }
 
   void scene::add_sphere(const std::string& name, const SphereObject& object)
@@ -82,11 +102,10 @@ namespace raytracing
     mMaterialsCount--;
   }
 
-  void scene::add_model(const std::string& filename, const glm::mat4& matrix)
+  void scene::add_model(const std::string& filename)
   {
     model m;
     m.mFilename = filename;
-    m.mModelMatrix = matrix;
     mModels.push_back(std::move(m));
   }
 

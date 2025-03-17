@@ -27,8 +27,13 @@ namespace raytracing
       node->bounds.expand(v2);
     }
 
-    node->bounds.min -= 1e-5f;
-    node->bounds.max += 1e-5f;
+    glm::vec3 boundSize = node->bounds.max - node->bounds.min;
+    constexpr float epsilon = 1e-2;
+
+    glm::vec3 adjust = glm::step(boundSize, glm::vec3(epsilon)) * epsilon;
+
+    node->bounds.min -= adjust;
+    node->bounds.max += adjust;
 
     if (node->count <= mObjectPerNode)
     {
@@ -101,8 +106,8 @@ namespace raytracing
           rt::get()->mScene.mTriangles[i].size() > it->start && it->left == -1 && it->right == -1 ? triangle
                                                                                                   : glm::ivec4(0)});
       }
-      rt::get()->mScene.mBVHEntries.count++;
-      rt::get()->mScene.mBVHEntries.indices.push_back(currentIndex);
+      rt::get()->mScene.mBVHEntriesCount++;
+      rt::get()->mScene.mBVHEntries.push_back({glm::vec3(), currentIndex, glm::mat4(1.0f)});
       currentIndex += mBVHNodes[i].size();
       currentTriangleIndex += rt::get()->mScene.mVertices[i].size();
     }

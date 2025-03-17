@@ -81,8 +81,39 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
   return mat;
 }
 
+void drawTextureLayer(inout vec3 sampleColor, inout SampledMaterial mat)
+{
+  switch (u_debugTextureLayer)
+  {
+    case DEBUG_TEXTURE_LAYER_DEFAULT:
+      sampleColor = mat.albedo;
+      return;
+    case DEBUG_TEXTURE_LAYER_NORMAL:
+      sampleColor = mat.normal;
+      return;
+    case DEBUG_TEXTURE_LAYER_ROUGHNESS:
+      sampleColor = vec3(mat.roughness);
+      return;
+    case DEBUG_TEXTURE_LAYER_METALLIC:
+      sampleColor = vec3(mat.metallic);
+      return;
+    case DEBUG_TEXTURE_LAYER_SPECULAR:
+      sampleColor = vec3(mat.specular);
+      return;
+    case DEBUG_TEXTURE_LAYER_ALPHA:
+      sampleColor = vec3(mat.alpha);
+      return;
+    case DEBUG_TEXTURE_LAYER_EMISSIVE:
+      sampleColor = mat.emissivity;
+      return;
+    case DEBUG_TEXTURE_LAYER_UV:
+      sampleColor = vec3(mat.uv, 0.0);
+      return;
+  }
+}
+
 /*
- * Returns `true` if ray should reflect, otherwise - `false`
+ * Returns `true` if ray should reflect or refract, otherwise - `false`
  */
 bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 sampleColor, inout Ray ray)
 {
@@ -98,33 +129,8 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   if (u_renderMode != 1)
   {
-    switch (u_debugTextureLayer)
-    {
-    case DEBUG_TEXTURE_LAYER_DEFAULT:
-      sampleColor = mat.albedo;
-      return false;
-    case DEBUG_TEXTURE_LAYER_NORMAL:
-      sampleColor = mat.normal;
-      return false;
-    case DEBUG_TEXTURE_LAYER_ROUGHNESS:
-      sampleColor = vec3(mat.roughness);
-      return false;
-    case DEBUG_TEXTURE_LAYER_METALLIC:
-      sampleColor = vec3(mat.metallic);
-      return false;
-    case DEBUG_TEXTURE_LAYER_SPECULAR:
-      sampleColor = vec3(mat.specular);
-      return false;
-    case DEBUG_TEXTURE_LAYER_ALPHA:
-      sampleColor = vec3(mat.alpha);
-      return false;
-    case DEBUG_TEXTURE_LAYER_EMISSIVE:
-      sampleColor = mat.emissivity;
-      return false;
-    case DEBUG_TEXTURE_LAYER_UV:
-      sampleColor = vec3(mat.uv, 0.0);
-      return false;
-    }
+    drawTextureLayer(sampleColor, mat);
+    return false;
   }
 
   // Pass ray through if alpha is near zero (for grass, leaves, etc...)

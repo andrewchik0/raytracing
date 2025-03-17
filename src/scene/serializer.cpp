@@ -199,9 +199,11 @@ namespace raytracing
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "model") == 0 && object["filename"])
           {
-            glm::mat4 modelMatrix = glm::mat4(1.0f);
-            if (object["matrix"]) modelMatrix = object["matrix"].as<glm::mat4>();
-            Scene.add_model(object["filename"].as<std::string>(), modelMatrix);
+            Scene.add_model(object["filename"].as<std::string>());
+            const size_t index = Scene.mModels.size() - 1;
+            if (object["translate"]) Scene.mModels[index].mTranslate = object["translate"].as<glm::vec3>();
+            if (object["rotation"]) Scene.mModels[index].mRotation = object["rotation"].as<glm::vec3>();
+            if (object["scale"]) Scene.mModels[index].mScale = object["scale"].as<glm::vec3>();
           }
           if (strcmp(object["type"].as<std::string>().c_str(), "water") == 0)
           {
@@ -334,7 +336,9 @@ namespace raytracing
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "model";
         out << YAML::Key << "filename" << YAML::Value << it->mFilename.c_str();
-        out << YAML::Key << "matrix" << YAML::Value << it->mModelMatrix;
+        out << YAML::Key << "translate" << YAML::Value << it->mTranslate;
+        out << YAML::Key << "scale" << YAML::Value << it->mScale;
+        out << YAML::Key << "rotation" << YAML::Value << it->mRotation;
         out << YAML::EndMap;
       }
       if (Scene.mWater.isShown)
@@ -373,6 +377,8 @@ namespace raytracing
       out << YAML::BeginSeq;
       for (size_t i = 0; i < Scene.mMaterialsCount; i++)
       {
+        if (std::ranges::find(Scene.mModelMaterials, i) != Scene.mModelMaterials.end())
+          continue;
         out << YAML::BeginMap;
         out << YAML::Key << "name" << YAML::Value << Scene.mMaterialsAdditional[i].name;
         out << YAML::Key << "albedo" << YAML::Value << Scene.mMaterials[i].albedo;
@@ -394,6 +400,8 @@ namespace raytracing
       out << YAML::BeginSeq << YAML::Flow;
       for (size_t i = 0; i < rt::get()->mRender.mTextures.mTextureFilenames.size(); i++)
       {
+        if (std::ranges::find(Scene.mModelTextures, i) != Scene.mModelTextures.end())
+          continue;
         out << rt::get()->mRender.mTextures.mTextureFilenames[i];
       }
       out << YAML::EndSeq;

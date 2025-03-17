@@ -33,6 +33,7 @@ struct Mandelbulb
   Material u_materials[MAX_MATERIALS];            \
   Water u_water;                                  \
   Mandelbulb u_mandelbulb;                        \
+  uint u_bvhEntriesCount;                         \
   uint u_spheresCount;                            \
   uint u_planesCount;                             \
 }
