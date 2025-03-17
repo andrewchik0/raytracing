@@ -1,0 +1,31 @@
+exposure: 1.27
+gamma: 1.04
+blur_radius: 0
+sky_filename: assets/skies/cloudy.hdr
+camera:
+  position: [252.46863, 5.3392057, 238.292]
+  direction: [-0.9511429, -0.22028355, 0.2162923]
+  fov: 90
+objects:
+  - type: water
+    albedo: [0.02, 0.09, 0.14]
+    amplitude: 1.71
+    roughness: 0
+    speed: 1
+    samples: 256
+    size: 0.01
+  - type: terrain
+    seed: 4242
+    size: 200
+materials:
+  - name: Default material
+    albedo: [0.5, 0.5, 0.5]
+    emissivity: [0, 0, 0]
+    roughness: 0.8
+    metallic: 0
+    texture_coordinates_multiplier: 1
+    texture_id: -1
+    metallic_texture_id: -1
+    normal_texture_id: -1
+textures:
+  []

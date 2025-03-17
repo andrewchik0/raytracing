@@ -2,7 +2,7 @@
 
 namespace raytracing
 {
-  void grid::load(uint32_t width, uint32_t depth, const std::vector<float>& heights)
+  void grid::load(uint32_t width, uint32_t depth, const std::vector<float>& heights, const float scale /* = 1.0 */, const uint32_t materialIndex /* = 0 */)
   {
     mVertices.clear();
     mTriangles.clear();
@@ -33,6 +33,8 @@ namespace raytracing
 
         Vertex vertex;
         vertex.position = glm::vec4(-(float)width / 2.0f + i, centerHeight, -(float)depth / 2.0f + j, 1.0f);
+        vertex.position.x *= scale;
+        vertex.position.z *= scale;
         vertex.normal = glm::vec4(normal, 0.0f);
         vertex.tangent = glm::vec4(dx, float(i) / width);
         vertex.bitangent = glm::vec4(dz, float(j) / depth);
@@ -50,8 +52,8 @@ namespace raytracing
         uint32_t bottomLeft = (j + 1) * width + i;
         uint32_t bottomRight = (j + 1) * width + (i + 1);
 
-        mTriangles.push_back(glm::ivec4(topLeft, bottomLeft, topRight, 0));
-        mTriangles.push_back(glm::ivec4(topRight, bottomLeft, bottomRight, 0));
+        mTriangles.push_back(glm::ivec4(topLeft, bottomLeft, topRight, materialIndex));
+        mTriangles.push_back(glm::ivec4(topRight, bottomLeft, bottomRight, materialIndex));
       }
     }
   }

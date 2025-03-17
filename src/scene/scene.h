@@ -2,8 +2,8 @@
 
 #include "bounding_volume_builder.h"
 #include "camera.h"
+#include "model.h"
 #include "render/grid.h"
-#include "render/model.h"
 
 namespace raytracing
 {
@@ -43,9 +43,9 @@ namespace raytracing
       mSpheresCount = 0,
       mPlanesCount = 0,
       mMaterialsCount = 0;
+    bounding_volume_builder mBoundingVolumeBuilder;
   private:
 
-    bounding_volume_builder mBoundingVolumeBuilder;
 
     std::array<SphereObject, MAX_SPHERES> mSpheres;
     std::array<PlaneObject, MAX_PLANES> mPlanes;
@@ -69,11 +69,19 @@ namespace raytracing
     std::array<object_additional, MAX_PLANES> mPlanesAdditional;
     std::array<object_additional, MAX_MATERIALS> mMaterialsAdditional;
 
+    struct terrain_options
+    {
+      bool exists = false;
+      uint32_t size = 200;
+      uint32_t seed = 4242u;
+    } mTerrainOptions;
+
     friend class render;
     friend class rt;
     friend class bounding_volume_builder;
     friend class gui;
     friend class serializer;
     friend class final_render;
+    friend class terrain_generator  ;
   };
 }

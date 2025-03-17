@@ -23,6 +23,8 @@ struct Mandelbulb
   int isShown;
 };
 
+#define TERRAIN_MATERIAL (MAX_MATERIALS + 3)
+
 #define SCENE_BINDING 1
 #define SceneBufferStruct SceneBuffer             \
 {                                                 \

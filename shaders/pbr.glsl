@@ -2,6 +2,7 @@
 #include "utils.glsl"
 #include "types.glsl"
 #include "water.glsl"
+#include "terrain.glsl"
 
 vec3 hash3(uvec3 p)
 {
@@ -20,6 +21,11 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
   if (hit.materialIndex == WATER_MATERIAL)
   {
     waterMaterial(hit, mat, ray);
+    return mat;
+  }
+  if (hit.materialIndex == TERRAIN_MATERIAL)
+  {
+    terrainMaterial(hit, mat, ray);
     return mat;
   }
 
@@ -86,7 +92,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     return false;
   }
 
-  float bias = 1e-5;
+  float bias = max(1e-6 * hit.distance, 1e-6);
   SampledMaterial mat;
   sampleMaterial(hit, mat, ray);
 

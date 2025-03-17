@@ -8,11 +8,13 @@ namespace raytracing
   scene::scene() : mSpheres(), mPlanes(), mMaterials()
   {
     mWater.isShown = false;
-    mWater.amplitude = 0.1f;
-    mWater.speed = 1.0f;
     mWater.animationTime = 0.0f;
-    mWater.samples = 16;
-    mWater.size = 1.0f;
+    mWater.albedo = glm::vec3(0.3, 0.6, 0.7);
+    mWater.amplitude = 5.49;
+    mWater.roughness = 0;
+    mWater.speed = 1;
+    mWater.samples = 256;
+    mWater.size = 0.05;
   }
 
   void scene::load_models()

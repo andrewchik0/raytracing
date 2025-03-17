@@ -417,7 +417,10 @@ namespace raytracing
   {
     static bool renderWater = rt::get()->mScene.mWater.isShown;
     if (check(ImGui::Checkbox("Render water", &renderWater)))
+    {
       rt::get()->mScene.mWater.isShown = renderWater;
+      renderWater ? rt::get()->mRender.mGenerateNoise = true : rt::get()->mRender.mGenerateNoise = false;
+    }
     check(ImGui::Checkbox("Auto animate", &mAnimateWater));
     check(ImGui::DragFloat3("Color###WaterColor", &rt::get()->mScene.mWater.albedo.x, 0.01f, 0.0f, 1.0f, "%.2f"));
     check(ImGui::DragFloat("Size", &rt::get()->mScene.mWater.size, 0.01f, 0.01f, 100.0f, "%.2f"));

@@ -36,6 +36,9 @@ namespace raytracing
     void init(const init_options& options = init_options());
     void run();
 
+    void set_load_callback(const std::function<void(rt* app)>& loadCallBack)
+      { mLoadCallBack = loadCallBack; }
+
     bool is_loading() const;
 
     static rt* get()
@@ -50,6 +53,8 @@ namespace raytracing
 
     bool mTexturesLoading = false, mModelsLoading = false, mBVHLoading = false;
     bool mLoaded = false;
+
+    std::function<void(rt* app)> mLoadCallBack;
 
     utils::thread_pool mThreadPool;
 

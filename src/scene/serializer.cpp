@@ -2,9 +2,9 @@
 
 #include <nfd.h>
 #include <yaml-cpp/yaml.h>
-#include <fstream>
 
 #include "../rt.h"
+#include "terrain_generator.h"
 
 namespace YAML
 {
@@ -217,6 +217,13 @@ namespace raytracing
             Scene.mMandelbulb.isShown = true;
             if (object["position"]) Scene.mMandelbulb.position = object["position"].as<glm::vec3>();
           }
+          if (strcmp(object["type"].as<std::string>().c_str(), "terrain") == 0)
+          {
+            Scene.mTerrainOptions.exists = true;
+            if (object["size"]) Scene.mTerrainOptions.size = object["size"].as<float>();
+            if (object["seed"]) Scene.mTerrainOptions.seed = object["seed"].as<float>();
+            terrain_generator::init(&Scene);
+          }
         }
       }
 
@@ -345,6 +352,14 @@ namespace raytracing
         out << YAML::BeginMap;
         out << YAML::Key << "type" << YAML::Value << "mandelbulb";
         out << YAML::Key << "position" << YAML::Value << Scene.mMandelbulb.position;
+        out << YAML::EndMap;
+      }
+      if (Scene.mTerrainOptions.exists)
+      {
+        out << YAML::BeginMap;
+        out << YAML::Key << "type" << YAML::Value << "terrain";
+        out << YAML::Key << "seed" << YAML::Value << Scene.mTerrainOptions.seed;
+        out << YAML::Key << "size" << YAML::Value << Scene.mTerrainOptions.size;
         out << YAML::EndMap;
       }
       out << YAML::EndSeq;

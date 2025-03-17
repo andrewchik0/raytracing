@@ -101,6 +101,8 @@ namespace raytracing
     mModelsLoading = true;
     mThreadPool.send_task([&]
     {
+      if (mLoadCallBack)
+        mLoadCallBack(this);
       mScene.load_models();
       mTexturesLoading = true;
       mModelsLoading = false;

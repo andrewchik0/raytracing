@@ -24,8 +24,8 @@ add_executable(ray-tracing
   src/render/uniform_buffer.h
   src/render/textures.cpp
   src/render/textures.h
-  src/render/model.cpp
-  src/render/model.h
+  src/scene/model.cpp
+  src/scene/model.h
   src/scene/bounding_volume_builder.cpp
   src/scene/bounding_volume_builder.h
   src/render/shader.cpp
@@ -55,6 +55,8 @@ add_executable(ray-tracing
   src/final_render.h
   src/render/grid.cpp
   src/render/grid.h
+  src/scene/terrain_generator.cpp
+  src/scene/terrain_generator.h
 )
 
 target_precompile_headers(ray-tracing PUBLIC src/pch.h)
@@ -65,6 +67,7 @@ target_include_directories(ray-tracing PUBLIC
   ${PROJECT_SOURCE_DIR}/src
   third_party/stb
   third_party/FontAwesome
+  third_party/Reputeless
   ${glm_SOURCE_DIR}
   ${OPENGL_INCLUDE_DIRS}
 )

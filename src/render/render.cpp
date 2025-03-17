@@ -25,9 +25,16 @@ namespace raytracing
 
   void render::post_init()
   {
+    if (rt::get()->mScene.mMaterialsCount == 0)
+    {
+      Material mat;
+      mat.albedo = glm::vec3(0.5, 0.5, 0.5);
+      mat.roughness = 0.8;
+      rt::get()->mScene.add_material("Default material", mat);
+    }
     mTextures.load_to_gpu();
     push_geometry();
-    mAccumulatingFrameIndex = 0;
+    reset_accumulation();
     clear();
   }
 
@@ -148,7 +155,7 @@ namespace raytracing
 
     for (auto& modelVertices: rt::get()->mScene.mVertices)
       vertices.insert(vertices.end(), modelVertices.begin(), modelVertices.end());
-    mVerticesBuffer.set(vertices.data(), vertices.size() * sizeof(Vertex));
+     mVerticesBuffer.set(vertices.data(), vertices.size() * sizeof(Vertex));
     mBVHBuffer.set(rt::get()->mScene.mBoundingVolumes.data(), rt::get()->mScene.mBoundingVolumes.size() * sizeof(BoundingVolume));
   }
 
