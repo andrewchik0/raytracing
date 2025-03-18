@@ -18,7 +18,7 @@ namespace raytracing
     scene();
     ~scene() = default;
 
-    std::string mSceneFilename = "";
+    std::string mSceneFilename;
     std::string mSkyFilename;
 
     camera mCamera;

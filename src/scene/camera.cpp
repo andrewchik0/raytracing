@@ -17,27 +17,27 @@ namespace raytracing
     mHalfWidth = mAspect * mHalfHeight;
   }
 
-  void camera::move_back(float deltaSpeed) { move_forward(-deltaSpeed); }
-  void camera::move_forward(float deltaSpeed)
+  void camera::move_back(const float deltaSpeed) { move_forward(-deltaSpeed); }
+  void camera::move_forward(const float deltaSpeed)
   {
     mPosition += glm::normalize(math::getNormalizedProjection(mDirection)) * deltaSpeed;
   }
 
-  void camera::move_right(float deltaSpeed) { move_left(-deltaSpeed); }
-  void camera::move_left(float deltaSpeed)
+  void camera::move_right(const float deltaSpeed) { move_left(-deltaSpeed); }
+  void camera::move_left(const float deltaSpeed)
   {
     mPosition += glm::normalize(glm::cross(glm::vec3(0, 1, 0), mDirection)) * deltaSpeed;
   }
 
-  void camera::move_down(float deltaSpeed) { move_up(-deltaSpeed); }
-  void camera::move_up(float deltaSpeed)
+  void camera::move_down(const float deltaSpeed) { move_up(-deltaSpeed); }
+  void camera::move_up(const float deltaSpeed)
   {
     mPosition.y += deltaSpeed;
   }
 
-  void camera::update(float deltaTime)
+  void camera::update(const float deltaTime)
   {
-    float speed = 2.0f * deltaTime * mSpeed;
+    const float speed = 2.0f * deltaTime * mSpeed;
 
     if (
       input::key(GLFW_KEY_SPACE) |
@@ -61,8 +61,8 @@ namespace raytracing
     if (input::key(GLFW_MOUSE_BUTTON_LEFT))
     {
       rt::get()->mWindow.set_grabbing(true);
-      float yaw = rt::get()->mInput.mMouseDeltaX / 200.0 * mMouseSensitivity;
-      float pitch = rt::get()->mInput.mMouseDeltaY / 200.0 * mMouseSensitivity;
+      const float yaw = rt::get()->mInput.mMouseDeltaX / 200.0 * mMouseSensitivity;
+      const float pitch = rt::get()->mInput.mMouseDeltaY / 200.0 * mMouseSensitivity;
 
       if (rt::get()->mInput.mMouseDeltaX || rt::get()->mInput.mMouseDeltaY)
         rt::get()->mRender.reset_accumulation();
@@ -74,8 +74,8 @@ namespace raytracing
 
       if (float angleCos = (glm::dot(checkLookAt, math::getNormalizedProjection(mDirection))); angleCos <= 0)
       {
-        float threshold = 1e-3f;
-        char sign = mDirection.y > 0 ? 1 : -1;
+        constexpr float threshold = 1e-3f;
+        const char sign = mDirection.y > 0 ? 1 : -1;
 
         mDirection = math::getNormalizedProjection(mDirection);
         mDirection = rotateX * glm::vec4(mDirection.x * threshold, sign * (1 - threshold), mDirection.z * threshold, 1);

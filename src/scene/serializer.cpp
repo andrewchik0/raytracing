@@ -270,13 +270,15 @@ namespace raytracing
 
   void serializer::load()
   {
-    nfdu8char_t* outPath;
     constexpr nfdu8filteritem_t filters[1] = {{"YAML Files", "yaml,yml"}};
+    const auto defaultPath = (std::filesystem::current_path() / "scenes").string();
     nfdopendialogu8args_t args = {nullptr};
+
     args.filterList = filters;
     args.filterCount = 1;
-    auto defaultPath = (std::filesystem::current_path() / "scenes").string();
     args.defaultPath = defaultPath.c_str();
+
+    nfdu8char_t* outPath;
     nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
     if (result != NFD_OKAY)
       return;

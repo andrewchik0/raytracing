@@ -16,10 +16,10 @@ namespace raytracing
     render_texture rt(mRenderOptions.width, mRenderOptions.height);
 
     // Store data
-    uint32_t bounces = mRt->mRender.mBouncesCount;
-    uint32_t samples = mRt->mRender.mSamplesCount;
-    size_t maxAccumulation = mRt->mRender.mMaxAccumulation;
-    int renderMode = mRt->mRender.mRenderMode;
+    const uint32_t bounces = mRt->mRender.mBouncesCount;
+    const uint32_t samples = mRt->mRender.mSamplesCount;
+    const size_t maxAccumulation = mRt->mRender.mMaxAccumulation;
+    const int renderMode = mRt->mRender.mRenderMode;
 
     mRt->mRender.mRenderMode = true;
     mRt->mRender.mBouncesCount = mRenderOptions.bounces;
@@ -56,10 +56,10 @@ namespace raytracing
     std::filesystem::create_directory(directory.parent_path());
 
     // Store data
-    uint32_t bounces = mRt->mRender.mBouncesCount;
+    const uint32_t bounces = mRt->mRender.mBouncesCount;
+    const size_t maxAccumulation = mRt->mRender.mMaxAccumulation;
+    const int renderMode = mRt->mRender.mRenderMode;
     mRt->mRender.reset_accumulation();
-    size_t maxAccumulation = mRt->mRender.mMaxAccumulation;
-    int renderMode = mRt->mRender.mRenderMode;
 
     mRt->mRender.mRenderMode = true;
     mRt->mRender.mBouncesCount = mRenderOptions.bounces;

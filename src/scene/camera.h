@@ -19,7 +19,7 @@ namespace raytracing
     glm::mat4 mViewMatrix = glm::mat4(1.0f);
     glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
 
-    void resize(const uint32_t width, const uint32_t height);
+    void resize(uint32_t width, uint32_t height);
     void update(float deltaTime);
 
     void move_back(float deltaSpeed);

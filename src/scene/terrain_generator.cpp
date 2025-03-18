@@ -7,7 +7,18 @@
 namespace raytracing
 {
   static std::vector<model> sGrass;
-  constexpr size_t sGrassCount = 9;
+  constexpr std::array<std::string_view, 9> sGrassFilenames = {
+    "assets/models/grass/small_1.gltf",
+    "assets/models/grass/small_2.gltf",
+    "assets/models/grass/small_3.gltf",
+    "assets/models/grass/medium_1.gltf",
+    "assets/models/grass/medium_2.gltf",
+    "assets/models/grass/medium_3.gltf",
+    "assets/models/grass/large_1.gltf",
+    "assets/models/grass/large_2.gltf",
+    "assets/models/grass/large_3.gltf"
+  };
+  constexpr size_t sGrassCount = sGrassFilenames.size();
 
   void terrain_generator::init(scene* scene)
   {
@@ -41,8 +52,8 @@ namespace raytracing
     scene->mTriangles.emplace_back();
     scene->mVertices.emplace_back();
 
-    auto globalTriangleIndex = scene->mTriangles.size() - 1;
-    auto globalVertexIndex = scene->mVertices.size() - 1;
+    const auto globalTriangleIndex = scene->mTriangles.size() - 1;
+    const auto globalVertexIndex = scene->mVertices.size() - 1;
     size_t indexCounter = 0;
     for (size_t y = 0; y < size; ++y)
     {
@@ -76,23 +87,23 @@ namespace raytracing
   {
     auto result = status::success;
 
-    scene->mTerrain.albedoIndexGrass = rt::get()->mRender.mTextures.add_texture("assets/materials/grass/albedo.png");
-    scene->mTerrain.normalIndexGrass = rt::get()->mRender.mTextures.add_texture("assets/materials/grass/normal.png");
-    scene->mTerrain.metallicIndexGrass = rt::get()->mRender.mTextures.add_texture("assets/materials/grass/metallic.psd");
-    scene->mTerrain.albedoIndexSand = rt::get()->mRender.mTextures.add_texture("assets/materials/sand/albedo.png");
-    scene->mTerrain.normalIndexSand = rt::get()->mRender.mTextures.add_texture("assets/materials/sand/normal.png");
-    scene->mTerrain.metallicIndexSand = rt::get()->mRender.mTextures.add_texture("assets/materials/sand/metallic.psd");
+    const std::vector<std::pair<std::string, int&>> textures = {{
+      {"assets/materials/grass/albedo.png",   scene->mTerrain.albedoIndexGrass},
+      {"assets/materials/grass/normal.png",   scene->mTerrain.normalIndexGrass},
+      {"assets/materials/grass/metallic.psd", scene->mTerrain.metallicIndexGrass},
+      {"assets/materials/sand/albedo.png",    scene->mTerrain.albedoIndexSand},
+      {"assets/materials/sand/normal.png",    scene->mTerrain.normalIndexSand},
+      {"assets/materials/sand/metallic.psd",  scene->mTerrain.metallicIndexSand}
+    }};
+
+    for (auto& [path, index] : textures)
+    {
+      index = rt::get()->mRender.mTextures.add_texture(path);
+    }
 
     sGrass.resize(sGrassCount);
-    result |= sGrass[0].load_from_file("assets/models/grass/small_1.gltf");
-    result |= sGrass[1].load_from_file("assets/models/grass/small_2.gltf");
-    result |= sGrass[2].load_from_file("assets/models/grass/small_3.gltf");
-    result |= sGrass[3].load_from_file("assets/models/grass/medium_1.gltf");
-    result |= sGrass[4].load_from_file("assets/models/grass/medium_2.gltf");
-    result |= sGrass[5].load_from_file("assets/models/grass/medium_3.gltf");
-    result |= sGrass[6].load_from_file("assets/models/grass/large_1.gltf");
-    result |= sGrass[7].load_from_file("assets/models/grass/large_2.gltf");
-    result |= sGrass[8].load_from_file("assets/models/grass/large_3.gltf");
+    for (size_t i = 0; i < sGrassCount; ++i)
+      result |= sGrass[i].load_from_file(sGrassFilenames[i]);
 
     return result;
   }

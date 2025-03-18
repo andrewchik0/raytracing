@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void __engine_assert(bool bExpr, const char* message, const char* file, uint32_t line)
+void __engine_assert(const bool bExpr, const char* message, const char* file, const uint32_t line)
 {
   if (!bExpr)
   {
@@ -13,7 +13,7 @@ void __engine_assert(bool bExpr, const char* message, const char* file, uint32_t
   }
 }
 
-void __engine_assert(bool bExpr, const std::string& message, const char* file, uint32_t line)
+void __engine_assert(const bool bExpr, const std::string& message, const char* file, const uint32_t line)
 {
   __engine_assert(bExpr, message.c_str(), file, line);
 }

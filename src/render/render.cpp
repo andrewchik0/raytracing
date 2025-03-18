@@ -63,6 +63,7 @@ namespace raytracing
       if (mGenerateNoise)
       {
         mNoiseGeneratorShader.dispatch_compute(mNoiseTextureBuffer);
+        mark_zone("Noise generation");
       }
 
       // Main pass
@@ -80,7 +81,6 @@ namespace raytracing
         mBloomShader.dispatch_compute(mBloomTexture);
         mark_zone("Bloom pass");
       }
-
 
       // Post-processing pass
       mPostShader.set_uniform("u_renderedTexture", mLastFrameTexture);

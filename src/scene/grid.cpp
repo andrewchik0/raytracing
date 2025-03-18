@@ -18,11 +18,12 @@ namespace raytracing
     {
       for (size_t i = 0; i < width; i++)
       {
-        float hL = getHeight(i - 1, j); // Left
-        float hR = getHeight(i + 1, j); // Right
-        float hD = getHeight(i, j - 1); // Down
-        float hU = getHeight(i, j + 1); // Up
-        float centerHeight = getHeight(i, j);
+        const float
+          hL = getHeight(i - 1, j), // Left
+          hR = getHeight(i + 1, j), // Right
+          hD = getHeight(i, j - 1), // Down
+          hU = getHeight(i, j + 1), // Up
+          centerHeight = getHeight(i, j);
 
         // Compute tangent vectors
         glm::vec3 dx = glm::normalize(glm::vec3(2.0f, hR - hL, 0.0f));

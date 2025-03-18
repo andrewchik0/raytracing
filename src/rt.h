@@ -41,7 +41,7 @@ namespace raytracing
 
     bool is_loading() const;
 
-    static rt* get()
+    [[nodiscard]] static rt* get()
     {
       rt_assert(sInstance != nullptr, "Application instance is NULL!");
       return sInstance;

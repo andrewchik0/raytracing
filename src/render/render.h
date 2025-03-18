@@ -80,6 +80,6 @@ namespace raytracing
     void push_geometry();
     void set_uniforms();
 
-    bool should_accumulate();
+    [[nodiscard]] bool should_accumulate();
   };
 }

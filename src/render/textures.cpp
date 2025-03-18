@@ -57,7 +57,7 @@ namespace raytracing
 
   void textures::load_to_gpu()
   {
-    int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
+    const int mipLevels = static_cast<int>(std::log2(std::max(mTextureWidth, mTextureHeight))) + 1;
 
     glGenTextures(1, &mTextureArray);
     glBindTexture(GL_TEXTURE_2D_ARRAY, mTextureArray);
@@ -138,13 +138,15 @@ namespace raytracing
 
   void textures::load_from_filesystem()
   {
-    nfdu8char_t* outPath;
-    const nfdu8filteritem_t filters[1] = {{"Image files", "png,jpg,jpeg,hdr,psd,bmp,tga,pic"}};
-    nfdopendialogu8args_t args = {0};
+    constexpr nfdu8filteritem_t filters[1] = {{"Image files", "png,jpg,jpeg,hdr,psd,bmp,tga,pic"}};
+    const auto defaultPath = (std::filesystem::current_path() / "assets").string();
+    nfdopendialogu8args_t args = {nullptr};
+
     args.filterList = filters;
     args.filterCount = 1;
-    auto defaultPath = (std::filesystem::current_path() / "assets").string();
     args.defaultPath = defaultPath.c_str();
+
+    nfdu8char_t* outPath;
     nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
     if (result != NFD_OKAY)
       return;

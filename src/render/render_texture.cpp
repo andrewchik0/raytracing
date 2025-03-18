@@ -5,7 +5,7 @@ namespace raytracing
   uint32_t render_texture::sQuadVAO = 0;
   uint32_t render_texture::sQuadVBO = 0;
 
-  render_texture::render_texture(uint32_t width, uint32_t height) { resize(width, height); }
+  render_texture::render_texture(const uint32_t width, const uint32_t height) { resize(width, height); }
   render_texture::~render_texture() { render_texture::destroy(); }
 
   bool render_texture::resize(const uint32_t width, const uint32_t height)
@@ -14,7 +14,7 @@ namespace raytracing
     {
       GLfloat vertices[] =
       {
-        // Positions         // Texture Coords (optional)
+        // Positions         // Texture Coords
         -1.0f,  1.0f, 0.0f,  0.0f, 1.0f, // Top-left (v0)
          1.0f,  1.0f, 0.0f,  1.0f, 1.0f, // Top-right (v1)
         -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, // Bottom-left (v2)
@@ -27,11 +27,11 @@ namespace raytracing
       glBindBuffer(GL_ARRAY_BUFFER, sQuadVBO);
       glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-      // Position attribute (assuming vec3 position)
+      // Position attribute
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
       glEnableVertexAttribArray(0);
 
-      // Texture coordinates attribute (optional)
+      // Texture coordinates attribute
       glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
       glEnableVertexAttribArray(1);
 
