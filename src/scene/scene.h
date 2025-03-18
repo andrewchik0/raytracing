@@ -55,6 +55,7 @@ namespace raytracing
     std::vector<uint32_t> mModelMaterials;
     std::vector<uint32_t> mModelTextures;
 
+    Terrain mTerrain;
     Water mWater;
     Mandelbulb mMandelbulb;
 

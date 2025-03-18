@@ -19,7 +19,7 @@ namespace raytracing
   public:
     model() = default;
 
-    [[nodiscard]] status load_from_file(std::filesystem::path file);
+    [[nodiscard]] status load_from_file(const std::filesystem::path& file);
     [[nodiscard]] status load();
 
     std::string mFilename;

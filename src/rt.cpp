@@ -6,6 +6,7 @@
 #include <nfd.h>
 
 #include "scene/serializer.h"
+#include "scene/terrain_generator.h"
 
 namespace raytracing
 {
@@ -103,6 +104,8 @@ namespace raytracing
     {
       if (mLoadCallBack)
         mLoadCallBack(this);
+      if (mScene.mTerrainOptions.exists)
+        terrain_generator::init(&mScene);
       mScene.load_models();
       mTexturesLoading = true;
       mModelsLoading = false;

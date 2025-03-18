@@ -1,0 +1,11 @@
+Model Information:
+* title:	Grass (pack of 9 vars, lowpoly, game ready)
+* source:	https://sketchfab.com/3d-models/grass-pack-of-9-vars-lowpoly-game-ready-0561204a1fa14c17939300ee1108948b
+* author:	LOLIPOP (https://sketchfab.com/lolipop_1707)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Grass (pack of 9 vars, lowpoly, game ready)" (https://sketchfab.com/3d-models/grass-pack-of-9-vars-lowpoly-game-ready-0561204a1fa14c17939300ee1108948b) by LOLIPOP (https://sketchfab.com/lolipop_1707) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

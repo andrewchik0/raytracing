@@ -136,7 +136,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
   // Pass ray through if alpha is near zero (for grass, leaves, etc...)
   if (mat.alpha <= 0.1)
   {
-    ray.origin = hit.position + ray.direction * bias;
+    ray.origin = hit.position + ray.direction * 0.001;
     return true;
   }
 

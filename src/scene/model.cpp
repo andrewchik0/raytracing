@@ -14,7 +14,7 @@
 
 namespace raytracing
 {
-  status model::load_from_file(std::filesystem::path file)
+  status model::load_from_file(const std::filesystem::path& file)
   {
     if (!std::filesystem::exists(file))
       return status::file_not_found;

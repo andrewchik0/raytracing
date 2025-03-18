@@ -1,4 +1,5 @@
 #pragma once
+#include "model.h"
 
 namespace raytracing
 {
@@ -8,5 +9,8 @@ namespace raytracing
   {
   public:
     static void init(scene* scene);
+
+  private:
+    [[nodiscard]] static status load_assets(scene* scene);
   };
 }

@@ -265,7 +265,7 @@ namespace raytracing
 
     if (rt::get()->mBVHLoading || rt::get()->mTexturesLoading || rt::get()->mModelsLoading)
       ImGui::Separator();
-    if (rt::get()->mBVHLoading && rt::get()->mScene.mModels.size())
+    if (rt::get()->mBVHLoading && rt::get()->mScene.mTriangles.size())
     {
       size_t allTrianglesCount = 0, allBVHNodesCount = 0;
       for (auto& it : rt::get()->mScene.mTriangles)

@@ -10,8 +10,28 @@ namespace raytracing
   {
     success = 0,
     error = 1,
-    file_not_found = 2,
+    file_not_found = 2
   };
+
+  inline status operator|(status left, status right)
+  {
+    return static_cast<status>(static_cast<int>(left) | static_cast<int>(right));
+  }
+
+  inline status operator|=(status& _this, status other)
+  {
+    return _this = static_cast<status>(static_cast<int>(_this) | static_cast<int>(other));
+  }
+
+  inline status operator&(status left, status right)
+  {
+    return static_cast<status>(static_cast<int>(left) & static_cast<int>(right));
+  }
+
+  inline status operator&=(status& _this, status other)
+  {
+    return _this = static_cast<status>(static_cast<int>(_this) & static_cast<int>(other));
+  }
 
   struct init_options
   {

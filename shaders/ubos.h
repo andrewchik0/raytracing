@@ -24,6 +24,17 @@ struct Mandelbulb
 };
 
 #define TERRAIN_MATERIAL (MAX_MATERIALS + 3)
+struct Terrain
+{
+  int albedoIndexGrass;
+  int normalIndexGrass;
+  int metallicIndexGrass;
+  int albedoIndexSand;
+  int normalIndexSand;
+  int metallicIndexSand;
+  uint seed;
+  int size;
+};
 
 #define SCENE_BINDING 1
 #define SceneBufferStruct SceneBuffer             \
@@ -32,6 +43,7 @@ struct Mandelbulb
   PlaneObject u_planes[MAX_PLANES];               \
   Material u_materials[MAX_MATERIALS];            \
   Water u_water;                                  \
+  Terrain u_terrain;                              \
   Mandelbulb u_mandelbulb;                        \
   uint u_bvhEntriesCount;                         \
   uint u_spheresCount;                            \

@@ -93,6 +93,9 @@ float getHeight(vec2 texCoords, float size, sampler2D heightMap)
 
 float rayIntersectsHeightmap(Ray ray, sampler2D heightMap, float intensity, int samples, float size)
 {
+  // Don't intersect if ray origin below heightmap
+  if (ray.origin.y < 0) return FAR_PLANE;
+
   // Intersect ray with bottom and top planes (y=0, y=intensity)
   float t_bottomPlane = -ray.origin.y / ray.direction.y;
   float t_upperPlane = (intensity - ray.origin.y) / ray.direction.y;

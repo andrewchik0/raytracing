@@ -165,6 +165,7 @@ namespace raytracing
         if (camera["fov"]) Scene.mCamera.mFovY = camera["fov"].as<float>();
         if (camera["position"]) Scene.mCamera.mPosition = camera["position"].as<glm::vec3>();
         if (camera["direction"]) Scene.mCamera.mDirection = camera["direction"].as<glm::vec3>();
+        if (camera["speed"]) Scene.mCamera.mSpeed = camera["speed"].as<float>();
       }
 
       if (scene["objects"])
@@ -226,7 +227,6 @@ namespace raytracing
             Scene.mTerrainOptions.exists = true;
             if (object["size"]) Scene.mTerrainOptions.size = object["size"].as<float>();
             if (object["seed"]) Scene.mTerrainOptions.seed = object["seed"].as<float>();
-            terrain_generator::init(&Scene);
           }
         }
       }
@@ -304,6 +304,7 @@ namespace raytracing
       out << YAML::Key << "position" << YAML::Value << Scene.mCamera.mPosition;
       out << YAML::Key << "direction" << YAML::Value << Scene.mCamera.mDirection;
       out << YAML::Key << "fov" << YAML::Value << Scene.mCamera.mFovY;
+      out << YAML::Key << "speed" << YAML::Value << Scene.mCamera.mSpeed;
       out << YAML::EndMap;
     }
 

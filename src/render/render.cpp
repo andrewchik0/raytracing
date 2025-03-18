@@ -141,6 +141,7 @@ namespace raytracing
     memcpy(buffer.u_materials, rt::get()->mScene.mMaterials.data(), sizeof(Material) * MAX_MATERIALS);
     memcpy(&buffer.u_water, &rt::get()->mScene.mWater, sizeof(Water));
     memcpy(&buffer.u_mandelbulb, &rt::get()->mScene.mMandelbulb, sizeof(Mandelbulb));
+    memcpy(&buffer.u_terrain, &rt::get()->mScene.mTerrain, sizeof(Terrain));
     buffer.u_planesCount = rt::get()->mScene.mPlanesCount;
     buffer.u_spheresCount = rt::get()->mScene.mSpheresCount;
     buffer.u_bvhEntriesCount = rt::get()->mScene.mBVHEntriesCount;
