@@ -37,6 +37,8 @@ namespace raytracing
 
   void camera::update(const float deltaTime)
   {
+    if (!rt::get()->mGui.mIsViewPortInFocus)
+      return;
     const float speed = 2.0f * deltaTime * mSpeed;
 
     if (

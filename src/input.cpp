@@ -13,9 +13,6 @@ namespace raytracing
 
   void input::handle_key_click(const int32_t key, const int32_t action)
   {
-    if (!rt::get()->mGui.mIsViewPortInFocus)
-      return;
-
     if (action == GLFW_PRESS)
     {
       mKeyPressed[key] = true;

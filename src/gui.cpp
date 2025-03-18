@@ -79,6 +79,12 @@ namespace raytracing
     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiWindowFlags_NoBackground | ImGuiConfigFlags_NoMouse);
 
+    if (input::key(GLFW_KEY_LEFT_CONTROL) && input::key(GLFW_KEY_O))
+      serializer::load();
+
+    if (input::key(GLFW_KEY_LEFT_CONTROL) && input::key(GLFW_KEY_S))
+      serializer::save(rt::get()->mScene.mSceneFilename);
+
     ImGui::PopStyleVar();
     if (ImGui::BeginMainMenuBar())
     {

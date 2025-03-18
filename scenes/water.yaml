@@ -3,10 +3,16 @@ gamma: 1.04
 blur_radius: 0
 sky_filename: assets/skies/sky.hdr
 camera:
-  position: [-10.480279, 8.448932, -13.931149]
-  direction: [0.4856086, -0.2620461, 0.83397615]
+  position: [-7.090345, 7.658378, 15.070485]
+  direction: [0.63423914, -0.17404601, -0.7532885]
   fov: 90
+  speed: 5.85
 objects:
+  - type: model
+    filename: assets/models/ship/scene.gltf
+    translate: [0, 2.3, 0]
+    scale: [1, 1, 1]
+    rotation: [0, 0, 0]
   - type: water
     albedo: [0.3, 0.6, 0.7]
     amplitude: 5.49
@@ -14,6 +20,7 @@ objects:
     speed: 1
     samples: 256
     size: 0.05
-  - type: model
-    filename: assets/models/ship/scene.gltf
-    matrix: [ 1, 0, 0, 0,   0, 1, 0, 0,   0, 0, 1, 0,   0, 3, 0, 1 ]
+materials:
+  []
+textures:
+  []
