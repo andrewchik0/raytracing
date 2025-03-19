@@ -28,7 +28,7 @@
 			"translation":[
 				0,
 				0,
-				-0.6248738765716553
+				0.022309064865112305
 			]
 		}
 	],
@@ -178,7 +178,7 @@
 	"buffers":[
 		{
 			"byteLength":560,
-			"uri":"Grassmedium1_GrassAtlas_0.bin"
+			"uri":"medium_1.bin"
 		}
 	]
 }

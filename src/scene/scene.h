@@ -63,6 +63,8 @@ namespace raytracing
     std::vector<BoundingVolumeEntry> mBVHEntries;
     std::vector<BoundingVolume> mBoundingVolumes;
 
+    std::unordered_map<uint32_t, bool> mWindAppliedMeshes;
+
     // Additional data stored separately in order to easily pass main data to the shader
     std::array<object_additional, MAX_SPHERES> mSpheresAdditional;
     std::array<object_additional, MAX_PLANES> mPlanesAdditional;

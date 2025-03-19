@@ -52,7 +52,8 @@ struct BoundingVolume
 
 struct BoundingVolumeEntry
 {
-  vec3 _;
+  vec2 _;
+  int applyWind;
   int index;
   mat4 transform;
 };

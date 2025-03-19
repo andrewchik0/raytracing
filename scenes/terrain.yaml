@@ -3,10 +3,10 @@ gamma: 0.75
 blur_radius: 0
 sky_filename: assets/skies/sky.hdr
 camera:
-  position: [80.79366, 4.2207017, 24.072428]
-  direction: [-0.72729737, -0.27634385, 0.62822974]
+  position: [90.69816, 4.5394907, 27.067928]
+  direction: [-0.74296314, -0.1473074, 0.65291184]
   fov: 90
-  speed: 1
+  speed: 4.43
 objects:
   - type: water
     albedo: [0.3, 0.45, 0.5]
@@ -28,87 +28,6 @@ materials:
     texture_id: -1
     metallic_texture_id: -1
     normal_texture_id: -1
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
-  - name: GrassAtlas
-    albedo: [1, 1, 1]
-    emissivity: [0, 0, 0]
-    roughness: 1
-    metallic: 0
-    texture_coordinates_multiplier: 1
-    texture_id: 6
-    metallic_texture_id: 7
-    normal_texture_id: 8
 textures:
   - assets/materials/grass/albedo.png
   - assets/materials/grass/normal.png
@@ -116,6 +35,3 @@ textures:
   - assets/materials/sand/albedo.png
   - assets/materials/sand/normal.png
   - assets/materials/sand/metallic.psd
-  - assets/models/grass\GrassAtlas_baseColor.png
-  - assets/models/grass\GrassAtlas_metallicRoughness.png
-  - assets/models/grass\GrassAtlas_normal.png

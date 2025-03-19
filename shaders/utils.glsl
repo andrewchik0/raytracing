@@ -97,3 +97,20 @@ vec3 randomHemisphereDirection(vec3 normal, vec3 rand)
 
   return normalize(tangent * randomDir.x + bitangent * randomDir.y + normal * randomDir.z);
 }
+
+mat4 skewMatrix(float sxy, float sxz, float syx, float syz, float szx, float szy)
+{
+  return mat4(
+    1.0, sxy, sxz, 0.0,
+    syx, 1.0, syz, 0.0,
+    szx, szy, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 windSkewMatrix(float sx, float sz, float time)
+{
+  float swayX = sx * sin(time);
+  float swayZ = sz * cos(time);
+  return skewMatrix(swayX, swayZ, 0.0, 0.0, 0.0, 0.0);
+}

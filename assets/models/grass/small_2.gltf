@@ -26,9 +26,9 @@
 				0.7071066498756409
 			],
 			"translation":[
-				0.6248737573623657,
+				0.0013650059700012207,
 				0,
-				0
+				0.03165018931031227
 			]
 		}
 	],
@@ -41,7 +41,7 @@
 					"specularFactor":0.167573019862175
 				}
 			},
-			"name":"GrassAtlas",
+			"name":"GrassAtlas.002",
 			"normalTexture":{
 				"index":0,
 				"scale":0.7212925553321838
@@ -178,7 +178,7 @@
 	"buffers":[
 		{
 			"byteLength":420,
-			"uri":"Grasssmall2_GrassAtlas_0.bin"
+			"uri":"small_2.bin"
 		}
 	]
 }

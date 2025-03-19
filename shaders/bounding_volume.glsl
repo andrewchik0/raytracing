@@ -1,5 +1,6 @@
 #include "uniforms.h"
 #include "types.glsl"
+#include "utils.glsl"
 
 layout(std430, binding = BVH_ENTRIES_BINDING) buffer BVHEntries
 {
@@ -29,7 +30,8 @@ void transformHit(inout HitData hit, Ray originalRay, mat4 transform, mat4 inver
 HitData intersectBVH(Ray inputRay, int modelIndex)
 {
   Ray ray;
-  mat4 invMatrix = inverse(entries[modelIndex].transform);
+  mat4 transform = entries[modelIndex].transform;
+  mat4 invMatrix = inverse(transform);
 
   ray.direction = (invMatrix * vec4(inputRay.direction, 0.0)).xyz;
   ray.origin = (invMatrix * vec4(inputRay.origin, 1.0)).xyz;
@@ -112,7 +114,7 @@ HitData intersectBVH(Ray inputRay, int modelIndex)
     hit.position = ray.origin + ray.direction * hit.distance;
   }
 
-  transformHit(hit, inputRay, entries[modelIndex].transform, invMatrix);
+  transformHit(hit, inputRay, transform, invMatrix);
 
   return hit;
 }

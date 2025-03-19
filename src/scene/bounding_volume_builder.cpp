@@ -107,7 +107,17 @@ namespace raytracing
                                                                                                   : glm::ivec4(0)});
       }
       rt::get()->mScene.mBVHEntriesCount++;
-      rt::get()->mScene.mBVHEntries.push_back({glm::vec3(), currentIndex, glm::mat4(1.0f)});
+      bool applyWind = false;
+      if (rt::get()->mScene.mWindAppliedMeshes.contains(i))
+        applyWind = true;
+      BoundingVolumeEntry entry =
+      {
+        ._ = glm::vec2(),
+        .applyWind = applyWind,
+        .index = currentIndex,
+        .transform = glm::mat4(1.0f),
+      };
+      rt::get()->mScene.mBVHEntries.push_back(entry);
       currentIndex += mBVHNodes[i].size();
       currentTriangleIndex += rt::get()->mScene.mVertices[i].size();
     }
