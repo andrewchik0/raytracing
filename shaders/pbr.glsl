@@ -2,14 +2,13 @@
 #include "utils.glsl"
 #include "types.glsl"
 #include "water.glsl"
+#include "hit.glsl"
 #include "terrain.glsl"
 
-vec3 hash3(uvec3 p)
+layout(std430, binding = POINT_LIGHTS_BINDING) buffer PointLightsBuffer
 {
-  p = 1103515245U * ((p >> 1U) ^ p.yzx);
-  p = 1103515245U * ((p >> 1U) ^ p.yzx);
-  return vec3(p & 0xFFFFFFU) / float(0xFFFFFFU);
-}
+  PointLight pointLights[];
+};
 
 float fresnelSchlik(float cosTheta, float f0)
 {
@@ -37,11 +36,7 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
   mat.f0 = -1.0;
 
   mat.uv = hit.textureCoordinates * u_materials[hit.materialIndex].textureCoordinatesMultiplier;
-  loadUV(mat.uv, hit.materialIndex);
-  vec2 dudx = getDDX();
-  vec2 dudy = getDDY();
-  float lambda = max(length(dudx), length(dudy));
-  mat.lod = log2(max(lambda * textureSize(u_texArray, 0).x, 1.0));
+  mat.lod = 0;
 
   mat.albedo = max(
     float(u_materials[hit.materialIndex].textureIndex != -1) *
@@ -194,6 +189,21 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
 
   ray.direction = mix(dielectricDir, metallicDir, mat.metallic);
   sampleColor = mix(dielectricColor, metallicColor, mat.metallic);
+
+  if (bounceCounter < 1)
+    for (int i = 0; i < u_pointLightsCount; i++)
+    {
+      pointLights[i].radius = 0;
+      pointLights[i].intensity = vec3(1);
+      pointLights[i].position += randomOnSphere(seed) * pointLights[i].radius;
+
+      Ray pointLightRay;
+      pointLightRay.direction = normalize(pointLights[i].position - hit.position);
+      pointLightRay.origin = hit.position + pointLightRay.direction * bias;
+      HitData pointLightHit = closestHit(pointLightRay);
+      if (pointLightHit.distance == FAR_PLANE);
+        sampleColor += sampleColor * max(dot(hit.normal, normalize(pointLights[i].position - hit.position)), 0) * pointLights[i].intensity / pow(distance(pointLights[i].position, hit.position), 2.0);
+    }
 
   return true;
 }

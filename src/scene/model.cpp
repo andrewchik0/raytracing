@@ -25,10 +25,11 @@ namespace raytracing
     const aiScene* scene =
       importer.ReadFile(file.string(),
                         aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenUVCoords |
-                        aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+                        aiProcess_GenNormals | aiProcess_Triangulate);
 
     rt_assert(scene != nullptr && scene->mRootNode != nullptr, "Failed to load model");
 
+    process_lights(scene);
     process_node(scene->mRootNode, scene, aiMatrix4x4());
     return status::success;
   }
@@ -59,7 +60,9 @@ namespace raytracing
     {
       Vertex vertex;
       glm::vec4 pos = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f);
-      glm::vec4 normal = mesh->mNormals != nullptr ? glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0.0f) : glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+      glm::vec4 normal = mesh->mNormals != nullptr
+        ? glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0.0f)
+        : glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
       vertex.position = meshTransform * pos;
       vertex.normal = glm::normalize(meshTransform * normal);
@@ -105,6 +108,46 @@ namespace raytracing
     }
   }
 
+  aiMatrix4x4 model::get_node_transform(const aiNode* node)
+  {
+    aiMatrix4x4 transform = node->mTransformation;
+    while (node->mParent)
+    {
+      node = node->mParent;
+      transform = node->mTransformation * transform;
+    }
+    return transform;
+  }
+
+  aiNode* model::find_node(const aiNode* root, const std::string& name)
+  {
+    if (root->mName.C_Str() == name) return (aiNode*)root;
+
+    for (unsigned int i = 0; i < root->mNumChildren; i++)
+    {
+      if (aiNode* found = find_node(root->mChildren[i], name)) return found;
+    }
+    return nullptr;
+  }
+
+  void model::process_lights(const aiScene* scene)
+  {
+    if (!scene->HasLights()) return;
+
+    for (size_t i = 0; i < scene->mNumLights; ++i)
+    {
+      if (scene->mLights[i]->mType == aiLightSource_POINT)
+      {
+        aiLight *light = scene->mLights[i];
+        PointLight pl;
+        pl.position = glm::vec3(light->mPosition.x, light->mPosition.y, light->mPosition.z);
+        pl.intensity = glm::vec3(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b);
+        pl.radius = light->mAttenuationLinear > 0.0f ? (1.0f / light->mAttenuationLinear) : 1.0f;
+        mPointLights.emplace_back(pl);
+      }
+    }
+  }
+
 
   void model::process_node(aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform)
   {
@@ -118,6 +161,27 @@ namespace raytracing
     for (size_t i = 0; i < node->mNumChildren; ++i)
     {
       process_node(node->mChildren[i], scene, nodeTransform);
+    }
+
+    uint64_t lightIndex;
+    bool hasLight = false;
+    if (node->mMetaData)
+    {
+      if (aiMetadata extensions; node->mMetaData->Get("extensions", extensions))
+      {
+        if (aiMetadata khronos_extension; extensions.Get("KHR_lights_punctual", khronos_extension))
+        {
+          hasLight = true;
+          khronos_extension.Get("light", lightIndex);
+        }
+      }
+    }
+    if (hasLight)
+    {
+      PointLight newLight = mPointLights[lightIndex];
+      glm::mat4 lightTransform = glm::transpose(glm::make_mat4(&nodeTransform.a1));
+      newLight.position = lightTransform * vec4(newLight.position, 1.0);
+      rt::get()->mScene.add_point_light(newLight);
     }
   }
 

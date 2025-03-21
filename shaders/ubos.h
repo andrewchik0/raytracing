@@ -48,6 +48,7 @@ struct Terrain
   uint u_bvhEntriesCount;                         \
   uint u_spheresCount;                            \
   uint u_planesCount;                             \
+  uint u_pointLightsCount;                        \
 }
 
 #define GLOBAL_DATA_BINDING 2
@@ -81,6 +82,7 @@ struct Terrain
 #define BVH_ENTRIES_BINDING 3
 #define BVH_BINDING 4
 #define VERTICES_BINDING 5
+#define POINT_LIGHTS_BINDING 6
 
 #define DEBUG_TEXTURE_LAYER_DEFAULT 0
 #define DEBUG_TEXTURE_LAYER_NORMAL 1

@@ -83,6 +83,10 @@ namespace raytracing
     mMaterialsAdditional[mMaterialsCount].name = name;
     mMaterials[mMaterialsCount++] = material;
   }
+  void scene::add_point_light(const PointLight& light)
+  {
+    mPointLights.emplace_back(light);
+  }
   void scene::delete_sphere(size_t index)
   {
     for (size_t i = index; i < mSpheresCount; ++i)
@@ -100,6 +104,12 @@ namespace raytracing
     for (size_t i = index; i < mMaterialsCount; ++i)
       mMaterials[i] = mMaterials[i + 1];
     mMaterialsCount--;
+  }
+  void scene::delete_point_light(size_t index)
+  {
+    for (size_t i = index; i < mPointLights.size(); ++i)
+      mPointLights[i] = mPointLights[i + 1];
+    mPointLights.erase(mPointLights.end() - 1);
   }
 
   void scene::add_model(const std::string& filename)

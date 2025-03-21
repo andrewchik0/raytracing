@@ -57,3 +57,11 @@ struct BoundingVolumeEntry
   int index;
   mat4 transform;
 };
+
+struct PointLight
+{
+  vec3 position;
+  float radius;
+  vec3 intensity;
+  float _;
+};

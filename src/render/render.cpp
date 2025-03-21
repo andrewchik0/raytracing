@@ -13,11 +13,14 @@ namespace raytracing
 
     mSceneBuffer.create(SCENE_BINDING, sizeof(SceneBuffer), "SceneBuffer", mShader.get_handle());
     mGlobalDataBuffer.create(GLOBAL_DATA_BINDING, sizeof(GlobalData), "GlobalData", mShader.get_handle());
+    mGlobalDataBuffer.bind_to_shader("GlobalData", mBloomShader.get_handle());
+    mGlobalDataBuffer.bind_to_shader("GlobalData", mAccumulationShader.get_handle());
     mGlobalDataBuffer.bind_to_shader("GlobalData", mPostShader.get_handle());
     mSceneBuffer.bind_to_shader("SceneBuffer", mNoiseGeneratorShader.get_handle());
     mBVHEntriesBuffer.create(BVH_ENTRIES_BINDING);
     mBVHBuffer.create(BVH_BINDING);
     mVerticesBuffer.create(VERTICES_BINDING);
+    mPointLightsBuffer.create(POINT_LIGHTS_BINDING);
 
     mNoiseTextureBuffer.resize(NOISE_WIDTH, NOISE_HEIGHT);
     mNoiseTextureBuffer.set_repeated(true);
@@ -145,8 +148,10 @@ namespace raytracing
     buffer.u_planesCount = rt::get()->mScene.mPlanesCount;
     buffer.u_spheresCount = rt::get()->mScene.mSpheresCount;
     buffer.u_bvhEntriesCount = rt::get()->mScene.mBVHEntriesCount;
+    buffer.u_pointLightsCount = rt::get()->mScene.mPointLights.size();
     mSceneBuffer.set(&buffer);
     mBVHEntriesBuffer.set(rt::get()->mScene.mBVHEntries.data(), sizeof(BoundingVolumeEntry) * (rt::get()->mScene.mBVHEntries.size()));
+    mPointLightsBuffer.set(rt::get()->mScene.mPointLights.data(), sizeof(PointLight) * (rt::get()->mScene.mPointLights.size()));
   }
 
   void render::push_geometry()

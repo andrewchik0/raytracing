@@ -35,9 +35,11 @@ namespace raytracing
     void add_sphere(const std::string& name, const SphereObject& object);
     void add_plane(const std::string& name, const PlaneObject& object);
     void add_material(const std::string& name, const Material& material);
+    void add_point_light(const PointLight& light);
     void delete_sphere(size_t index);
     void delete_plane(size_t index);
     void delete_material(size_t index);
+    void delete_point_light(size_t index);
 
     size_t
       mSpheresCount = 0,
@@ -54,6 +56,8 @@ namespace raytracing
     std::vector<std::vector<ivec4>> mTriangles;
     std::vector<uint32_t> mModelMaterials;
     std::vector<uint32_t> mModelTextures;
+
+    std::vector<PointLight> mPointLights;
 
     Terrain mTerrain;
     Water mWater;

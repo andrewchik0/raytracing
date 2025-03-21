@@ -114,3 +114,10 @@ mat4 windSkewMatrix(float sx, float sz, float time)
   float swayZ = sz * cos(time);
   return skewMatrix(swayX, swayZ, 0.0, 0.0, 0.0, 0.0);
 }
+
+vec3 hash3(uvec3 p)
+{
+  p = 1103515245U * ((p >> 1U) ^ p.yzx);
+  p = 1103515245U * ((p >> 1U) ^ p.yzx);
+  return vec3(p & 0xFFFFFFU) / float(0xFFFFFFU);
+}

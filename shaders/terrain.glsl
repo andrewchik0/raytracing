@@ -5,11 +5,7 @@ void terrainMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
 {
   const float multiplier = 100;
   mat.uv = hit.textureCoordinates * multiplier;
-  loadUV(mat.uv, hit.materialIndex);
-  vec2 dudx = getDDX();
-  vec2 dudy = getDDY();
-  float lambda = max(length(dudx), length(dudy));
-  mat.lod = log2(max(lambda * textureSize(u_texArray, 0).x, 1.0));
+  mat.lod = 0;
   mat3 TBN = mat3(hit.tangent, hit.bitangent, hit.normal);
 
   vec3 grassAlbedo = textureLod(u_texArray, vec3(mat.uv, u_terrain.albedoIndexGrass), mat.lod).rgb;
