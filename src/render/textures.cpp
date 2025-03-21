@@ -71,6 +71,7 @@ namespace raytracing
 
     for (size_t i = 0; i < mTexturesCountMax && i < mTextureFilenames.size(); ++i)
     {
+      if (mTexturesData[i] == nullptr) continue;
       glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, mTextureWidth, mTextureHeight,
         1, GL_RGBA, GL_UNSIGNED_BYTE, mTexturesData[i]);

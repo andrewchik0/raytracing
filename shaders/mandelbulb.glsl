@@ -41,11 +41,9 @@ HitData mandelbulbIntersect(Ray ray)
   result.distance = FAR_PLANE;
   vec3 currentOrigin = ray.origin;
   float totalDistance = 0.0;
-  const int maxSteps = 256;
-  const float epsilon = 1e-6;
-  const float maxDistance = 100.0;
-
-  vec3 bulbPosition = vec3(3, 2, 0);
+  const int maxSteps = 1024;
+  const float epsilon = 1e-5;
+  const float maxDistance = 1e3;
 
   for (int i = 0; i < maxSteps; i++)
   {
@@ -69,4 +67,17 @@ HitData mandelbulbIntersect(Ray ray)
     totalDistance += dist;
   }
   return result;
+}
+
+void mandelbulbMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
+{
+  mat.normal = hit.normal;
+  mat.albedo = vec3(hit.position - u_mandelbulb.position) * 4;
+  mat.metallic = 0.0;
+  mat.alpha = 1.0;
+  mat.roughness = 1.0;
+  mat.lod = 0;
+  mat.emissivity = vec3(0);
+  mat.specular = 0;
+  mat.f0 = -1;
 }

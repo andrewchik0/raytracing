@@ -2,8 +2,8 @@
 #include "utils.glsl"
 #include "intersections.glsl"
 #include "bounding_volume.glsl"
-#include "pbr.glsl"
 #include "mandelbulb.glsl"
+#include "pbr.glsl"
 
 vec3 calculateRayDirection(vec3 cameraDirection, vec3 cameraRight, vec3 cameraUp, vec2 texCoords, float halfWidth, float halfHeight)
 {

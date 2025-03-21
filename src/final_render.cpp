@@ -73,6 +73,7 @@ namespace raytracing
       render_texture rt(mRenderOptions.width, mRenderOptions.height);
       size_t sampleCounter = 0;
       mRt->mScene.mWater.animationTime += mRt->mScene.mWater.speed * 1.0 / mRenderOptions.framerate;
+      mRt->mScene.mCamera.mPosition -= mRt->mScene.mCamera.mDirection * (1.0f / mRenderOptions.framerate) * 0.5f;
 
       while (sampleCounter++ < mRenderOptions.samples)
       {

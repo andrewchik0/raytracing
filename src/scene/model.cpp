@@ -24,14 +24,10 @@ namespace raytracing
 
     const aiScene* scene =
       importer.ReadFile(file.string(),
-                        aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |
-                          aiProcess_GenSmoothNormals | aiProcess_ValidateDataStructure |
-                          aiProcess_RemoveRedundantMaterials | aiProcess_GenUVCoords | aiProcess_GenBoundingBoxes);
+                        aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenUVCoords |
+                        aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
-    if (!scene || !scene->mRootNode)
-    {
-      return status::error;
-    }
+    rt_assert(scene != nullptr && scene->mRootNode != nullptr, "Failed to load model");
 
     process_node(scene->mRootNode, scene, aiMatrix4x4());
     return status::success;
@@ -63,7 +59,7 @@ namespace raytracing
     {
       Vertex vertex;
       glm::vec4 pos = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f);
-      glm::vec4 normal = glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0.0f);
+      glm::vec4 normal = mesh->mNormals != nullptr ? glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0.0f) : glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
       vertex.position = meshTransform * pos;
       vertex.normal = glm::normalize(meshTransform * normal);
@@ -102,6 +98,8 @@ namespace raytracing
       triangle[0] = face.mIndices[0] + vertexOffset;
       triangle[1] = face.mIndices[1] + vertexOffset;
       triangle[2] = face.mIndices[2] + vertexOffset;
+      if (triangle[0] < 0 || triangle[1] < 0 || triangle[2] < 0)
+        continue;
       triangle[3] = materialIndex;
       mTriangles.push_back(triangle);
     }

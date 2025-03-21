@@ -28,6 +28,11 @@ SampledMaterial sampleMaterial(HitData hit, inout SampledMaterial mat, Ray ray)
     terrainMaterial(hit, mat, ray);
     return mat;
   }
+  if (hit.materialIndex == MANDELBULB_MATERIAL)
+  {
+    mandelbulbMaterial(hit, mat, ray);
+    return mat;
+  }
 
   mat.f0 = -1.0;
 
@@ -179,7 +184,7 @@ bool pbr(inout HitData hit, uint sampleCounter, uint bounceCounter, inout vec3 s
     dielectricDir = mix(specularDir, randomDir, mat.roughness);
     dielectricColor = sampleColor + mat.emissivity;
   }
-  else if (mat.alpha > 0.1 && mat.alpha < 0.99 && random(seed.x + seed.z) > mat.alpha)
+  else if (mat.alpha > 0.1 && mat.alpha < 0.99 && random(seed.x + seed.y + seed.z) > mat.alpha / 2)
   {
     ray.origin = hit.position + ray.direction * bias;
     return true;
