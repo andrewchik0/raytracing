@@ -3,10 +3,10 @@ gamma: 0.75
 blur_radius: 0
 sky_filename: assets/skies/sky.hdr
 camera:
-  position: [81.575714, 2.4055154, 37.409378]
-  direction: [-0.64830935, 0.023151945, 0.7610249]
+  position: [84.31564, 3.1362865, 35.86654]
+  direction: [-0.60735875, -0.08659611, 0.789693]
   fov: 100.6
-  speed: 0.31
+  speed: 1
 objects:
   - type: model
     filename: assets/models/koenigsegg/scene.gltf

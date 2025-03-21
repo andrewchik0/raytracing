@@ -15,6 +15,7 @@
 
 ## Render example
 ![Final render](./render.png)
+![Final render](./render.jpg)
 
 ## Features
 
