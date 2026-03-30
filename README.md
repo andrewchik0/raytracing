@@ -15,7 +15,7 @@
 
 ## Render example
 ![Final render](./render.png)
-![Final render](./render.jpg)
+![Water rendering](./assets/readme/water.gif)
 
 ## Features
 
@@ -28,9 +28,6 @@
 - Exposure & Gamma
 - Field of view
 - Bloom intensity 
-
-### Customizable water rendering
-<img src="assets/readme/water.gif" width="600">
 
 ### Save & Load
 - Save and load scenes in YAML format
