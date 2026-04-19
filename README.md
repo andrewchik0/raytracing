@@ -14,7 +14,7 @@
 5. Run `ray-tracing` target
 
 ## Render example
-![Final render](./render.png)
+![Final render](./render_car.jpg)
 ![Water rendering](./assets/readme/water.gif)
 
 ## Features
